@@ -13,9 +13,7 @@ TODO:
 
 Working on scaling the x-axis with dates.
 
-~~Still working on adding a touch listener to the data points.~~
-
-Touch listener added.
+~~Still working on adding a touch listener to the data points.~~ Touch listener added.
 
 Working on formatting Toast text.
 
