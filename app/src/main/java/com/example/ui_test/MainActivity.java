@@ -2,12 +2,17 @@ package com.example.ui_test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +35,13 @@ public class MainActivity extends AppCompatActivity {
         GraphView graph = (GraphView) findViewById(R.id.graph);
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
         graph.addSeries(series);
+
+        series.setOnDataPointTapListener(new OnDataPointTapListener() {
+            @Override
+            public void onTap(Series series, DataPointInterface dataPoint) {
+                Toast.makeText(getActivity(), ""+dataPoint, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         time.set(100, 3, 4);
         date = time.getTime();
@@ -65,5 +77,9 @@ public class MainActivity extends AppCompatActivity {
 // as we use dates as labels, the human rounding to nice readable numbers
 // is not necessary
         graph.getGridLabelRenderer().setHumanRounding(false);
+    }
+
+    private Context getActivity() {
+        return this;
     }
 }
