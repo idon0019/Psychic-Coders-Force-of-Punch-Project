@@ -36,12 +36,9 @@ public class MainActivity extends AppCompatActivity {
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
         graph.addSeries(series);
 
-        series.setOnDataPointTapListener(new OnDataPointTapListener() {
-            @Override
-            public void onTap(Series series, DataPointInterface dataPoint) {
-                Toast.makeText(getActivity(), ""+dataPoint, Toast.LENGTH_SHORT).show();
-            }
-        });
+        // touch listener that displays data point.
+        // TODO: format the data points into readable text.
+        series.setOnDataPointTapListener((series1, dataPoint) -> Toast.makeText(getActivity(), "" + dataPoint, Toast.LENGTH_SHORT).show());
 
         time.set(100, 3, 4);
         date = time.getTime();
