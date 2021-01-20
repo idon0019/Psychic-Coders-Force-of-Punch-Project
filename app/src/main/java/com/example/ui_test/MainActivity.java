@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextView infoText;
     final String pattern = "####.#";
     final DecimalFormat format = new DecimalFormat(pattern);
-    final SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yy");
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MM, YYYY");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         time.set(90, 3, 4);
         Date date = time.getTime();
-        graph.getViewport().setMinX(date.getTime());
+        graph.getViewport().setMinX(date.getTime()); // sets minimum x value label
         series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
 
         // creates some data points
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
             series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
         }
 
-        graph.getViewport().setMaxX(date.getTime());
+        graph.getViewport().setMaxX(date.getTime()); // sets maximum x value label
 
         // set date label formatter
         graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(this));
