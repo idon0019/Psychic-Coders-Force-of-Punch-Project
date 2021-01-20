@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     TextView infoText;
     final String pattern = "####.#";
     final DecimalFormat format = new DecimalFormat(pattern);
-    final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MM, YYYY");
+    final SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMMM, YYYY");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
