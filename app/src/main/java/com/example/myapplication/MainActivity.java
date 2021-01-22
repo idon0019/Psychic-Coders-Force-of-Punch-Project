@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
-    TextView txtUser, txtAddPhoto, txtFirstName, txtLastName, txtHeight, txtWeight, txtVersion, txtSubmitted;
+    TextView txtUser, txtAddPhoto, txtFirstName, txtLastName, txtHeight, txtWeight, txtVersion;
     ImageButton imgAdd;
     EditText edtFirstName, edtLastName, edtHeight, edtWeight;
     Button btnSubmit;
@@ -29,10 +29,16 @@ public class MainActivity extends AppCompatActivity {
         btnSubmit = (Button) findViewById(R.id.BtnSubmit);
 
 
+        Toast txtSubmitted = Toast.makeText(this, "User created", Toast.LENGTH_LONG);
+
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                edtFirstName.setText(null);
+                edtLastName.setText(null);
+                edtHeight.setText(null);
+                edtWeight.setText(null);
+                txtSubmitted.show();
             }
         });
     }

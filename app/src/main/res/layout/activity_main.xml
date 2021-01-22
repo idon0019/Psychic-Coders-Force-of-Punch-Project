@@ -157,15 +157,6 @@
         />
 
     <TextView
-        android:id="@+id/TxtSubmitted"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="40sp"
-        android:textColor="@color/white"
-    />
-
-    <TextView
         android:id="@+id/TxtVersion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
