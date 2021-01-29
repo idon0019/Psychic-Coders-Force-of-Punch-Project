@@ -4,7 +4,7 @@
     "type": "PACKAGED_MANIFESTS",
     "kind": "Directory"
   },
-  "applicationId": "com.example.ui_test",
+  "applicationId": "com.example.sqlitetest",
   "variantName": "debug",
   "elements": [
     {

@@ -4,8 +4,8 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.example.ui_test",
-  "variantName": "processDebugResources",
+  "applicationId": "com.example.sqlitetest",
+  "variantName": "debug",
   "elements": [
     {
       "type": "SINGLE",
