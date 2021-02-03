@@ -17,7 +17,8 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
-import java.util.List;
+import com.example.myapplication.DataModel.ProfileModel;
+import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
 public class SecondFragment extends Fragment {
 

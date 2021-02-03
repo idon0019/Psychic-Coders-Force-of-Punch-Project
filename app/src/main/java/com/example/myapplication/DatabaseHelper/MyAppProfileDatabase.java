@@ -1,4 +1,4 @@
-package com.example.myapplication;
+package com.example.myapplication.DatabaseHelper;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -7,6 +7,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import androidx.annotation.Nullable;
+
+import com.example.myapplication.DataModel.ProfileModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +23,8 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_STUDENT_HEIGHT = "STUDENT_HEIGHT";
     public static final String COLUMN_STUDENT_AGE = "STUDENT_AGE";
     public static final String COLUMN_ID = "ID";
+
+    //TODO: Add in the names of the Punch tables. Also update the onCreate and onUpgrade methods.
 
 
     public MyAppProfileDatabase(@Nullable Context context) {
