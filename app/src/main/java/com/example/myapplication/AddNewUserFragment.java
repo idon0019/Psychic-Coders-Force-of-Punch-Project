@@ -94,18 +94,15 @@ public class AddNewUserFragment extends Fragment {
                     profileModel = new ProfileModel(-1, "error", "error", 0, 0, 0);
                 }
 
-                profileModel.setFirstName(edtFirstName.getText().toString());
-                profileModel.setLastName(edtLastName.getText().toString());
-                profileModel.setAge(Integer.parseInt(edtAge.getText().toString()));
-                profileModel.setWeight(Float.parseFloat(edtWeight.getText().toString()));
-                profileModel.setHeight(Float.parseFloat(edtHeight.getText().toString()));
-
                 // Reference to the new profile database
                 MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
                 boolean success = databaseHelper.addStudent(profileModel);
-                Toast.makeText(getActivity(), "Profile added", Toast.LENGTH_LONG).show();
-
-                navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
+                if (success == true) {
+                    Toast.makeText(getActivity(), "Profile added", Toast.LENGTH_LONG).show();
+                    navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
+                }else {
+                    Toast.makeText(getActivity(), "Profile could be added", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

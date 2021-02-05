@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
@@ -15,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class StudentProfileFragment extends Fragment {
 
@@ -22,10 +26,11 @@ public class StudentProfileFragment extends Fragment {
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight;
     private NavController navController;
 
+    private ProfileModel profileModel;
+
     public StudentProfileFragment() {
         // Required empty public constructor
     }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,27 +55,47 @@ public class StudentProfileFragment extends Fragment {
         txtWeight = view.findViewById(R.id.TxtWeight);
         txtHeight = view.findViewById(R.id.TxtHeight);
 
+        // Database helper object
+        MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
+        // Set the empty text in the student profile screen to the first name of the student
+        txtFirstName.setText(database.getFirstNameFromDatabase(profileModel));
 
+        /**
+         * Back button - Navigate to previous screen
+         */
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Navigate back to select a user screen
                 navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
             }
         });
 
+        /**
+         * Home button - Navigate back to Main Menu
+         */
         btnHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
+                // Navigate to main menu
                 navController.navigate(R.id.action_studentProfileFragment_to_firstFragment);
             }
         });
 
+        /**
+         * Delete button - Delete student profile
+         */
         btnDeleteProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
+                database.deleteStudent(profileModel);
+
+                // Navigate back to select user screen
+                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
             }
         });
 

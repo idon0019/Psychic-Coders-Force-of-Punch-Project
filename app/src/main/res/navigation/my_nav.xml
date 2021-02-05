@@ -28,9 +28,6 @@
         <action
             android:id="@+id/action_secondFragment_to_studentProfileFragment"
             app:destination="@id/studentProfileFragment" />
-        <action
-            android:id="@+id/action_secondFragment_self"
-            app:destination="@id/secondFragment" />
     </fragment>
     <fragment
         android:id="@+id/addNewUserFragment"
