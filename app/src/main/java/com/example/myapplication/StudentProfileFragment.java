@@ -16,6 +16,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.myapplication.DataModel.ProfileModel;
+import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
