@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">UI Page 5 Beta</string>
-    <string name="page_title">Progression Graph</string>
-    <string name="infoView_initial">Tap graph for more information</string>
+    <string name="app_name">My Application</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
