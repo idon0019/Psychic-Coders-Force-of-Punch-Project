@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FirstFragment"
-    android:background="@color/teal_700"
+    android:background="@color/red"
     android:orientation="vertical">
 
 
@@ -12,7 +12,7 @@
         android:id="@+id/TxtWelcomeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Welcome to this app"
+        android:text="Force of a Punch"
         android:textSize="30sp"
         android:textColor="@color/white"
         android:paddingTop="30sp"

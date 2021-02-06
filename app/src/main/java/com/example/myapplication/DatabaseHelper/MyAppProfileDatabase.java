@@ -25,6 +25,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "ID";
 
     //TODO: Add in the names of the Punch tables. Also update the onCreate and onUpgrade methods.
+    public ProfileModel pModel;
 
 
     public MyAppProfileDatabase(@Nullable Context context) {
@@ -105,8 +106,54 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return returnList;
     }
 
+    /**
+     * Gets the number of students in the database
+     * @return
+     */
+    public int getNumberOfStudentsFromDatabase() {
+        int num = 0;
+
+        String stringQuery = "SELECT COUNT(*) FROM " + STUDENT_TABLE;
+        Cursor cursor = getReadableDatabase().rawQuery(stringQuery, null);
+
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            num = cursor.getInt(0);
+        }
+
+        cursor.close();
+
+        return num;
+    }
+
+    /**
+     * Gets the first name of the student of which profile the user chose.
+     * @param profileModel
+     * @return
+     */
+    public String getFirstNameFromDatabase(ProfileModel profileModel) {
+        String someString = "";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_FIRSTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + profileModel.getId();
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        cursor.moveToNext();
+
+
+        someString = cursor.getString(cursor.getPosition());
+
+
+        return someString;
+    }
+
+    /**
+     * Deletes a student from database
+     * @param profileModel
+     * @return
+     */
     public boolean deleteStudent(ProfileModel profileModel) {
-        List<ProfileModel> returnList = new ArrayList<>();
         SQLiteDatabase db = this.getWritableDatabase();
         String queryString = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + profileModel.getId();
 
