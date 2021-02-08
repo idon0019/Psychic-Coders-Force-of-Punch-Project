@@ -1,7 +1,5 @@
 package com.example.myapplication;
 
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,8 +14,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.example.myapplication.DataModel.ProfileModel;
+import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
 
 public class StudentProfileFragment extends Fragment {
