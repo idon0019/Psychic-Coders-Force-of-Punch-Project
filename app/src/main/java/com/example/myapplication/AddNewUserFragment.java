@@ -71,7 +71,8 @@ public class AddNewUserFragment extends Fragment {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ProfileModel profileModel;
+                ProfileModel profileModel = null;
+                boolean valid = false;
                 try {
                     profileModel = new ProfileModel(
                             -1,
@@ -81,19 +82,28 @@ public class AddNewUserFragment extends Fragment {
                             Float.parseFloat(edtWeight.getText().toString()),
                             Float.parseFloat(edtHeight.getText().toString())
                     );
+                    valid = true;
                 }catch (Exception e) {
                     Toast.makeText(getActivity(), "Invalid Entry", Toast.LENGTH_LONG).show();
-                    profileModel = new ProfileModel(-1, "error", "error", 0, 0, 0);
                 }
 
-                // Reference to the new profile database
-                MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
-                boolean success = databaseHelper.addStudent(profileModel);
-                if (success == true) {
-                    Toast.makeText(getActivity(), "Profile added", Toast.LENGTH_LONG).show();
-                    navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
-                }else {
-                    Toast.makeText(getActivity(), "Profile could be added", Toast.LENGTH_LONG).show();
+                if (valid) {
+                    // Reference to the new profile database
+                    MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
+                    boolean success = databaseHelper.addStudent(profileModel);
+                    if (success == true) {
+                        Toast.makeText(getActivity(), "Profile added", Toast.LENGTH_LONG).show();
+
+                        int id = databaseHelper.getLastStudentID();
+
+                        Bundle accountID = new Bundle();
+                        accountID.putInt("accountID", id);
+                        getParentFragmentManager().setFragmentResult("accountID", accountID);
+
+                        navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
+                    } else {
+                        Toast.makeText(getActivity(), "Profile could be added", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });

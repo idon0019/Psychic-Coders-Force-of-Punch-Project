@@ -105,7 +105,9 @@ public class SecondFragment extends Fragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ProfileModel profileModel = (ProfileModel) parent.getItemAtPosition(position);
 
-
+                Bundle accountID = new Bundle();
+                accountID.putInt("accountID", profileModel.getId());
+                getParentFragmentManager().setFragmentResult("accountID", accountID);
                 // Navigate to student profile screen
                 navController.navigate(R.id.action_secondFragment_to_studentProfileFragment);
             }
