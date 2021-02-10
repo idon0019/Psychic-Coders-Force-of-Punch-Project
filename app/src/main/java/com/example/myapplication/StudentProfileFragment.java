@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -16,6 +17,9 @@ import android.widget.TextView;
 
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class StudentProfileFragment extends Fragment {
@@ -56,8 +60,15 @@ public class StudentProfileFragment extends Fragment {
         // Database helper object
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
-        // Set the empty text in the student profile screen to the first name of the student
-        txtFirstName.setText(database.getFirstNameFromDatabase(profileModel));
+        getParentFragmentManager().setFragmentResultListener("accountID", this, new FragmentResultListener() {
+            @Override
+            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                int accountID = result.getInt("accountID");
+
+                // Set the empty text in the student profile screen to the first name of the student
+                txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
+            }
+        });
 
         /**
          * Back button - Navigate to previous screen

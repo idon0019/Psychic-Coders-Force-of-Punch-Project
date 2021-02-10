@@ -9,13 +9,14 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 import com.example.myapplication.DataModel.ProfileModel;
+import com.example.myapplication.DataModel.PunchModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
-
+    // Profile table
     public static final String STUDENT_TABLE = "STUDENT_TABLE";
     public static final String COLUMN_STUDENT_FIRSTNAME = "STUDENT_FIRSTNAME";
     public static final String COLUMN_STUDENT_LASTNAME = "STUDENT_LASTNAME";
@@ -24,12 +25,19 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public static final String COLUMN_STUDENT_AGE = "STUDENT_AGE";
     public static final String COLUMN_ID = "ID";
 
+    // Punch table
+    private static final String PUNCH_TABLE = "PUNCH_TABLE";
+    private static final String PUNCH_ID = "ID";
+    private static final String PUNCH_ACCOUNT_ID = "ACCOUNT_ID";
+    private static final String PUNCH_FORCE = "FORCE";
+    private static final String PUNCH_DATE = "DATE";
+
     //TODO: Add in the names of the Punch tables. Also update the onCreate and onUpgrade methods.
     public ProfileModel pModel;
 
 
     public MyAppProfileDatabase(@Nullable Context context) {
-        super(context, "MyAppDatabase.db", null, 1);
+        super(context, "MyAppDatabase.db", null, 2);
     }
 
     /**
@@ -47,6 +55,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
         db.execSQL(createTableStatement);
+
+        String createTable = "CREATE TABLE " + PUNCH_TABLE
+                + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + PUNCH_ACCOUNT_ID + "INTEGER, "
+                + PUNCH_FORCE + " REAL, "
+                + PUNCH_DATE + " INTEGER)";
+
+        db.execSQL(createTable);
     }
 
 
@@ -72,6 +88,24 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         else
             return true;
     }
+
+    // gets the last student added
+    public int getLastStudentID() {
+        String queryString = "SELECT * FROM " + STUDENT_TABLE + " ORDER BY " + COLUMN_ID + " DESC LIMIT 1";
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery(queryString, null);
+        int id = -1;
+
+        if (cursor.getCount() > 0) {
+            cursor.moveToFirst();
+            id = cursor.getInt(0);
+        }
+
+        cursor.close();
+
+        return id;
+    }
+
 
     /**
      * Retrieves all profiles in database
@@ -128,14 +162,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the first name of the student of which profile the user chose.
-     * @param profileModel
+     * @param accountID
      * @return
      */
-    public String getFirstNameFromDatabase(ProfileModel profileModel) {
+    public String getFirstNameFromDatabase(int accountID) {
         String someString = "";
 
         SQLiteDatabase db = this.getReadableDatabase();
-        String queryString = "SELECT " + COLUMN_STUDENT_FIRSTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + profileModel.getId();
+        String queryString = "SELECT " + COLUMN_STUDENT_FIRSTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
         Cursor cursor = db.rawQuery(queryString, null);
 
@@ -165,6 +199,65 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             return false;
     }
 
+    public boolean addPunch(PunchModel punchModel) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues newData = new ContentValues();
+
+        newData.put(PUNCH_ACCOUNT_ID, punchModel.getAccountID());
+        newData.put(PUNCH_FORCE, punchModel.getForce());
+        newData.put(PUNCH_DATE, punchModel.getDate());
+
+        long insert = db.insert(PUNCH_TABLE, null, newData);
+        db.close();
+
+        if (insert == -1)
+            return false;
+        else
+            return true;
+    }
+
+    public List<PunchModel> getAllPunches() {
+        List<PunchModel> returnList = new ArrayList<>();
+
+        String query = "SELECT * FROM " + PUNCH_TABLE;
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                int id = cursor.getInt(0);
+                int accountId = cursor.getInt(1);
+                double force = cursor.getDouble(2);
+                long date = cursor.getLong(3);
+
+                PunchModel punch = new PunchModel(id, accountId, force, date);
+                returnList.add(punch);
+            } while(cursor.moveToNext());
+        }
+        cursor.close();
+        db.close();
+        return returnList;
+    }
+
+    // Deletes a single punch given punch id
+    public void removePunch(int punchID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(PUNCH_TABLE, PUNCH_ID + " = ?", new String[]{String.valueOf(punchID)});
+
+        db.close();
+    }
+
+    // Deletes all punches with given account id
+    public void removeAccountPunches(int accountID) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(PUNCH_TABLE, PUNCH_ID + " = ?", new String[]{String.valueOf(accountID)});
+
+        db.close();
+    }
+
 
     /**
      * This method gets called whenever the version of the database changes
@@ -174,6 +267,12 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        String createTable = "CREATE TABLE " + PUNCH_TABLE
+                + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + PUNCH_ACCOUNT_ID + "INTEGER, "
+                + PUNCH_FORCE + " REAL, "
+                + PUNCH_DATE + " INTEGER)";
 
+        db.execSQL(createTable);
     }
 }
