@@ -185,12 +185,12 @@
             android:id="@+id/BtnDeleteProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Delete profile"
-            android:backgroundTint="@color/black"
             android:layout_below="@+id/TxtHeight"
             android:layout_alignEnd="@+id/TxtFName"
             android:layout_marginTop="50sp"
-            />
+            android:backgroundTint="@color/black"
+            android:text="Delete profile"
+            android:textColor="#FFFBFB" />
     </RelativeLayout>
 
 
