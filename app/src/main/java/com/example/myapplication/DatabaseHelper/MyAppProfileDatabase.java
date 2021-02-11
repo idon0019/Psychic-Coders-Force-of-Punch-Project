@@ -166,7 +166,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * @return
      */
     public String getFirstNameFromDatabase(int accountID) {
-        String someString = "";
+        String studentFirstName = "";
 
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_FIRSTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
@@ -175,21 +175,19 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         cursor.moveToNext();
 
+        studentFirstName = cursor.getString(cursor.getPosition());
 
-        someString = cursor.getString(cursor.getPosition());
-
-
-        return someString;
+        return studentFirstName;
     }
 
     /**
      * Deletes a student from database
-     * @param profileModel
+     * @param accountID : The account id of the student in the database
      * @return
      */
-    public boolean deleteStudent(ProfileModel profileModel) {
+    public boolean deleteStudent(int accountID) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String queryString = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + profileModel.getId();
+        String queryString = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
         Cursor cursor = db.rawQuery(queryString, null);
 

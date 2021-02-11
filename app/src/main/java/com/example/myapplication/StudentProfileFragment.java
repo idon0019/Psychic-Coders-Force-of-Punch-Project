@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
@@ -27,6 +28,7 @@ public class StudentProfileFragment extends Fragment {
     private Button btnBack, btnHome, btnSubmit, btnDeleteProfile;
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight;
     private NavController navController;
+    private int accountID;
 
     private ProfileModel profileModel;
 
@@ -63,7 +65,7 @@ public class StudentProfileFragment extends Fragment {
         getParentFragmentManager().setFragmentResultListener("accountID", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                int accountID = result.getInt("accountID");
+                accountID = result.getInt("accountID");
 
                 // Set the empty text in the student profile screen to the first name of the student
                 txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
@@ -101,7 +103,12 @@ public class StudentProfileFragment extends Fragment {
             public void onClick(View v) {
                 MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
-                database.deleteStudent(profileModel);
+                boolean deleteStudent = database.deleteStudent(accountID);
+                if (deleteStudent)
+                    Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
+                else
+                    Toast.makeText(getActivity(), "Delete failed", Toast.LENGTH_LONG).show();
+
 
                 // Navigate back to select user screen
                 navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
