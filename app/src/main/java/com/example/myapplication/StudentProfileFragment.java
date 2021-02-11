@@ -69,6 +69,10 @@ public class StudentProfileFragment extends Fragment {
 
                 // Set the empty text in the student profile screen to the first name of the student
                 txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
+                txtLastName.setText(database.getLastNameFromDatabase(accountID));
+                txtAge.setText(database.getAgeFromDatabase(accountID));
+                txtWeight.setText(database.getWeightFromDatabase(accountID));
+                txtHeight.setText(database.getHeightFromDatabase(accountID));
             }
         });
 
