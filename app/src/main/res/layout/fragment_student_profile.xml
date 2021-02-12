@@ -181,16 +181,53 @@
 
             />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Force of punch:"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_alignBottom="@+id/TxtDateOfBirth"
+            android:layout_marginLeft="20sp"
+            />
+
+        <TextView
+            android:id="@+id/TxtPunchForceResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2000N"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:layout_alignBottom="@+id/TxtAge"
+            android:layout_marginLeft="20sp"
+            />
+
         <Button
             android:id="@+id/BtnDeleteProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Delete profile"
             android:backgroundTint="@color/black"
+            android:layout_alignLeft="@+id/BtnRecordPunch"
+            android:layout_alignBottom="@+id/BtnRecordPunch"
+            android:layout_marginTop="50sp"
+            android:layout_marginLeft="40sp"
+            android:layout_alignParentLeft="true"
+            />
+
+        <Button
+            android:id="@+id/BtnRecordPunch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Record Punch"
+            android:backgroundTint="@color/black"
             android:layout_below="@+id/TxtHeight"
             android:layout_alignEnd="@+id/TxtFName"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="50sp"
+            android:layout_marginRight="40sp"
             />
+
     </RelativeLayout>
 
 

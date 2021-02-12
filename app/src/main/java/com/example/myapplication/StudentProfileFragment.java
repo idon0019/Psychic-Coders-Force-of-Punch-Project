@@ -25,8 +25,8 @@ import java.util.List;
 
 public class StudentProfileFragment extends Fragment {
 
-    private Button btnBack, btnHome, btnSubmit, btnDeleteProfile;
-    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight;
+    private Button btnBack, btnHome, btnSubmit, btnDeleteProfile, btnRecordPunch;
+    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult;
     private NavController navController;
     private int accountID;
 
@@ -52,6 +52,7 @@ public class StudentProfileFragment extends Fragment {
         btnHome = view.findViewById(R.id.BtnHome);
         btnSubmit = view.findViewById(R.id.BtnSubmit);
         btnDeleteProfile = view.findViewById(R.id.BtnDeleteProfile);
+        btnRecordPunch = view.findViewById(R.id.BtnRecordPunch);
 
         txtFirstName = view.findViewById(R.id.TxtFirstName);
         txtLastName = view.findViewById(R.id.TxtLastName);
@@ -119,6 +120,12 @@ public class StudentProfileFragment extends Fragment {
             }
         });
 
-    }
+        btnRecordPunch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
+            }
+        });
 
+    }
 }

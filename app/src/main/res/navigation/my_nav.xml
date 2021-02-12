@@ -55,5 +55,44 @@
         <action
             android:id="@+id/action_studentProfileFragment_to_secondFragment"
             app:destination="@id/secondFragment" />
+        <action
+            android:id="@+id/action_studentProfileFragment_to_phoneSecuredFragment"
+            app:destination="@id/phoneSecuredFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneSecuredFragment"
+        android:name="com.example.myapplication.PhoneSecuredFragment"
+        android:label="fragment_phone_secured"
+        tools:layout="@layout/fragment_phone_secured" >
+        <action
+            android:id="@+id/action_phoneSecuredFragment_to_measuringPunchFragment"
+            app:destination="@id/measuringPunchFragment" />
+        <action
+            android:id="@+id/action_phoneSecuredFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/measuringPunchFragment"
+        android:name="com.example.myapplication.MeasuringPunchFragment"
+        android:label="fragment_measuring_punch"
+        tools:layout="@layout/fragment_measuring_punch" >
+        <action
+            android:id="@+id/action_measuringPunchFragment_to_punchResultFragment"
+            app:destination="@id/punchResultFragment" />
+        <action
+            android:id="@+id/action_measuringPunchFragment_to_phoneSecuredFragment"
+            app:destination="@id/phoneSecuredFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/punchResultFragment"
+        android:name="com.example.myapplication.PunchResultFragment"
+        android:label="fragment_punch_result"
+        tools:layout="@layout/fragment_punch_result" >
+        <action
+            android:id="@+id/action_punchResultFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+        <action
+            android:id="@+id/action_punchResultFragment_to_phoneSecuredFragment"
+            app:destination="@id/phoneSecuredFragment" />
     </fragment>
 </navigation>
