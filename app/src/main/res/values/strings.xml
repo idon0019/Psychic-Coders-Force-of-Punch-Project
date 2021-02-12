@@ -19,4 +19,5 @@
     <string name="save">Save</string>
     <string name="new_record_nprevious_record_800n">New Record!\nPrevious Record: 800N</string>
     <string name="todo">TODO</string>
+    <string name="punch_data_label">Punch Record</string>
 </resources>

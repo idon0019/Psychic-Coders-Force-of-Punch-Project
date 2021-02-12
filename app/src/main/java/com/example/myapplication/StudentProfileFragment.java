@@ -9,25 +9,37 @@ import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.myapplication.DataModel.ProfileModel;
+import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 
 public class StudentProfileFragment extends Fragment {
 
     private Button btnBack, btnHome, btnSubmit, btnDeleteProfile, btnRecordPunch;
-    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult;
+    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtPunchDataLabel;
+    private GraphView graph;
     private NavController navController;
+    private LinearLayout parentLayout;
     private int accountID;
 
     private ProfileModel profileModel;
@@ -59,6 +71,12 @@ public class StudentProfileFragment extends Fragment {
         txtAge = view.findViewById(R.id.TxtAge);
         txtWeight = view.findViewById(R.id.TxtWeight);
         txtHeight = view.findViewById(R.id.TxtHeight);
+        txtPunchData = view.findViewById(R.id.TxtPunchData);
+        txtPunchDataLabel = view.findViewById(R.id.TxtPunchLabel);
+
+        graph = view.findViewById(R.id.graph);
+        parentLayout = view.findViewById(R.id.parentLayout);
+        List<PunchModel> punchModels = new ArrayList<>();
 
         // Database helper object
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
@@ -126,6 +144,112 @@ public class StudentProfileFragment extends Fragment {
                 navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
             }
         });
+
+        List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
+        if (punches.size() == 0) {
+            insertFakePunchData(accountID, database);
+        }
+
+        if (populatePunchData(accountID, database))
+            populateGraph();
+        else {
+            parentLayout.removeView(graph);
+            txtPunchDataLabel.setText("No Punch Data");
+        }
+
+
+    }
+
+    /**
+     * Populates the punchData textview
+     *
+     * @return
+     */
+    private boolean populatePunchData(int accountID, MyAppProfileDatabase db) {
+        boolean hasPunch = true;
+
+        List<PunchModel> punchData = db.getAllPunchesFromProfile(accountID);
+        String display = "";
+
+        if (punchData.size() == 0) {
+            hasPunch = false;
+        }
+
+        for (int i = 0; i < punchData.size(); i++) {
+            display += punchData.get(i).toString();
+        }
+
+        txtPunchData.setMovementMethod(new ScrollingMovementMethod());
+        txtPunchData.setText(display);
+
+        return hasPunch;
+    }
+
+    /**
+     * Populates the graph
+     */
+    private void populateGraph() {
+        Date date;
+        Calendar time;
+
+        time = Calendar.getInstance();
+        Random rand = new Random();
+
+        LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
+        graph.addSeries(series);
+
+        time.set(100, 3, 4);
+        date = time.getTime();
+        graph.getViewport().setMinX(date.getTime());
+        series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
+
+        for (int i = 0; i < 40; i++) {
+            time.set(100 + i, 3, 12);
+            date = time.getTime();
+            series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
+        }
+
+        graph.getViewport().setMaxX(date.getTime());
+
+        // set date label formatter
+        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+        graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+
+        // activate horizontal zooming and scrolling
+        graph.getViewport().setScalable(true);
+
+        // activate horizontal scrolling
+        graph.getViewport().setScrollable(true);
+
+        // activate horizontal and vertical zooming and scrolling
+        graph.getViewport().setScalableY(true);
+
+        // activate vertical scrolling
+        graph.getViewport().setScrollableY(true);
+
+        // as we use dates as labels, the human rounding to nice readable numbers
+        // is not necessary
+        graph.getGridLabelRenderer().setHumanRounding(false);
+    }
+
+    /**
+     * Debug method to populate punch table with 20 data points
+     * @Test
+     */
+    public void insertFakePunchData(int accountID, MyAppProfileDatabase db) {
+        Date date;
+        Calendar time;
+        time = Calendar.getInstance();
+        Random rand = new Random();
+        PunchModel newPunch;
+
+        for (int i = 0; i < 20; i++) {
+            time.set(100 + i, 3, 12);
+            date = time.getTime();
+            newPunch = new PunchModel(0, accountID, rand.nextDouble(), date.getTime());
+            db.addPunch(newPunch);
+        }
+
 
     }
 }
