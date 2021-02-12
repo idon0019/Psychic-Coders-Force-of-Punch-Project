@@ -166,7 +166,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * @return
      */
     public String getFirstNameFromDatabase(int accountID) {
-        String someString = "";
+        String studentFirstName;
 
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_FIRSTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
@@ -175,21 +175,79 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         cursor.moveToNext();
 
+        studentFirstName = cursor.getString(cursor.getPosition());
 
-        someString = cursor.getString(cursor.getPosition());
+        return studentFirstName;
+    }
 
+    public String getLastNameFromDatabase(int accountID) {
+        String studentLastName;
 
-        return someString;
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_LASTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        cursor.moveToNext();
+
+        studentLastName = cursor.getString(cursor.getPosition());
+
+        return studentLastName;
+    }
+
+    public String getAgeFromDatabase(int accountID) {
+        String studentAge;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_AGE + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        cursor.moveToNext();
+
+        studentAge = cursor.getString(cursor.getPosition());
+
+        return studentAge;
+    }
+
+    public String getWeightFromDatabase(int accountID) {
+        String studentWeight;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_WEIGHT + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        cursor.moveToNext();
+
+        studentWeight = cursor.getString(cursor.getPosition());
+
+        return studentWeight;
+    }
+
+    public String getHeightFromDatabase(int accountID) {
+        String studentHeight;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_HEIGHT + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        cursor.moveToNext();
+
+        studentHeight = cursor.getString(cursor.getPosition());
+
+        return studentHeight;
     }
 
     /**
      * Deletes a student from database
-     * @param profileModel
+     * @param accountID : The account id of the student in the database
      * @return
      */
-    public boolean deleteStudent(ProfileModel profileModel) {
+    public boolean deleteStudent(int accountID) {
         SQLiteDatabase db = this.getWritableDatabase();
-        String queryString = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + profileModel.getId();
+        String queryString = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
         Cursor cursor = db.rawQuery(queryString, null);
 
