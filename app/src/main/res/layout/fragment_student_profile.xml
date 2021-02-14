@@ -60,22 +60,24 @@
                 android:id="@+id/TxtChangePhoto"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Change profile"
                 android:layout_below="@+id/ImgViewProfilePicture"
                 android:layout_marginLeft="25sp"
-                android:text="Change profile"
+                android:textStyle="bold"
                 android:textSize="15sp"
-                android:textStyle="bold" />
+                />
 
             <TextView
                 android:id="@+id/TxtFName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="30sp"
-                android:layout_marginRight="100sp"
                 android:text="First Name"
+                android:textStyle="bold"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="50sp"
+                android:layout_marginTop="30sp"
+                />
 
             <TextView
                 android:id="@+id/TxtFirstName"
@@ -84,20 +86,24 @@
                 android:layout_below="@+id/TxtFName"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginRight="20sp"
                 />
 
             <TextView
                 android:id="@+id/TxtLName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Last Name"
+                android:textStyle="bold"
+                android:textSize="20sp"
                 android:layout_below="@+id/TxtFirstName"
                 android:layout_alignParentEnd="true"
+                android:layout_marginRight="50sp"
                 android:layout_marginTop="30sp"
-                android:layout_marginRight="100sp"
-                android:text="Last Name"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                />
 
             <TextView
                 android:id="@+id/TxtLastName"
@@ -106,20 +112,24 @@
                 android:layout_below="@+id/TxtLName"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginRight="20sp"
                 />
 
             <TextView
                 android:id="@+id/TxtDateOfBirth"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Age"
+                android:textStyle="bold"
+                android:textSize="20sp"
                 android:layout_below="@+id/TxtLastName"
                 android:layout_alignParentEnd="true"
+                android:layout_marginRight="77sp"
                 android:layout_marginTop="30sp"
-                android:layout_marginRight="100sp"
-                android:text="Age"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                />
 
             <TextView
                 android:id="@+id/TxtAge"
@@ -128,20 +138,24 @@
                 android:layout_below="@+id/TxtDateOfBirth"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:layout_marginRight="33sp"
                 />
 
             <TextView
                 android:id="@+id/Txtweight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Weight"
+                android:textStyle="bold"
+                android:textSize="20sp"
                 android:layout_below="@+id/TxtAge"
                 android:layout_alignParentEnd="true"
+                android:layout_marginRight="65sp"
                 android:layout_marginTop="30sp"
-                android:layout_marginRight="100sp"
-                android:text="Weight"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                />
 
             <TextView
                 android:id="@+id/TxtWeight"
@@ -150,20 +164,24 @@
                 android:layout_below="@+id/Txtweight"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginRight="28sp"
                 />
 
             <TextView
                 android:id="@+id/Txtheight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Height"
+                android:textStyle="bold"
+                android:textSize="20sp"
                 android:layout_below="@+id/TxtWeight"
                 android:layout_alignParentEnd="true"
+                android:layout_marginRight="65sp"
                 android:layout_marginTop="30sp"
-                android:layout_marginRight="100sp"
-                android:text="Height"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                />
 
             <TextView
                 android:id="@+id/TxtHeight"
@@ -172,33 +190,72 @@
                 android:layout_below="@+id/Txtheight"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:layout_marginRight="28sp"
                 />
 
-            <Button
-                android:id="@+id/BtnDeleteProfile"
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignLeft="@+id/BtnRecordPunch"
-                android:layout_alignBottom="@+id/BtnRecordPunch"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="39dp"
-                android:layout_marginTop="50sp"
-                android:layout_marginBottom="-2dp"
-                android:backgroundTint="@color/black"
-                android:text="Delete profile" />
+                android:text="Force of punch:"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_alignBottom="@+id/TxtDateOfBirth"
+                android:layout_marginLeft="20sp"
+                />
 
-            <Button
-                android:id="@+id/BtnRecordPunch"
+            <TextView
+                android:id="@+id/TxtPunchForceResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="2000N"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:layout_alignBottom="@+id/TxtAge"
+                android:layout_marginLeft="55sp"
+                />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="55sp"
+                android:layout_centerHorizontal="true"
                 android:layout_below="@+id/TxtHeight"
-                android:layout_alignEnd="@+id/TxtFName"
-                android:layout_alignParentRight="true"
-                android:layout_marginTop="50sp"
-                android:layout_marginRight="40sp"
-                android:backgroundTint="@color/black"
-                android:text="Record Punch" />
+                android:layout_marginBottom="20sp">
+
+                <Button
+                    android:id="@+id/BtnDeleteProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Delete"
+                    android:backgroundTint="@color/black"
+                    android:layout_toLeftOf="@+id/BtnEditProfile"
+                    />
+
+                <Button
+                    android:id="@+id/BtnEditProfile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Edit"
+                    android:backgroundTint="@color/black"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginRight="30sp"
+                    android:layout_marginLeft="30sp"
+                    />
+
+                <Button
+                    android:id="@+id/BtnRecordPunch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Record"
+                    android:backgroundTint="@color/black"
+                    android:layout_toRightOf="@+id/BtnEditProfile"
+                    />
+
+            </RelativeLayout>
 
         </RelativeLayout>
 
