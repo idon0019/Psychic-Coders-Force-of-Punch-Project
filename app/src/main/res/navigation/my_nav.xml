@@ -58,6 +58,9 @@
         <action
             android:id="@+id/action_studentProfileFragment_to_phoneSecuredFragment"
             app:destination="@id/phoneSecuredFragment" />
+        <action
+            android:id="@+id/action_studentProfileFragment_to_editStudentProfileFragment"
+            app:destination="@id/editStudentProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/phoneSecuredFragment"
@@ -94,5 +97,14 @@
         <action
             android:id="@+id/action_punchResultFragment_to_phoneSecuredFragment"
             app:destination="@id/phoneSecuredFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editStudentProfileFragment"
+        android:name="com.example.myapplication.EditStudentProfileFragment"
+        android:label="fragment_edit_student_profile"
+        tools:layout="@layout/fragment_edit_student_profile" >
+        <action
+            android:id="@+id/action_editStudentProfileFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
     </fragment>
 </navigation>
