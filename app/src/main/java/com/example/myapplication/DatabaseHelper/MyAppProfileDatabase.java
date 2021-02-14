@@ -37,7 +37,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
 
     public MyAppProfileDatabase(@Nullable Context context) {
-        super(context, "MyAppDatabase.db", null, 2);
+        super(context, "MyAppDatabase.db", null, 3);
     }
 
     /**
@@ -270,6 +270,13 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null);
     }
 
+
+    /**
+     * Creates a new punch in the table
+     * @param punchModel
+     * @return
+     */
+
     public boolean addPunch(PunchModel punchModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues newData = new ContentValues();
@@ -287,10 +294,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             return true;
     }
 
-    public List<PunchModel> getAllPunches() {
+    /**
+     * Returns all punches in the database
+     * @return
+     */
+    public List<PunchModel> getAllPunchesFromProfile(int accountID) {
         List<PunchModel> returnList = new ArrayList<>();
 
-        String query = "SELECT * FROM " + PUNCH_TABLE;
+        String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_ACCOUNT_ID + " = " + accountID;
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
@@ -311,11 +322,11 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return returnList;
     }
 
-    // Deletes a single punch given punch id
-    public void removePunch(int punchID) {
+    // Deletes all punches given profile id
+    public void removePunch(int accountID) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(PUNCH_TABLE, PUNCH_ID + " = ?", new String[]{String.valueOf(punchID)});
+        db.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountID)});
 
         db.close();
     }
@@ -338,9 +349,13 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        String dropTable = "DROP TABLE PUNCH_TABLE";
+
+        db.execSQL(dropTable);
+
         String createTable = "CREATE TABLE " + PUNCH_TABLE
                 + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PUNCH_ACCOUNT_ID + "INTEGER, "
+                + PUNCH_ACCOUNT_ID + " INTEGER, "
                 + PUNCH_FORCE + " REAL, "
                 + PUNCH_DATE + " INTEGER)";
 

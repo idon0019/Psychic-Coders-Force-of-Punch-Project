@@ -8,262 +8,227 @@
     android:background="@color/red"
     >
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".StudentProfileFragment"
-    android:orientation="vertical">
-
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/parentLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:padding="20sp">
-
-        <Button
-            android:id="@+id/BtnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
-            android:layout_alignParentStart="true"
-            />
-        <Button
-            android:id="@+id/BtnHome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Home"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
-            android:layout_alignParentEnd="true"
-            />
-
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/ImgViewProfilePicture"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher_foreground"
-            android:background="@color/cardview_dark_background"
-            android:layout_marginTop="20sp"
-            android:layout_marginLeft="20sp"
-
-            />
-
-        <TextView
-            android:id="@+id/TxtChangePhoto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Change profile"
-            android:layout_below="@+id/ImgViewProfilePicture"
-            android:layout_marginLeft="25sp"
-            android:textStyle="bold"
-            android:textSize="15sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtFName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="First Name"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="50sp"
-            android:layout_marginTop="30sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtFirstName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/TxtFName"
-            android:layout_alignEnd="@id/TxtFName"
-            android:layout_marginTop="10sp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_marginRight="20sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtLName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Last Name"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_below="@+id/TxtFirstName"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="50sp"
-            android:layout_marginTop="30sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtLastName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/TxtLName"
-            android:layout_alignEnd="@id/TxtFName"
-            android:layout_marginTop="10sp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_marginRight="20sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtDateOfBirth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Age"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_below="@+id/TxtLastName"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="77sp"
-            android:layout_marginTop="30sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtAge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/TxtDateOfBirth"
-            android:layout_alignEnd="@id/TxtFName"
-            android:layout_marginTop="10sp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_marginRight="33sp"
-            />
-
-        <TextView
-            android:id="@+id/Txtweight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Weight"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_below="@+id/TxtAge"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="65sp"
-            android:layout_marginTop="30sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtWeight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/Txtweight"
-            android:layout_alignEnd="@id/TxtFName"
-            android:layout_marginTop="10sp"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_marginRight="28sp"
-            />
-
-        <TextView
-            android:id="@+id/Txtheight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Height"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:layout_below="@+id/TxtWeight"
-            android:layout_alignParentEnd="true"
-            android:layout_marginRight="65sp"
-            android:layout_marginTop="30sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtHeight"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/Txtheight"
-            android:layout_alignEnd="@id/TxtFName"
-            android:layout_marginTop="10sp"
-            android:textSize="20sp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:layout_marginRight="28sp"
-            />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Force of punch:"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:layout_alignBottom="@+id/TxtDateOfBirth"
-            android:layout_marginLeft="20sp"
-            />
-
-        <TextView
-            android:id="@+id/TxtPunchForceResult"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2000N"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:textColor="@color/white"
-            android:layout_alignBottom="@+id/TxtAge"
-            android:layout_marginLeft="55sp"
-            />
+        android:orientation="vertical"
+        tools:context=".StudentProfileFragment">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="55sp"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/TxtHeight"
-            android:layout_marginBottom="20sp">
+            android:background="@color/black"
+            android:padding="20sp">
+
+            <Button
+                android:id="@+id/BtnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:backgroundTint="@color/white"
+                android:text="Back"
+                android:textColor="@color/black" />
+
+            <Button
+                android:id="@+id/BtnHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:backgroundTint="@color/white"
+                android:text="Home"
+                android:textColor="@color/black" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ImgViewProfilePicture"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginTop="20sp"
+                android:background="@color/cardview_dark_background"
+                android:src="@drawable/ic_launcher_foreground"
+
+                />
+
+            <TextView
+                android:id="@+id/TxtChangePhoto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ImgViewProfilePicture"
+                android:layout_marginLeft="25sp"
+                android:text="Change profile"
+                android:textSize="15sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TxtFName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="30sp"
+                android:layout_marginRight="100sp"
+                android:text="First Name"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TxtFirstName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtFName"
+                android:layout_alignEnd="@id/TxtFName"
+                android:layout_marginTop="10sp"
+
+                />
+
+            <TextView
+                android:id="@+id/TxtLName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtFirstName"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="30sp"
+                android:layout_marginRight="100sp"
+                android:text="Last Name"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TxtLastName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtLName"
+                android:layout_alignEnd="@id/TxtFName"
+                android:layout_marginTop="10sp"
+
+                />
+
+            <TextView
+                android:id="@+id/TxtDateOfBirth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtLastName"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="30sp"
+                android:layout_marginRight="100sp"
+                android:text="Age"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TxtAge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtDateOfBirth"
+                android:layout_alignEnd="@id/TxtFName"
+                android:layout_marginTop="10sp"
+
+                />
+
+            <TextView
+                android:id="@+id/Txtweight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtAge"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="30sp"
+                android:layout_marginRight="100sp"
+                android:text="Weight"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TxtWeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/Txtweight"
+                android:layout_alignEnd="@id/TxtFName"
+                android:layout_marginTop="10sp"
+
+                />
+
+            <TextView
+                android:id="@+id/Txtheight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/TxtWeight"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="30sp"
+                android:layout_marginRight="100sp"
+                android:text="Height"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/TxtHeight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/Txtheight"
+                android:layout_alignEnd="@id/TxtFName"
+                android:layout_marginTop="10sp"
+
+                />
 
             <Button
                 android:id="@+id/BtnDeleteProfile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete"
+                android:layout_alignLeft="@+id/BtnRecordPunch"
+                android:layout_alignBottom="@+id/BtnRecordPunch"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="39dp"
+                android:layout_marginTop="50sp"
+                android:layout_marginBottom="-2dp"
                 android:backgroundTint="@color/black"
-                android:layout_toLeftOf="@+id/BtnEditProfile"
-                />
-
-            <Button
-                android:id="@+id/BtnEditProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit"
-                android:backgroundTint="@color/black"
-                android:layout_centerHorizontal="true"
-                android:layout_marginRight="30sp"
-                android:layout_marginLeft="30sp"
-                />
+                android:text="Delete profile" />
 
             <Button
                 android:id="@+id/BtnRecordPunch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Record"
+                android:layout_below="@+id/TxtHeight"
+                android:layout_alignEnd="@+id/TxtFName"
+                android:layout_alignParentRight="true"
+                android:layout_marginTop="50sp"
+                android:layout_marginRight="40sp"
                 android:backgroundTint="@color/black"
-                android:layout_toRightOf="@+id/BtnEditProfile"
-                />
+                android:text="Record Punch" />
 
         </RelativeLayout>
 
+        <TextView
+            android:id="@+id/TxtPunchLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/punch_data_label"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="22dp"
+            />
 
-    </RelativeLayout>
+        <TextView
+            android:id="@+id/TxtPunchData"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="20"
+            android:scrollbars="vertical"
+            android:singleLine="false"
+            android:textColor="@color/cardview_light_background"
+            android:textSize="18sp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"/>
 
+        <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
+            android:layout_width="match_parent"
+            android:layout_height="300dip" />
 
-
-
-
-</LinearLayout>
+    </LinearLayout>
 
 </ScrollView>
