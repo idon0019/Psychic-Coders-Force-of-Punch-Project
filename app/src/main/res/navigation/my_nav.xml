@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+ <navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_nav"
+    app:startDestination="@id/firstFragment">
+
+    <fragment
+        android:id="@+id/firstFragment"
+        android:name="com.example.myapplication.FirstFragment"
+        android:label="fragment_first"
+        tools:layout="@layout/fragment_first" >
+        <action
+            android:id="@+id/action_firstFragment_to_secondFragment"
+            app:destination="@id/secondFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/secondFragment"
+        android:name="com.example.myapplication.SecondFragment"
+        android:label="fragment_second"
+        tools:layout="@layout/fragment_second" >
+        <action
+            android:id="@+id/action_secondFragment_to_addNewUserFragment"
+            app:destination="@id/addNewUserFragment" />
+        <action
+            android:id="@+id/action_secondFragment_to_firstFragment"
+            app:destination="@id/firstFragment" />
+        <action
+            android:id="@+id/action_secondFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addNewUserFragment"
+        android:name="com.example.myapplication.AddNewUserFragment"
+        android:label="fragment_add_new_user"
+        tools:layout="@layout/fragment_add_new_user" >
+        <action
+            android:id="@+id/action_addNewUserFragment_to_secondFragment"
+            app:destination="@id/secondFragment" />
+        <action
+            android:id="@+id/action_addNewUserFragment_to_firstFragment"
+            app:destination="@id/firstFragment" />
+        <action
+            android:id="@+id/action_addNewUserFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/studentProfileFragment"
+        android:name="com.example.myapplication.StudentProfileFragment"
+        android:label="fragment_student_profile"
+        tools:layout="@layout/fragment_student_profile" >
+        <action
+            android:id="@+id/action_studentProfileFragment_to_firstFragment"
+            app:destination="@id/firstFragment" />
+        <action
+            android:id="@+id/action_studentProfileFragment_to_secondFragment"
+            app:destination="@id/secondFragment" />
+        <action
+            android:id="@+id/action_studentProfileFragment_to_phoneSecuredFragment"
+            app:destination="@id/phoneSecuredFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/phoneSecuredFragment"
+        android:name="com.example.myapplication.PhoneSecuredFragment"
+        android:label="fragment_phone_secured"
+        tools:layout="@layout/fragment_phone_secured" >
+        <action
+            android:id="@+id/action_phoneSecuredFragment_to_measuringPunchFragment"
+            app:destination="@id/measuringPunchFragment" />
+        <action
+            android:id="@+id/action_phoneSecuredFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/measuringPunchFragment"
+        android:name="com.example.myapplication.MeasuringPunchFragment"
+        android:label="fragment_measuring_punch"
+        tools:layout="@layout/fragment_measuring_punch" >
+        <action
+            android:id="@+id/action_measuringPunchFragment_to_punchResultFragment"
+            app:destination="@id/punchResultFragment" />
+        <action
+            android:id="@+id/action_measuringPunchFragment_to_phoneSecuredFragment"
+            app:destination="@id/phoneSecuredFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/punchResultFragment"
+        android:name="com.example.myapplication.PunchResultFragment"
+        android:label="fragment_punch_result"
+        tools:layout="@layout/fragment_punch_result" >
+        <action
+            android:id="@+id/action_punchResultFragment_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+        <action
+            android:id="@+id/action_punchResultFragment_to_phoneSecuredFragment"
+            app:destination="@id/phoneSecuredFragment" />
+    </fragment>
+</navigation>

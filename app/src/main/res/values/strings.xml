@@ -1,3 +1,22 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">Force of Punch</string>
+    <string name="tap_to_select_user">Tap to Select User</string>
+    <string name="add_new_user">Add New User</string>
+    <string name="title_activity_add_new_user">AddNewUser</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="tap_to_begin">TAP TO BEGIN</string>
+    <string name="start">Start!</string>
+    <string name="force_of_punch">Force of Punch</string>
+    <string name="title_activity_result">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="force_of_punch_1500n">Force of Punch: 1500N</string>
+    <string name="try_again">Try Again</string>
+    <string name="save">Save</string>
+    <string name="new_record_nprevious_record_800n">New Record!\nPrevious Record: 800N</string>
+    <string name="todo">TODO</string>
 </resources>

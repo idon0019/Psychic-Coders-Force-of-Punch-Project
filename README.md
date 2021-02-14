@@ -1,3 +1,22 @@
 # Psychic-Coders-Force-of-Punch-Project
+Notes on implementing a GraphView in the layout.
 
-Working on UI page 3 of Force of a Punch app. Allows the user to create a new profile by choosing a profile picture, entering first and last name, height, and weight.
+DEPENDENCIES:
+
+Must add 
+
+    implementation 'com.jjoe64:graphview:4.2.2'
+
+to build.gradle in the app folder to enable graphs.
+
+TODO:
+
+~~Working on scaling the x-axis with dates.~~
+
+~~Still working on adding a touch listener to the data points.~~ Touch listener added.
+
+~~Working on formatting Toast text.~~ Toast dropped. Using a text view to display data instead. 
+
+Work on formatting x-axis date labels to work better.
+
+Consider where to put a back button.

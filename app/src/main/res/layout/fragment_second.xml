@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SecondFragment"
+    android:orientation="vertical"
+    android:background="@color/red"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:padding="20sp">
+
+        <Button
+            android:id="@+id/BtnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"
+            android:layout_alignParentLeft="true"
+            />
+        <Button
+            android:id="@+id/BtnHome"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"
+            android:layout_centerHorizontal="true"
+            />
+
+        <Button
+            android:id="@+id/BtnAddAccount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add"
+            android:backgroundTint="@color/white"
+            android:textColor="@color/black"
+            android:layout_alignParentRight="true"
+            />
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/TxtSelectAccount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Please select an account"
+        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:layout_gravity="left"
+        android:padding="20sp"
+        />
+
+    <Button
+        android:id="@+id/BtnShowAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show all"
+        android:backgroundTint="@color/black"
+        android:layout_marginLeft="20sp"
+        android:layout_marginBottom="10sp"
+        />
+
+    <TextView
+        android:id="@+id/TxtNumResults"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Results: 0"
+        android:textSize="20sp"
+        android:textColor="@color/white"
+        android:paddingLeft="20sp"
+        android:layout_marginBottom="10sp"
+        />
+
+    <ListView
+        android:id="@+id/ListProfiles"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="10sp"
+    />
+
+
+</LinearLayout>
