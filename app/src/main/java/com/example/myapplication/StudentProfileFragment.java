@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -59,6 +60,7 @@ public class StudentProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_student_profile, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -172,6 +174,14 @@ public class StudentProfileFragment extends Fragment {
                 navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
             }
         });
+
+        graph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to select a user screen
+                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+            }
+        });
     }
 
     /**
@@ -217,7 +227,7 @@ public class StudentProfileFragment extends Fragment {
         series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
 
         for (int i = 0; i < 40; i++) {
-            time.set(100 + i, 3, 12);
+            time.set(101 + i, 3, 12);
             date = time.getTime();
             series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
         }
