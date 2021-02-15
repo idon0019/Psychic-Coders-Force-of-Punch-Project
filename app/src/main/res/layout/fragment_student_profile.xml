@@ -3,6 +3,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/scrollview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/red"
@@ -266,15 +267,13 @@
             android:text="@string/punch_data_label"
             android:gravity="center"
             android:textColor="#ffffff"
-            android:textSize="22dp"
+            android:textSize="20sp"
             />
 
         <TextView
             android:id="@+id/TxtPunchData"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:maxLines="20"
-            android:scrollbars="vertical"
             android:singleLine="false"
             android:textColor="@color/cardview_light_background"
             android:textSize="18sp"

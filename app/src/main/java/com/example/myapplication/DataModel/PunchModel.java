@@ -1,5 +1,9 @@
 package com.example.myapplication.DataModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Data model for Punch
  */
@@ -49,7 +53,10 @@ public class PunchModel {
     }
 
     public String toString () {
-        String text = "Account ID: " + this.accountID + "\nForce: " + this.force + "\nDate: " + this.date + "\n\n";
+        DateFormat df = new SimpleDateFormat("dd/MMMM/yy 'at' HH:mm:ss");
+        Date date = new Date(this.date);
+
+        String text = "Force: " + this.force + "\nDate: " + df.format(date) + "\n\n";
 
         return text;
     }
