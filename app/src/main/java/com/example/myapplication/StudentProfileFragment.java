@@ -1,9 +1,11 @@
 package com.example.myapplication;
 
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
@@ -26,6 +28,9 @@ import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -83,6 +88,7 @@ public class StudentProfileFragment extends Fragment {
         // Database helper object
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
+
         getParentFragmentManager().setFragmentResultListener("accountID", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
@@ -91,7 +97,7 @@ public class StudentProfileFragment extends Fragment {
                 // Set the empty text in the student profile screen to the first name of the student
                 txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
                 txtLastName.setText(database.getLastNameFromDatabase(accountID));
-                txtAge.setText(database.getAgeFromDatabase(accountID));
+                txtAge.setText(database.getAgeFromDatabase(accountID) + ", Age: " + getAge(database));
                 txtWeight.setText(database.getWeightFromDatabase(accountID));
                 txtHeight.setText(database.getHeightFromDatabase(accountID));
             }
@@ -171,6 +177,36 @@ public class StudentProfileFragment extends Fragment {
         }
 
 
+    }
+
+    private int getAge(MyAppProfileDatabase database){
+        Date date = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            date = sdf.parse(database.getAgeFromDatabase(accountID));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if(date == null) return 0;
+
+        Calendar dob = Calendar.getInstance();
+        Calendar today = Calendar.getInstance();
+
+        dob.setTime(date);
+
+        int year = dob.get(Calendar.YEAR);
+        int month = dob.get(Calendar.MONTH);
+        int day = dob.get(Calendar.DAY_OF_MONTH);
+
+        dob.set(year, month+1, day);
+
+        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+
+        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)){
+            age--;
+        }
+        return age;
     }
 
     /**

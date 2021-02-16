@@ -50,7 +50,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
                 + COLUMN_STUDENT_LASTNAME + " TEXT, "
-                + COLUMN_STUDENT_AGE + " INT, "
+                + COLUMN_STUDENT_AGE + " STRING, "
                 + COLUMN_STUDENT_WEIGHT + " FLOAT, "
                 + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
@@ -122,7 +122,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 int columnID = cursor.getInt(0);
                 String columnFirstName = cursor.getString(1);
                 String columnLastName = cursor.getString(2);
-                int columnAge = cursor.getInt(3);
+                String columnAge = cursor.getString(3);
                 float columnWeight = cursor.getFloat(4);
                 float columnHeight = cursor.getFloat(5);
 

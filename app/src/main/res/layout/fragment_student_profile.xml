@@ -141,7 +141,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="20sp"
-                android:layout_marginRight="33sp"
+                android:text="2/9/1998, Age: 22"
                 />
 
             <TextView
@@ -215,7 +215,7 @@
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:layout_alignBottom="@+id/TxtAge"
-                android:layout_marginLeft="55sp"
+                android:layout_marginLeft="20sp"
                 />
 
             <RelativeLayout

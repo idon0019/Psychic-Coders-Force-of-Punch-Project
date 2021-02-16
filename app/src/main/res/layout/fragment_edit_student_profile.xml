@@ -109,17 +109,27 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Age:            "
+                android:text="Date of birth:"
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:paddingRight="10sp"/>
 
-            <EditText
-                android:id="@+id/EdtAge"
+            <Button
+                android:id="@+id/BtnDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="date"
+                android:backgroundTint="@color/black"
+                android:layout_marginRight="20sp"
+                />
+
+            <TextView
+                android:id="@+id/TxtAge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Date of birth"
-                android:inputType="number"/>
+                android:hint="mm/dd/yyyy"
+                android:textSize="20sp"
+                />
 
         </LinearLayout>
 
