@@ -190,23 +190,23 @@ public class StudentProfileFragment extends Fragment {
 
         if(date == null) return 0;
 
-        Calendar dob = Calendar.getInstance();
-        Calendar today = Calendar.getInstance();
+        Calendar studentDOB = Calendar.getInstance();
+        Calendar todayDate = Calendar.getInstance();
 
-        dob.setTime(date);
+        studentDOB.setTime(date);
 
-        int year = dob.get(Calendar.YEAR);
-        int month = dob.get(Calendar.MONTH);
-        int day = dob.get(Calendar.DAY_OF_MONTH);
+        int year = studentDOB.get(Calendar.YEAR);
+        int month = studentDOB.get(Calendar.MONTH);
+        int day = studentDOB.get(Calendar.DAY_OF_MONTH);
 
-        dob.set(year, month+1, day);
+        studentDOB.set(year, month+1, day);
 
-        int age = today.get(Calendar.YEAR) - dob.get(Calendar.YEAR);
+        int studentAge = todayDate.get(Calendar.YEAR) - studentDOB.get(Calendar.YEAR);
 
-        if (today.get(Calendar.DAY_OF_YEAR) < dob.get(Calendar.DAY_OF_YEAR)){
-            age--;
+        if (todayDate.get(Calendar.DAY_OF_YEAR) < studentDOB.get(Calendar.DAY_OF_YEAR)){
+            studentAge--;
         }
-        return age;
+        return studentAge;
     }
 
     /**
