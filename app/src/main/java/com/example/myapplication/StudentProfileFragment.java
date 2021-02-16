@@ -97,7 +97,7 @@ public class StudentProfileFragment extends Fragment {
                 // Set the empty text in the student profile screen to the first name of the student
                 txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
                 txtLastName.setText(database.getLastNameFromDatabase(accountID));
-                txtAge.setText(database.getAgeFromDatabase(accountID) + ", Age: " + getAge(database));
+                txtAge.setText(database.getAgeFromDatabase(accountID) + ", Age: " + getStudentAge(database));
                 txtWeight.setText(database.getWeightFromDatabase(accountID));
                 txtHeight.setText(database.getHeightFromDatabase(accountID));
             }
@@ -179,7 +179,7 @@ public class StudentProfileFragment extends Fragment {
 
     }
 
-    private int getAge(MyAppProfileDatabase database){
+    private int getStudentAge(MyAppProfileDatabase database){
         Date date = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
