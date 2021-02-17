@@ -44,8 +44,16 @@
         <com.jjoe64.graphview.GraphView
             android:id="@+id/Graph"
             android:layout_width="match_parent"
-            android:layout_height="300dp"
-            />
+            android:layout_height="250dp" />
+
+        <TextView
+            android:id="@+id/TxtPunchInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:text="@string/graph_info_init_text"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
 
     </LinearLayout>
 </ScrollView>

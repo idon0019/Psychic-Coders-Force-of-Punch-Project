@@ -1,6 +1,9 @@
 package com.example.myapplication.DataModel;
 
+import com.example.myapplication.R;
+
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -55,8 +58,9 @@ public class PunchModel {
     public String toString () {
         DateFormat df = new SimpleDateFormat("dd/MMMM/yy 'at' HH:mm:ss");
         Date date = new Date(this.date);
+        DecimalFormat myFormat = new DecimalFormat("#.##");
 
-        String text = "Force: " + this.force + "\nDate: " + df.format(date) + "\n\n";
+        String text = "Force: " + myFormat.format(force) + "\nDate: " + df.format(date) + "\n\n";
 
         return text;
     }
