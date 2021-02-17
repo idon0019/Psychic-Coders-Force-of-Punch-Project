@@ -61,6 +61,9 @@
         <action
             android:id="@+id/action_studentProfileFragment_to_editStudentProfileFragment"
             app:destination="@id/editStudentProfileFragment" />
+        <action
+            android:id="@+id/action_studentProfileFragment_to_studentGraph"
+            app:destination="@id/studentGraph" />
     </fragment>
     <fragment
         android:id="@+id/phoneSecuredFragment"
@@ -106,5 +109,17 @@
         <action
             android:id="@+id/action_editStudentProfileFragment_to_studentProfileFragment"
             app:destination="@id/studentProfileFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/studentGraph"
+        android:name="com.example.myapplication.StudentGraph"
+        android:label="fragment_student_graph"
+        tools:layout="@layout/fragment_student_graph" >
+        <action
+            android:id="@+id/action_studentGraph_to_studentProfileFragment"
+            app:destination="@id/studentProfileFragment" />
+        <action
+            android:id="@+id/action_studentGraph_to_firstFragment"
+            app:destination="@id/firstFragment" />
     </fragment>
 </navigation>

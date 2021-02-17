@@ -251,14 +251,16 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         // Deletes the account profile
         Cursor cursor = db.rawQuery(queryString, null);
-        db.close();
 
         if (!cursor.moveToFirst()) {
-            removeAccountPunches(accountID);
+            removeAccountPunches(accountID, db);
+            db.close();
             return true;
         }
-        else
+        else {
+            db.close();
             return false;
+        }
     }
 
     public void editStudentProfile(int id, String fname, String lname, String age, String weight, String height) {
@@ -327,11 +329,9 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     // Deletes all punches with given account id
-    public void removeAccountPunches(int accountID) {
-        SQLiteDatabase db = this.getWritableDatabase();
+    public void removeAccountPunches(int accountID, SQLiteDatabase db) {
 
         db.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountID)});
-
         db.close();
     }
 

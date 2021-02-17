@@ -27,6 +27,7 @@ import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -65,7 +66,6 @@ public class StudentProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_student_profile, container, false);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -85,7 +85,7 @@ public class StudentProfileFragment extends Fragment {
         txtHeight = view.findViewById(R.id.TxtHeight);
         txtPunchData = view.findViewById(R.id.TxtPunchData);
 
-        graph = view.findViewById(R.id.graph);
+        graph = view.findViewById(R.id.Graphview);
         parentLayout = view.findViewById(R.id.parentLayout);
         scrollView = view.findViewById(R.id.scrollview);
         List<PunchModel> punchModels = new ArrayList<>();
@@ -112,7 +112,7 @@ public class StudentProfileFragment extends Fragment {
                 }
 
                 if (populatePunchData(accountID, database, scrollView))
-                    populateGraph();
+                    populateGraph(database, accountID);
                 else {
                     parentLayout.removeView(graph);
                     txtPunchData.setText("No Punch Data");
@@ -185,7 +185,10 @@ public class StudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Navigate back to select a user screen
-                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+                Bundle bundle = new Bundle();
+                bundle.putInt("accountID", accountID);
+                getParentFragmentManager().setFragmentResult("studentgraph", bundle);
+                navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
             }
         });
     }
@@ -247,48 +250,47 @@ public class StudentProfileFragment extends Fragment {
     /**
      * Populates the graph
      */
-    private void populateGraph() {
-        Date date;
-        Calendar time;
-
-        time = Calendar.getInstance();
-        Random rand = new Random();
+    private void populateGraph(MyAppProfileDatabase database, int accountID) {
+        long date;
+        List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
 
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
         graph.addSeries(series);
 
-        time.set(100, 3, 4);
-        date = time.getTime();
-        graph.getViewport().setMinX(date.getTime());
-        series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
+        date = punches.get(0).getDate();
+        graph.getViewport().setMinX(date);
+        series.appendData(new DataPoint(date, punches.get(0).getForce()), true, 100);
 
-        for (int i = 0; i < 40; i++) {
-            time.set(101 + i, 3, 12);
-            date = time.getTime();
-            series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
+        for (int i = 1; i < punches.size(); i++) {
+            date = punches.get(i).getDate();
+            series.appendData(new DataPoint(date, punches.get(i).getForce()), true, 100);
         }
 
-        graph.getViewport().setMaxX(date.getTime());
+        graph.getViewport().setMaxX(date);
+
+        graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
+        graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+        graph.getViewport().setXAxisBoundsManual(true);
 
         // set date label formatter
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-        graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
+        //graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+        //graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
         // activate horizontal zooming and scrolling
-        graph.getViewport().setScalable(true);
+        //graph.getViewport().setScalable(true);
 
         // activate horizontal scrolling
-        graph.getViewport().setScrollable(true);
+        //graph.getViewport().setScrollable(true);
 
         // activate horizontal and vertical zooming and scrolling
-        graph.getViewport().setScalableY(true);
+        //graph.getViewport().setScalableY(true);
 
         // activate vertical scrolling
-        graph.getViewport().setScrollableY(true);
+        //graph.getViewport().setScrollableY(true);
 
         // as we use dates as labels, the human rounding to nice readable numbers
         // is not necessary
-        graph.getGridLabelRenderer().setHumanRounding(false);
+        //graph.getGridLabelRenderer().setHumanRounding(false);
     }
 
     /**
