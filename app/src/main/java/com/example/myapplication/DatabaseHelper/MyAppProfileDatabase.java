@@ -58,7 +58,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         String createTable = "CREATE TABLE " + PUNCH_TABLE
                 + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PUNCH_ACCOUNT_ID + "INTEGER, "
+                + PUNCH_ACCOUNT_ID + " INTEGER, "
                 + PUNCH_FORCE + " REAL, "
                 + PUNCH_DATE + " INTEGER)";
 
