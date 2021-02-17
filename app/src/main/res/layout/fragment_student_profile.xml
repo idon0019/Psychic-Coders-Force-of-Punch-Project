@@ -145,6 +145,25 @@
                 android:text="2/9/1998, Age: 22"
                 />
 
+            <com.jjoe64.graphview.GraphView
+                android:id="@+id/Graphview"
+                android:layout_width="150sp"
+                android:layout_height="100sp"
+                android:layout_below="@id/Txtweight"
+                android:layout_marginLeft="20sp" />
+
+            <TextView
+                android:id="@+id/TxtGraph"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/Graphview"
+                android:layout_alignStart="@id/Graphview"
+                android:layout_alignEnd="@+id/Graphview"
+                android:gravity="center"
+                android:text="@string/mini_graph_label"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
             <TextView
                 android:id="@+id/Txtweight"
                 android:layout_width="wrap_content"
@@ -264,11 +283,11 @@
             android:id="@+id/TxtPunchLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/punch_data_label"
             android:gravity="center"
+            android:text="@string/punch_data_label"
             android:textColor="#ffffff"
             android:textSize="20sp"
-            />
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/TxtPunchData"
@@ -279,11 +298,6 @@
             android:textSize="18sp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"/>
-
-        <com.jjoe64.graphview.GraphView
-            android:id="@+id/graph"
-            android:layout_width="match_parent"
-            android:layout_height="300dip" />
 
     </LinearLayout>
 
