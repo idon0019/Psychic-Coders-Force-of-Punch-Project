@@ -58,7 +58,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         String createTable = "CREATE TABLE " + PUNCH_TABLE
                 + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PUNCH_ACCOUNT_ID + "INTEGER, "
+                + PUNCH_ACCOUNT_ID + " INTEGER, "
                 + PUNCH_FORCE + " REAL, "
                 + PUNCH_DATE + " INTEGER)";
 
@@ -249,10 +249,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         String queryString = "DELETE FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
+        // Deletes the account profile
         Cursor cursor = db.rawQuery(queryString, null);
+        db.close();
 
-        if (cursor.moveToFirst())
+        if (!cursor.moveToFirst()) {
+            removeAccountPunches(accountID);
             return true;
+        }
         else
             return false;
     }
@@ -322,20 +326,11 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return returnList;
     }
 
-    // Deletes all punches given profile id
-    public void removePunch(int accountID) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        db.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountID)});
-
-        db.close();
-    }
-
     // Deletes all punches with given account id
     public void removeAccountPunches(int accountID) {
         SQLiteDatabase db = this.getWritableDatabase();
 
-        db.delete(PUNCH_TABLE, PUNCH_ID + " = ?", new String[]{String.valueOf(accountID)});
+        db.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountID)});
 
         db.close();
     }

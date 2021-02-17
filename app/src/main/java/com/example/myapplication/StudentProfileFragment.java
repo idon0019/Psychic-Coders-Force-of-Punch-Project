@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -13,10 +14,12 @@ import androidx.navigation.Navigation;
 
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,11 +44,12 @@ import java.util.Random;
 public class StudentProfileFragment extends Fragment {
 
     private Button btnBack, btnHome, btnSubmit, btnDeleteProfile, btnRecordPunch, btnEditProfile;
-    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtPunchDataLabel, txtForcePunchResult;
+    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtForcePunchResult;
     private GraphView graph;
 
     private NavController navController;
     private LinearLayout parentLayout;
+    private ScrollView scrollView;
     private int accountID;
 
     private ProfileModel profileModel;
@@ -61,6 +65,7 @@ public class StudentProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_student_profile, container, false);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -79,10 +84,10 @@ public class StudentProfileFragment extends Fragment {
         txtWeight = view.findViewById(R.id.TxtWeight);
         txtHeight = view.findViewById(R.id.TxtHeight);
         txtPunchData = view.findViewById(R.id.TxtPunchData);
-        txtPunchDataLabel = view.findViewById(R.id.TxtPunchLabel);
 
         graph = view.findViewById(R.id.graph);
         parentLayout = view.findViewById(R.id.parentLayout);
+        scrollView = view.findViewById(R.id.scrollview);
         List<PunchModel> punchModels = new ArrayList<>();
 
         // Database helper object
@@ -100,6 +105,18 @@ public class StudentProfileFragment extends Fragment {
                 txtAge.setText(database.getAgeFromDatabase(accountID) + ", Age: " + getStudentAge(database));
                 txtWeight.setText(database.getWeightFromDatabase(accountID));
                 txtHeight.setText(database.getHeightFromDatabase(accountID));
+
+                List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
+                if (punches.size() == 0) {
+                    insertFakePunchData(accountID, database);
+                }
+
+                if (populatePunchData(accountID, database, scrollView))
+                    populateGraph();
+                else {
+                    parentLayout.removeView(graph);
+                    txtPunchData.setText("No Punch Data");
+                }
             }
         });
 
@@ -164,19 +181,13 @@ public class StudentProfileFragment extends Fragment {
             }
         });
 
-        List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
-        if (punches.size() == 0) {
-            insertFakePunchData(accountID, database);
-        }
-
-        if (populatePunchData(accountID, database))
-            populateGraph();
-        else {
-            parentLayout.removeView(graph);
-            txtPunchDataLabel.setText("No Punch Data");
-        }
-
-
+        graph.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Navigate back to select a user screen
+                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+            }
+        });
     }
 
     private int getStudentAge(MyAppProfileDatabase database){
@@ -214,7 +225,7 @@ public class StudentProfileFragment extends Fragment {
      *
      * @return
      */
-    private boolean populatePunchData(int accountID, MyAppProfileDatabase db) {
+    private boolean populatePunchData(int accountID, MyAppProfileDatabase db, ScrollView view) {
         boolean hasPunch = true;
 
         List<PunchModel> punchData = db.getAllPunchesFromProfile(accountID);
@@ -228,7 +239,6 @@ public class StudentProfileFragment extends Fragment {
             display += punchData.get(i).toString();
         }
 
-        txtPunchData.setMovementMethod(new ScrollingMovementMethod());
         txtPunchData.setText(display);
 
         return hasPunch;
@@ -253,7 +263,7 @@ public class StudentProfileFragment extends Fragment {
         series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
 
         for (int i = 0; i < 40; i++) {
-            time.set(100 + i, 3, 12);
+            time.set(101 + i, 3, 12);
             date = time.getTime();
             series.appendData(new DataPoint(date, rand.nextDouble()), true, 100);
         }
