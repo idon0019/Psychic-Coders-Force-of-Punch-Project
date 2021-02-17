@@ -27,6 +27,7 @@ import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -65,7 +66,6 @@ public class StudentProfileFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_student_profile, container, false);
     }
 
-    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -185,7 +185,10 @@ public class StudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // Navigate back to select a user screen
-                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+                Bundle bundle = new Bundle();
+                bundle.putInt("accountID", accountID);
+                getParentFragmentManager().setFragmentResult("studentgraph", bundle);
+                navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
             }
         });
     }
