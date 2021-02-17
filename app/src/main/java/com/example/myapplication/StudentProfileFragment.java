@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -44,7 +45,8 @@ import java.util.Random;
 
 public class StudentProfileFragment extends Fragment {
 
-    private Button btnBack, btnHome, btnSubmit, btnDeleteProfile, btnRecordPunch, btnEditProfile;
+    private ImageButton btnBack, btnHome;
+    private Button btnDeleteProfile, btnRecordPunch, btnEditProfile;
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtForcePunchResult, txtGraph;
     private GraphView graph;
 
@@ -73,7 +75,6 @@ public class StudentProfileFragment extends Fragment {
         navController = Navigation.findNavController(view);
         btnBack = view.findViewById(R.id.BtnBack);
         btnHome = view.findViewById(R.id.BtnHome);
-        btnSubmit = view.findViewById(R.id.BtnSubmit);
         btnDeleteProfile = view.findViewById(R.id.BtnDeleteProfile);
         btnRecordPunch = view.findViewById(R.id.BtnRecordPunch);
         btnEditProfile = view.findViewById(R.id.BtnEditProfile);

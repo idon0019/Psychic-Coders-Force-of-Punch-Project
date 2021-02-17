@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
@@ -41,7 +42,7 @@ public class StudentGraph extends Fragment {
     private GraphView graph;
     private TextView txtPunchInfo, txtPunchData;
     private int accountID;
-    private Button btnHome, btnBack;
+    private ImageButton btnHome, btnBack;
     private NavController navController;
 
     public StudentGraph() {

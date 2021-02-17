@@ -19,25 +19,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/black"
-            android:padding="20sp">
+            android:paddingRight="10sp"
+            android:paddingLeft="10sp">
 
-            <Button
+            <ImageButton
                 android:id="@+id/BtnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="65sp"
+                android:layout_height="65sp"
                 android:layout_alignParentStart="true"
-                android:backgroundTint="@color/white"
-                android:text="Back"
-                android:textColor="@color/black" />
+                android:src="@drawable/ic_round_arrow_back"
+                android:backgroundTint="@color/black"
+                android:scaleType="fitCenter"/>
 
-            <Button
+            <ImageButton
                 android:id="@+id/BtnHome"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="65sp"
+                android:layout_height="65sp"
                 android:layout_alignParentEnd="true"
-                android:backgroundTint="@color/white"
-                android:text="Home"
-                android:textColor="@color/black" />
+                android:src="@drawable/ic_baseline_home"
+                android:backgroundTint="@color/black"
+                android:scaleType="fitCenter"/>
 
         </RelativeLayout>
 

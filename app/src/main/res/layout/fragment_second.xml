@@ -12,34 +12,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/black"
-        android:padding="20sp">
+        android:paddingRight="10sp"
+        android:paddingLeft="10sp">
 
-        <Button
+        <ImageButton
             android:id="@+id/BtnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Back"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
+            android:layout_width="65sp"
+            android:layout_height="65sp"
+            android:src="@drawable/ic_round_arrow_back"
+            android:backgroundTint="@color/black"
+            android:scaleType="fitCenter"
             android:layout_alignParentLeft="true"
             />
-        <Button
+
+        <ImageButton
             android:id="@+id/BtnHome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Home"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
+            android:layout_width="65sp"
+            android:layout_height="65sp"
+            android:src="@drawable/ic_baseline_home"
+            android:backgroundTint="@color/black"
+            android:scaleType="fitCenter"
             android:layout_centerHorizontal="true"
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/BtnAddAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Add"
-            android:backgroundTint="@color/white"
-            android:textColor="@color/black"
+            android:layout_width="65sp"
+            android:layout_height="65sp"
+            android:src="@drawable/ic_baseline_person_add"
+            android:backgroundTint="@color/black"
+            android:scaleType="fitCenter"
             android:layout_alignParentRight="true"
             />
 
