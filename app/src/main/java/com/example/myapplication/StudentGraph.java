@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,20 +14,32 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.OnDataPointTapListener;
+import com.jjoe64.graphview.series.Series;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.xml.parsers.FactoryConfigurationError;
 
 public class StudentGraph extends Fragment {
+    public static final String GRAPH_TITLE = "Punch Force vs Attempts";
+    public static final float POINT_RADIUS = 15f;
+    public static final float TEXT_SIZE = 80;
     private GraphView graph;
+    private TextView txtPunchInfo;
     private int accountID;
     private Button btnHome, btnBack;
     private NavController navController;
@@ -54,6 +67,7 @@ public class StudentGraph extends Fragment {
         navController = Navigation.findNavController(view);
         btnBack = view.findViewById(R.id.BtnBack);
         btnHome = view.findViewById(R.id.BtnHome);
+        txtPunchInfo = view.findViewById(R.id.TxtPunchInfo);
 
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
@@ -99,24 +113,55 @@ public class StudentGraph extends Fragment {
      */
     private void populateGraph(MyAppProfileDatabase database, int accountID) {
         long date;
+        int i;
         List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
 
+        // creates a data series and sets some display properties
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
+        series.setDataPointsRadius(POINT_RADIUS);
+        series.setDrawDataPoints(true);
+
+        // adds a listener to respond when data points are tapped
+        series.setOnDataPointTapListener(new OnDataPointTapListener() {
+            @Override
+            public void onTap(Series series, DataPointInterface dataPoint) {
+                String text = "";
+                double force = dataPoint.getY();
+                Date date = new Date(database.getDateFromPunchForce(force));
+                DateFormat df = new SimpleDateFormat("dd/MMMM/yy 'at' HH:mm");
+                DecimalFormat myFormat = new DecimalFormat("#.##");
+
+                text += "Attempt " + (int)dataPoint.getX() + ":\n";
+                text += "Date: " + df.format(date) + " \n";
+                text += "Force: " + myFormat.format(force);
+
+                txtPunchInfo.setText(text);
+            }
+        });
+
+
         graph.addSeries(series);
 
-        date = punches.get(0).getDate();
-        graph.getViewport().setMinX(date);
-        series.appendData(new DataPoint(date, punches.get(0).getForce()), true, 100);
+        graph.getViewport().setMinX(0);
+        series.appendData(new DataPoint(1, punches.get(0).getForce()), true, 100);
 
-        for (int i = 1; i < punches.size(); i++) {
-            date = punches.get(i).getDate();
-            series.appendData(new DataPoint(date, punches.get(i).getForce()), true, 100);
+        for (i = 1; i < punches.size(); i++) {
+            series.appendData(new DataPoint(i+1, punches.get(i).getForce()), true, 100);
         }
 
-        graph.getViewport().setMaxX(date);
+        graph.getViewport().setMaxX(i+1);
+
+        graph.setTitle(GRAPH_TITLE);
+        graph.setTitleColor(Color.WHITE);
+        graph.setTitleTextSize(TEXT_SIZE);
+
+        // changes label color
+        graph.getGridLabelRenderer().setVerticalLabelsColor(Color.WHITE);
+        graph.getGridLabelRenderer().setHorizontalLabelsColor(Color.WHITE);
+        graph.getGridLabelRenderer().reloadStyles();
 
         // set date label formatter
-        graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+        //graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
         graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
         // activate horizontal zooming and scrolling
@@ -133,6 +178,6 @@ public class StudentGraph extends Fragment {
 
         // as we use dates as labels, the human rounding to nice readable numbers
         // is not necessary
-        graph.getGridLabelRenderer().setHumanRounding(false);
+        //graph.getGridLabelRenderer().setHumanRounding(false);
     }
 }

@@ -5,6 +5,7 @@
     <string name="title_activity_add_new_user">AddNewUser</string>
     <string name="mini_graph_label">Tap graph for more</string>
     <string name="punch_data_label">Punch History</string>
+    <string name="graph_info_init_text">Tap a point for details.</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>

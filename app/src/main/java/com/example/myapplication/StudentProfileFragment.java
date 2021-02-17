@@ -271,26 +271,6 @@ public class StudentProfileFragment extends Fragment {
         graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
         graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
         graph.getViewport().setXAxisBoundsManual(true);
-
-        // set date label formatter
-        //graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-        //graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
-
-        // activate horizontal zooming and scrolling
-        //graph.getViewport().setScalable(true);
-
-        // activate horizontal scrolling
-        //graph.getViewport().setScrollable(true);
-
-        // activate horizontal and vertical zooming and scrolling
-        //graph.getViewport().setScalableY(true);
-
-        // activate vertical scrolling
-        //graph.getViewport().setScrollableY(true);
-
-        // as we use dates as labels, the human rounding to nice readable numbers
-        // is not necessary
-        //graph.getGridLabelRenderer().setHumanRounding(false);
     }
 
     /**

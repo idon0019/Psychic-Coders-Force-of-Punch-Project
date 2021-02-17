@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 
+import java.sql.SQLData;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -298,6 +299,22 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             return false;
         else
             return true;
+    }
+
+    public long getDateFromPunchForce(double force) {
+        String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_FORCE + " = " + force;
+        SQLiteDatabase db = this.getReadableDatabase();
+        long value = 0;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst())
+            value = (long) cursor.getDouble(3);
+
+        cursor.close();
+        db.close();
+
+        return value;
     }
 
     /**
