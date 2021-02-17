@@ -5,12 +5,12 @@ public class ProfileModel {
     private int id;
     private String firstName;
     private String lastName;
-    private int age;
+    private String age;
     private float weight;
     private float height;
 
 
-    public ProfileModel(int id, String firstName, String lastName, int age, float weight, float height) {
+    public ProfileModel(int id, String firstName, String lastName, String age, float weight, float height) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -51,11 +51,11 @@ public class ProfileModel {
         this.lastName = lastName;
     }
 
-    public int getAge() {
+    public String getAge() {
         return age;
     }
 
-    public void setAge(int age) {
+    public void setAge(String age) {
         this.age = age;
     }
 
