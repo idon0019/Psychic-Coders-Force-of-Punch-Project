@@ -39,7 +39,7 @@ public class StudentGraph extends Fragment {
     public static final float POINT_RADIUS = 15f;
     public static final float TEXT_SIZE = 80;
     private GraphView graph;
-    private TextView txtPunchInfo;
+    private TextView txtPunchInfo, txtPunchData;
     private int accountID;
     private Button btnHome, btnBack;
     private NavController navController;
@@ -68,6 +68,7 @@ public class StudentGraph extends Fragment {
         btnBack = view.findViewById(R.id.BtnBack);
         btnHome = view.findViewById(R.id.BtnHome);
         txtPunchInfo = view.findViewById(R.id.TxtPunchInfo);
+        txtPunchData = view.findViewById(R.id.TxtPunchData);
 
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
@@ -76,6 +77,8 @@ public class StudentGraph extends Fragment {
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 accountID = result.getInt("accountID");
                 populateGraph(database, accountID);
+
+                populatePunchData(accountID, database);
             }
         });
 
@@ -179,5 +182,29 @@ public class StudentGraph extends Fragment {
         // as we use dates as labels, the human rounding to nice readable numbers
         // is not necessary
         //graph.getGridLabelRenderer().setHumanRounding(false);
+    }
+
+    /**
+     * Populates the punchData textview
+     *
+     * @return
+     */
+    private boolean populatePunchData(int accountID, MyAppProfileDatabase db) {
+        boolean hasPunch = true;
+
+        List<PunchModel> punchData = db.getAllPunchesFromProfile(accountID);
+        String display = "";
+
+        if (punchData.size() == 0) {
+            hasPunch = false;
+        }
+
+        for (int i = 0; i < punchData.size(); i++) {
+            display += punchData.get(i).toString();
+        }
+
+        txtPunchData.setText(display);
+
+        return hasPunch;
     }
 }
