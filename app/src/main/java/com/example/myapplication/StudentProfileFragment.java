@@ -45,7 +45,7 @@ import java.util.Random;
 public class StudentProfileFragment extends Fragment {
 
     private Button btnBack, btnHome, btnSubmit, btnDeleteProfile, btnRecordPunch, btnEditProfile;
-    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtForcePunchResult;
+    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtForcePunchResult, txtGraph;
     private GraphView graph;
 
     private NavController navController;
@@ -86,6 +86,7 @@ public class StudentProfileFragment extends Fragment {
         txtPunchData = view.findViewById(R.id.TxtPunchData);
 
         graph = view.findViewById(R.id.Graphview);
+        txtGraph = view.findViewById(R.id.TxtGraph);
         parentLayout = view.findViewById(R.id.parentLayout);
         scrollView = view.findViewById(R.id.scrollview);
         List<PunchModel> punchModels = new ArrayList<>();
@@ -111,11 +112,11 @@ public class StudentProfileFragment extends Fragment {
                     insertFakePunchData(accountID, database);
                 }
 
-                if (populatePunchData(accountID, database, scrollView))
+                if (hasPunchData(accountID, database))
                     populateGraph(database, accountID);
                 else {
                     parentLayout.removeView(graph);
-                    txtPunchData.setText("No Punch Data");
+                    parentLayout.removeView(txtGraph);
                 }
             }
         });
@@ -224,27 +225,17 @@ public class StudentProfileFragment extends Fragment {
     }
 
     /**
-     * Populates the punchData textview
-     *
-     * @return
+     * Checks if user has punch data
      */
-    private boolean populatePunchData(int accountID, MyAppProfileDatabase db, ScrollView view) {
-        boolean hasPunch = true;
+    private boolean hasPunchData(int accountID, MyAppProfileDatabase db) {
+        List<PunchModel> punches = new ArrayList<>();
 
-        List<PunchModel> punchData = db.getAllPunchesFromProfile(accountID);
-        String display = "";
+        punches = db.getAllPunchesFromProfile(accountID);
 
-        if (punchData.size() == 0) {
-            hasPunch = false;
-        }
-
-        for (int i = 0; i < punchData.size(); i++) {
-            display += punchData.get(i).toString();
-        }
-
-        txtPunchData.setText(display);
-
-        return hasPunch;
+        if (punches.size() != 0)
+            return true;
+        else
+            return false;
     }
 
     /**

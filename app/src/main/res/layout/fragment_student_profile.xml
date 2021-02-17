@@ -279,26 +279,6 @@
 
         </RelativeLayout>
 
-        <TextView
-            android:id="@+id/TxtPunchLabel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/punch_data_label"
-            android:textColor="#ffffff"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/TxtPunchData"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:singleLine="false"
-            android:textColor="@color/cardview_light_background"
-            android:textSize="18sp"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"/>
-
     </LinearLayout>
 
 </ScrollView>
