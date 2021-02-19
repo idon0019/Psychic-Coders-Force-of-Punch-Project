@@ -276,7 +276,7 @@ public class StudentProfileFragment extends Fragment {
         PunchModel newPunch;
 
         for (int i = 0; i < 20; i++) {
-            time.set(100 + i, 3, 12);
+            time.set(100 + i, 10, 12);
             date = time.getTime();
             newPunch = new PunchModel(0, accountID, rand.nextDouble(), date.getTime());
             db.addPunch(newPunch);
