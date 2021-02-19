@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -24,7 +25,8 @@ import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
 public class SecondFragment extends Fragment {
 
-    private Button btnBack, btnHome, btnAdd, btnShowAll;
+    private ImageButton btnBack, btnHome, btnAdd;
+    private Button btnShowAll;
     private TextView txtNumResults;
     private ListView listView;
     private NavController navController;
