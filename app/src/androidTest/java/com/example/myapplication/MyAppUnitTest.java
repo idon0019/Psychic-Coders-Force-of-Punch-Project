@@ -28,11 +28,11 @@ public class MyAppUnitTest {
 
     private Context appContext;
     ProfileModel sampleProfile;
-
+    private static long INVALID_ID = 99999999;
     MyAppProfileDatabase databaseHelper;
     public MyAppUnitTest() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        sampleProfile = new ProfileModel(10, "bob","tom", "28", 100.5f, 167.5f);
+        sampleProfile = new ProfileModel(0, "bob","tom", "28", 100.5f, 167.5f);
         databaseHelper = new MyAppProfileDatabase(appContext);
     }
     @Before
@@ -40,22 +40,57 @@ public class MyAppUnitTest {
 
     }
 
+    /*
+     * Verifies TC1
+     */
     @Test
     public void addUserValid() {
         // Context of the app under test.
         assertTrue(databaseHelper.addStudent(sampleProfile));
-
-        databaseHelper.deleteStudent(sampleProfile.getId());
+        long lastID = databaseHelper.getLastStudentID();
+        databaseHelper.deleteStudent(lastID);
     }
 
+    /*
+     * Verifies TC15
+     */
+    @Test
+    public void findUserValid() {
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+        assertNotNull(databaseHelper.findStudent(lastID)); //Should exist!
+        databaseHelper.deleteStudent(lastID);
+    }
+
+    /*
+     * Verifies TC3
+     */
     @Test
     public void removeUserValid() {
-        databaseHelper.addStudent(sampleProfile);
-        assertTrue(databaseHelper.deleteStudent(sampleProfile.getId()));
-        List<PunchModel> lst = databaseHelper.getAllPunchesFromProfile(sampleProfile.getId());
+        assertTrue(databaseHelper.addStudent(sampleProfile));
+        long lastID = databaseHelper.getLastStudentID();
+        assertTrue(databaseHelper.deleteStudent(lastID)); //ensure student is gone!
+        assertNull(databaseHelper.findStudent(lastID));
+        List<PunchModel> lst = databaseHelper.getAllPunchesFromProfile(lastID);
 
-        assertEquals(0, lst.size()); //ensure all punches are deleted
+        assertEquals(0, lst.size()); //ensure all punches are deleted!
     }
+
+    /*
+     * Verifies TC16
+     */
+    @Test
+    public void findUserInvalid() {
+        assertNull(databaseHelper.findStudent(INVALID_ID)); //Should not exist!
+    }
+    /*
+     * Verifies TC4
+     */
+    @Test
+    public void removeUserInvalid() {
+        assertFalse(databaseHelper.deleteStudent(INVALID_ID)); //Should not exist!
+    }
+
 
     @After
     public void after() {
