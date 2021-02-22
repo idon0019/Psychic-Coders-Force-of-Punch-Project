@@ -262,15 +262,17 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * Deletes a student from database
+     * Deletes a student from database and all punches of that student
      * @param accountID : The account id of the student in the database
-     * @return
+     * @return True if a student was deleted.
      */
     public boolean deleteStudent(long accountID) {
         String where = "id=?";
         String args[] = {Long.toString(accountID)};
         SQLiteDatabase database = this.getWritableDatabase();
         int numDeleted = database.delete(STUDENT_TABLE, where, args);
+        if (numDeleted > 0)
+            database.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", args);
 
         return numDeleted > 0;
     }
@@ -355,14 +357,6 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         db.close();
         return returnList;
     }
-
-    // Deletes all punches with given account id
-    public void removeAccountPunches(long accountID, SQLiteDatabase db) {
-
-        db.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", new String[]{String.valueOf(accountID)});
-        db.close();
-    }
-
 
     /**
      * This method gets called whenever the version of the database changes
