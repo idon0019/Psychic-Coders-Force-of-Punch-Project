@@ -104,13 +104,13 @@ public class AddNewUserFragment extends Fragment {
                     // Reference to the new profile database
                     MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
                     boolean success = databaseHelper.addStudent(profileModel);
-                    if (success == true) {
+                    if (success) {
                         Toast.makeText(getActivity(), "Profile added", Toast.LENGTH_LONG).show();
 
-                        int id = databaseHelper.getLastStudentID();
+                        long id = databaseHelper.getLastStudentID();
 
                         Bundle accountID = new Bundle();
-                        accountID.putInt("accountID", id);
+                        accountID.putLong("accountID", id);
                         getParentFragmentManager().setFragmentResult("accountID", accountID);
 
                         navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);

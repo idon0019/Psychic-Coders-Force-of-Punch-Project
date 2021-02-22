@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
@@ -40,8 +41,8 @@ public class StudentGraph extends Fragment {
     public static final float TEXT_SIZE = 80;
     private GraphView graph;
     private TextView txtPunchInfo, txtPunchData;
-    private int accountID;
-    private Button btnHome, btnBack;
+    private long accountID;
+    private ImageButton btnHome, btnBack;
     private NavController navController;
 
     public StudentGraph() {
@@ -75,7 +76,7 @@ public class StudentGraph extends Fragment {
         getParentFragmentManager().setFragmentResultListener("studentgraph", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getInt("accountID");
+                accountID = result.getLong("accountID");
                 populateGraph(database, accountID);
 
                 populatePunchData(accountID, database);
@@ -90,7 +91,7 @@ public class StudentGraph extends Fragment {
             public void onClick(View v) {
                 // Navigate back to select a user screen
                 Bundle bundle = new Bundle();
-                bundle.putInt("accountID", accountID);
+                bundle.putLong("accountID", accountID);
                 getParentFragmentManager().setFragmentResult("accountID", bundle);
                 navController.navigate(R.id.action_studentGraph_to_studentProfileFragment);
             }
@@ -114,7 +115,7 @@ public class StudentGraph extends Fragment {
     /**
      * Populates the graph
      */
-    private void populateGraph(MyAppProfileDatabase database, int accountID) {
+    private void populateGraph(MyAppProfileDatabase database, long accountID) {
         long date;
         int i;
         List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
@@ -189,7 +190,7 @@ public class StudentGraph extends Fragment {
      *
      * @return
      */
-    private boolean populatePunchData(int accountID, MyAppProfileDatabase db) {
+    private boolean populatePunchData(long accountID, MyAppProfileDatabase db) {
         boolean hasPunch = true;
 
         List<PunchModel> punchData = db.getAllPunchesFromProfile(accountID);

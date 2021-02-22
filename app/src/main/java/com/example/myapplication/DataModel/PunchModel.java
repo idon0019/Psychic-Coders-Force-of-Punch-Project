@@ -11,19 +11,19 @@ import java.util.Date;
  * Data model for Punch
  */
 public class PunchModel {
-    private int id;
-    private int accountID;
+    private long id;
+    private long accountID;
     private double force;
     private long date;
 
-    public PunchModel(int id, int accountID, double force, long date) {
+    public PunchModel(long id, long accountID, double force, long date) {
         this.id = id;
         this.accountID = accountID;
         this.force = force;
         this.date = date;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
@@ -31,7 +31,7 @@ public class PunchModel {
         this.id = id;
     }
 
-    public int getAccountID() {
+    public long getAccountID() {
         return accountID;
     }
 

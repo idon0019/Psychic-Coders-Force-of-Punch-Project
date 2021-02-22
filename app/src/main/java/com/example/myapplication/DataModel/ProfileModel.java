@@ -2,7 +2,7 @@ package com.example.myapplication.DataModel;
 
 public class ProfileModel {
 
-    private int id;
+    private long id;
     private String firstName;
     private String lastName;
     private String age;
@@ -10,7 +10,7 @@ public class ProfileModel {
     private float height;
 
 
-    public ProfileModel(int id, String firstName, String lastName, String age, float weight, float height) {
+    public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -27,7 +27,7 @@ public class ProfileModel {
         return id + ". " + firstName + " " + lastName + ", " + age;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 

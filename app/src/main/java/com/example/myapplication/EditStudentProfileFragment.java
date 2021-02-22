@@ -29,7 +29,7 @@ public class EditStudentProfileFragment extends Fragment {
     private TextView txtAge;
     private Button btnSubmit, btnCancel, btnDate;
     private NavController navController;
-    private int accountID;
+    private long accountID;
     private MyAppProfileDatabase database;
 
     private Calendar calendar;
@@ -67,7 +67,7 @@ public class EditStudentProfileFragment extends Fragment {
         getParentFragmentManager().setFragmentResultListener("accountID2", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getInt("accountID2");
+                accountID = result.getLong("accountID2");
 
                 // Set the empty text in the student profile screen to the first name of the student
                 edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
@@ -102,7 +102,7 @@ public class EditStudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putInt("accountID", accountID);
+                bundle.putLong("accountID", accountID);
                 getParentFragmentManager().setFragmentResult("accountID", bundle);
                 database.editStudentProfile(accountID, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
@@ -113,7 +113,7 @@ public class EditStudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putInt("accountID", accountID);
+                bundle.putLong("accountID", accountID);
                 getParentFragmentManager().setFragmentResult("accountID", bundle);
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
             }

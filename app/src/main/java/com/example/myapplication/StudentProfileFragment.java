@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -44,14 +45,15 @@ import java.util.Random;
 
 public class StudentProfileFragment extends Fragment {
 
-    private Button btnBack, btnHome, btnSubmit, btnDeleteProfile, btnRecordPunch, btnEditProfile;
+    private ImageButton btnBack, btnHome;
+    private Button btnDeleteProfile, btnRecordPunch, btnEditProfile;
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtForcePunchResult, txtGraph;
     private GraphView graph;
 
     private NavController navController;
     private LinearLayout parentLayout;
     private ScrollView scrollView;
-    private int accountID;
+    private long accountID;
 
     private ProfileModel profileModel;
 
@@ -73,7 +75,6 @@ public class StudentProfileFragment extends Fragment {
         navController = Navigation.findNavController(view);
         btnBack = view.findViewById(R.id.BtnBack);
         btnHome = view.findViewById(R.id.BtnHome);
-        btnSubmit = view.findViewById(R.id.BtnSubmit);
         btnDeleteProfile = view.findViewById(R.id.BtnDeleteProfile);
         btnRecordPunch = view.findViewById(R.id.BtnRecordPunch);
         btnEditProfile = view.findViewById(R.id.BtnEditProfile);
@@ -98,7 +99,7 @@ public class StudentProfileFragment extends Fragment {
         getParentFragmentManager().setFragmentResultListener("accountID", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getInt("accountID");
+                accountID = result.getLong("accountID");
 
                 // Set the empty text in the student profile screen to the first name of the student
                 txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
@@ -176,7 +177,7 @@ public class StudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle2 = new Bundle();
-                bundle2.putInt("accountID2", accountID);
+                bundle2.putLong("accountID2", accountID);
                 getParentFragmentManager().setFragmentResult("accountID2", bundle2);
                 navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
             }
@@ -187,7 +188,7 @@ public class StudentProfileFragment extends Fragment {
             public void onClick(View v) {
                 // Navigate back to select a user screen
                 Bundle bundle = new Bundle();
-                bundle.putInt("accountID", accountID);
+                bundle.putLong("accountID", accountID);
                 getParentFragmentManager().setFragmentResult("studentgraph", bundle);
                 navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
             }
@@ -227,7 +228,7 @@ public class StudentProfileFragment extends Fragment {
     /**
      * Checks if user has punch data
      */
-    private boolean hasPunchData(int accountID, MyAppProfileDatabase db) {
+    private boolean hasPunchData(long accountID, MyAppProfileDatabase db) {
         List<PunchModel> punches = new ArrayList<>();
 
         punches = db.getAllPunchesFromProfile(accountID);
@@ -241,7 +242,7 @@ public class StudentProfileFragment extends Fragment {
     /**
      * Populates the graph
      */
-    private void populateGraph(MyAppProfileDatabase database, int accountID) {
+    private void populateGraph(MyAppProfileDatabase database, long accountID) {
         long date;
         List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
 
@@ -268,7 +269,7 @@ public class StudentProfileFragment extends Fragment {
      * Debug method to populate punch table with 20 data points
      * @Test
      */
-    public void insertFakePunchData(int accountID, MyAppProfileDatabase db) {
+    public void insertFakePunchData(long accountID, MyAppProfileDatabase db) {
         Date date;
         Calendar time;
         time = Calendar.getInstance();
