@@ -77,6 +77,14 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
                 navController.navigate(R.id.action_measuringPunchFragment_to_phoneSecuredFragment);
             }
         });
+
+        btnNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getParentFragmentManager().setFragmentResult("punchResult", bundle);
+                navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
+            }
+        });
     }
 
     @Override

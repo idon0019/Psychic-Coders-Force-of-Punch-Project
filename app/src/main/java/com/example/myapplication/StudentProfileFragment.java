@@ -47,7 +47,7 @@ public class StudentProfileFragment extends Fragment {
 
     private ImageButton btnBack, btnHome;
     private Button btnDeleteProfile, btnRecordPunch, btnEditProfile;
-    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtPunchData, txtForcePunchResult, txtGraph;
+    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult, txtGraph;
     private GraphView graph;
 
     private NavController navController;
@@ -84,7 +84,6 @@ public class StudentProfileFragment extends Fragment {
         txtAge = view.findViewById(R.id.TxtAge);
         txtWeight = view.findViewById(R.id.TxtWeight);
         txtHeight = view.findViewById(R.id.TxtHeight);
-        txtPunchData = view.findViewById(R.id.TxtPunchData);
 
         graph = view.findViewById(R.id.Graphview);
         txtGraph = view.findViewById(R.id.TxtGraph);
@@ -110,14 +109,28 @@ public class StudentProfileFragment extends Fragment {
 
                 List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
                 if (punches.size() == 0) {
-                    insertFakePunchData(accountID, database);
+                    //insertFakePunchData(accountID, database);
                 }
 
-                if (hasPunchData(accountID, database))
+                if (hasPunchData(accountID, database)) { // if punch data exists navigate to studentgraph
                     populateGraph(database, accountID);
-                else {
-                    parentLayout.removeView(graph);
-                    parentLayout.removeView(txtGraph);
+                    graph.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            // Navigate back to select a user screen
+                            Bundle bundle = new Bundle();
+                            bundle.putLong("accountID", accountID);
+                            getParentFragmentManager().setFragmentResult("studentgraph", bundle);
+                            navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
+                        }
+                    });
+                } else { // if data doesn't exist then show an error toast
+                    graph.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getContext(), R.string.no_punch_data, Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         });
@@ -185,20 +198,9 @@ public class StudentProfileFragment extends Fragment {
                 navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
             }
         });
-
-        graph.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate back to select a user screen
-                Bundle bundle = new Bundle();
-                bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult("studentgraph", bundle);
-                navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
-            }
-        });
     }
 
-    private int getStudentAge(MyAppProfileDatabase database){
+    private int getStudentAge(MyAppProfileDatabase database) {
         Date date = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         try {
@@ -207,7 +209,7 @@ public class StudentProfileFragment extends Fragment {
             e.printStackTrace();
         }
 
-        if(date == null) return 0;
+        if (date == null) return 0;
 
         Calendar studentDOB = Calendar.getInstance();
         Calendar todayDate = Calendar.getInstance();
@@ -218,11 +220,11 @@ public class StudentProfileFragment extends Fragment {
         int month = studentDOB.get(Calendar.MONTH);
         int day = studentDOB.get(Calendar.DAY_OF_MONTH);
 
-        studentDOB.set(year, month+1, day);
+        studentDOB.set(year, month + 1, day);
 
         int studentAge = todayDate.get(Calendar.YEAR) - studentDOB.get(Calendar.YEAR);
 
-        if (todayDate.get(Calendar.DAY_OF_YEAR) < studentDOB.get(Calendar.DAY_OF_YEAR)){
+        if (todayDate.get(Calendar.DAY_OF_YEAR) < studentDOB.get(Calendar.DAY_OF_YEAR)) {
             studentAge--;
         }
         return studentAge;
@@ -232,7 +234,7 @@ public class StudentProfileFragment extends Fragment {
      * Checks if user has punch data
      */
     private boolean hasPunchData(long accountID, MyAppProfileDatabase db) {
-        List<PunchModel> punches = new ArrayList<>();
+        List<PunchModel> punches;
 
         punches = db.getAllPunchesFromProfile(accountID);
 
@@ -255,6 +257,7 @@ public class StudentProfileFragment extends Fragment {
         date = punches.get(0).getDate();
         graph.getViewport().setMinX(date);
         series.appendData(new DataPoint(date, punches.get(0).getForce()), true, 100);
+        series.setDrawDataPoints(true);
 
         for (int i = 1; i < punches.size(); i++) {
             date = punches.get(i).getDate();
@@ -270,6 +273,7 @@ public class StudentProfileFragment extends Fragment {
 
     /**
      * Debug method to populate punch table with 20 data points
+     *
      * @Test
      */
     public void insertFakePunchData(long accountID, MyAppProfileDatabase db) {

@@ -23,8 +23,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
+import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
 import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class PunchResultFragment extends Fragment {
@@ -35,6 +39,7 @@ public class PunchResultFragment extends Fragment {
     private String punchString;
     private double punchScore;
     private long accountID;
+    private MyAppProfileDatabase database;
 
     public PunchResultFragment() {
         // Required empty public constructor
@@ -52,6 +57,7 @@ public class PunchResultFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         navController = Navigation.findNavController(view);
+        database = new MyAppProfileDatabase(getActivity());
 
         btnTryAgain = view.findViewById(R.id.BtnTryAgain);
         btnRecord = view.findViewById(R.id.BtnRecord);
@@ -60,7 +66,6 @@ public class PunchResultFragment extends Fragment {
 
         Bundle bundle = new Bundle();
 
-
         getParentFragmentManager().setFragmentResultListener("punchResult", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
@@ -68,6 +73,9 @@ public class PunchResultFragment extends Fragment {
                 punchScore = result.getDouble("punchScore");
                 punchString = df.format(punchScore) + " N";
                 txtPunchResult.setText(punchString);
+
+                accountID = result.getLong("accountID");
+                bundle.putLong("accountID", accountID);
             }
         });
 
@@ -75,6 +83,7 @@ public class PunchResultFragment extends Fragment {
         btnTryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
                 navController.navigate(R.id.action_punchResultFragment_to_phoneSecuredFragment);
             }
         });
@@ -82,6 +91,12 @@ public class PunchResultFragment extends Fragment {
         btnRecord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Date time = Calendar.getInstance().getTime();
+
+                PunchModel punch = new PunchModel(0, accountID, punchScore, time.getTime());
+                database.addPunch(punch);
+
+                getParentFragmentManager().setFragmentResult("studentProfile", bundle);
                 navController.navigate(R.id.action_punchResultFragment_to_studentProfileFragment);
             }
         });

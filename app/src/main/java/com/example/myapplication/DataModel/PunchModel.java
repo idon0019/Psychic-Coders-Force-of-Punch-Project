@@ -1,6 +1,7 @@
 package com.example.myapplication.DataModel;
 
 import com.example.myapplication.R;
+import com.example.myapplication.StudentGraph;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -55,10 +56,10 @@ public class PunchModel {
         this.date = date;
     }
 
-    public String toString () {
-        DateFormat df = new SimpleDateFormat("dd/MMMM/yy 'at' HH:mm:ss");
+    public String toString (String dateFormat, String numFormat) {
+        DateFormat df = new SimpleDateFormat(dateFormat);
         Date date = new Date(this.date);
-        DecimalFormat myFormat = new DecimalFormat("#.##");
+        DecimalFormat myFormat = new DecimalFormat(numFormat);
 
         String text = "Force: " + myFormat.format(force) + "\nDate: " + df.format(date) + "\n\n";
 

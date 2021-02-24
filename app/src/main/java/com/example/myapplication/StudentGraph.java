@@ -203,7 +203,7 @@ public class StudentGraph extends Fragment {
         }
 
         for (int i = 0; i < punchData.size(); i++) {
-            display += punchData.get(i).toString();
+            display += punchData.get(i).toString(DATE_FORMAT, NUMBER_FORMAT);
         }
 
         txtPunchData.setText(display);
