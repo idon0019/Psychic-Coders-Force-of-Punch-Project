@@ -109,7 +109,7 @@ public class SecondFragment extends Fragment {
 
                 Bundle bundle = new Bundle();
                 bundle.putLong("accountID", profileModel.getId());
-                getParentFragmentManager().setFragmentResult("accountID", bundle);
+                getParentFragmentManager().setFragmentResult("studentProfile", bundle);
                 // Navigate to student profile screen
                 navController.navigate(R.id.action_secondFragment_to_studentProfileFragment);
             }

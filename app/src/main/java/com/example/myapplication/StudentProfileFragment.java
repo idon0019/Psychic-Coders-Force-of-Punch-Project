@@ -96,7 +96,7 @@ public class StudentProfileFragment extends Fragment {
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
 
-        getParentFragmentManager().setFragmentResultListener("accountID", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener("studentProfile", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 accountID = result.getLong("accountID");
@@ -168,6 +168,9 @@ public class StudentProfileFragment extends Fragment {
         btnRecordPunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putLong("accountID", accountID);
+                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
                 navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
             }
         });

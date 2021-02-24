@@ -39,6 +39,8 @@ public class StudentGraph extends Fragment {
     public static final String GRAPH_TITLE = "Punch Force vs Attempts";
     public static final float POINT_RADIUS = 15f;
     public static final float TEXT_SIZE = 80;
+    public static final String NUMBER_FORMAT = "####";
+    public static final String DATE_FORMAT = "dd/MMMM/yy 'at' HH:mm";
     private GraphView graph;
     private TextView txtPunchInfo, txtPunchData;
     private long accountID;
@@ -132,8 +134,8 @@ public class StudentGraph extends Fragment {
                 String text = "";
                 double force = dataPoint.getY();
                 Date date = new Date(database.getDateFromPunchForce(force));
-                DateFormat df = new SimpleDateFormat("dd/MMMM/yy 'at' HH:mm");
-                DecimalFormat myFormat = new DecimalFormat("#.##");
+                DateFormat df = new SimpleDateFormat(DATE_FORMAT);
+                DecimalFormat myFormat = new DecimalFormat(NUMBER_FORMAT);
 
                 text += "Attempt " + (int)dataPoint.getX() + ":\n";
                 text += "Date: " + df.format(date) + " \n";

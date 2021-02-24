@@ -111,11 +111,11 @@ public class AddNewUserFragment extends Fragment {
 
                         Bundle accountID = new Bundle();
                         accountID.putLong("accountID", id);
-                        getParentFragmentManager().setFragmentResult("accountID", accountID);
+                        getParentFragmentManager().setFragmentResult("studentProfile", accountID);
 
                         navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
                     } else {
-                        Toast.makeText(getActivity(), "Profile could be added", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Profile could not be added", Toast.LENGTH_LONG).show();
                     }
                 }
             }

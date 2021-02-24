@@ -13,6 +13,7 @@ public class Acceleration implements SensorEventListener {
     private double acceleration = 0;
     private SensorManager senManager;
     private Sensor sen;
+    private boolean peakAcceleration = false;
 /*    private TextView accelView; // TextView to display the current acceleration
     private TextView maxAccelView; // TextView to display the max acceleration
     String pattern = "##.#"; // Used to format the force
@@ -47,15 +48,14 @@ public class Acceleration implements SensorEventListener {
         this.acceleration = linAcceleration;
 
         // updates to a new maxAcceleration is newer value is larger
-        // also updates the view if maxAcceleration changed
         if (this.maxAcceleration < linAcceleration) {
             this.maxAcceleration = linAcceleration;
-//            this.maxAccelView.setText("Max acceleration: " + format.format(this.maxAcceleration));
         }
 
-        /*// displays the current linear acceleration
-        this.accelView.setText(format.format(linAcceleration));
-        this.accelView.setText("Current Acceleration: "+ this.accelView.getText());*/
+        // if the acceleration more than 10% less than the peak, then the peak is stable
+        if (linAcceleration < (this.maxAcceleration*0.9)) {
+            this.peakAcceleration = true;
+        }
     }
 
 
@@ -64,19 +64,15 @@ public class Acceleration implements SensorEventListener {
         double force;
         bagMass = 40;/*arbitrary number, macro implementation possible*/
         force = bagMass * this.maxAcceleration;
-        return acceleration;
+        return force;
+    }
+
+    public boolean getPeakAcceleration(){
+        return peakAcceleration;
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // ignore
-    }
-
-    public double getMaxAcceleration() {
-        return this.maxAcceleration;
-    }
-
-    public void resetMaxAcceleration() {
-        this.maxAcceleration = 0.0;
     }
 }

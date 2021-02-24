@@ -24,6 +24,7 @@ import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 public class PunchResultFragment extends Fragment {
@@ -32,10 +33,8 @@ public class PunchResultFragment extends Fragment {
     private NavController navController;
     private TextView txtPunchResult;
     private String punchString;
-    private SensorManager senManager;
     private double punchScore;
-
-
+    private long accountID;
 
     public PunchResultFragment() {
         // Required empty public constructor
@@ -58,19 +57,16 @@ public class PunchResultFragment extends Fragment {
         btnRecord = view.findViewById(R.id.BtnRecord);
 
         txtPunchResult = view.findViewById(R.id.TxtPunchForceResult);
-        Acceleration punchSensor = new Acceleration(senManager);
-        punchScore = punchSensor.calculateForce();
 
         Bundle bundle = new Bundle();
-        bundle.putDouble("punchScore", punchScore);
-        getParentFragmentManager().setFragmentResult("punchScore", bundle);
 
 
-        getParentFragmentManager().setFragmentResultListener("punchScore", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener("punchResult", this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
+                DecimalFormat df = new DecimalFormat("####");
                 punchScore = result.getDouble("punchScore");
-                punchString = punchScore + " N";
+                punchString = df.format(punchScore) + " N";
                 txtPunchResult.setText(punchString);
             }
         });
