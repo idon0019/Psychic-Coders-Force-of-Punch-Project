@@ -1,6 +1,8 @@
 package com.example.myapplication.DataModel;
 
 public class ProfileModel {
+    private static final int MIN_ALLOWED_AGE = 5;
+    private static final int MAX_ALLOWED_AGE = 100;
 
     private long id;
     private String firstName;
@@ -11,12 +13,12 @@ public class ProfileModel {
 
 
     public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
-        this.weight = weight;
-        this.height = height;
+        setId(id);
+        setFirstName(firstName);
+        setLastName(lastName);
+        setAge(age);
+        setWeight(weight);
+        setHeight(height);
     }
 
     public ProfileModel() {
@@ -31,7 +33,7 @@ public class ProfileModel {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -40,6 +42,7 @@ public class ProfileModel {
     }
 
     public void setFirstName(String firstName) {
+
         this.firstName = firstName;
     }
 
@@ -48,6 +51,7 @@ public class ProfileModel {
     }
 
     public void setLastName(String lastName) {
+
         this.lastName = lastName;
     }
 
@@ -56,6 +60,11 @@ public class ProfileModel {
     }
 
     public void setAge(String age) {
+        int age_num = Integer.parseInt(age);
+        if (age_num < MIN_ALLOWED_AGE || age_num > MAX_ALLOWED_AGE) {
+            throw new IllegalArgumentException("Invalid age (must be between 0 and 120");
+        }
+
         this.age = age;
     }
 
@@ -64,6 +73,9 @@ public class ProfileModel {
     }
 
     public void setWeight(float weight) {
+        if (weight < 0) {
+            throw new IllegalArgumentException("Invalid Height");
+        }
         this.weight = weight;
     }
 
@@ -72,6 +84,9 @@ public class ProfileModel {
     }
 
     public void setHeight(float height) {
+        if (height < 0) {
+            throw new IllegalArgumentException("Invalid Height");
+        }
         this.height = height;
     }
 }

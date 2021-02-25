@@ -277,17 +277,22 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return numDeleted > 0;
     }
 
-    public void editStudentProfile(long id, String fname, String lname, String age, String weight, String height) {
+    public boolean editStudentProfile(long id, String fname, String lname, String age, String weight, String height) {
         ContentValues cv = new ContentValues();
         SQLiteDatabase database = this.getWritableDatabase();
 
+        try{
+            ProfileModel p = new ProfileModel(id, fname, lname, age, Float.parseFloat(weight), Float.parseFloat(height));
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
         cv.put(COLUMN_STUDENT_FIRSTNAME, fname);
         cv.put(COLUMN_STUDENT_LASTNAME, lname);
         cv.put(COLUMN_STUDENT_AGE, age);
         cv.put(COLUMN_STUDENT_WEIGHT, weight);
         cv.put(COLUMN_STUDENT_HEIGHT, height);
 
-        database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null);
+        return (database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null) > 0);
     }
 
 
