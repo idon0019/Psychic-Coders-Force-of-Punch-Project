@@ -1,6 +1,8 @@
 package com.example.myapplication;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -165,16 +167,35 @@ public class StudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                boolean deleteStudent = database.deleteStudent(accountID);
-                if (deleteStudent)
-                    Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
-                else
-                    Toast.makeText(getActivity(), "Delete failed", Toast.LENGTH_LONG).show();
+                builder.setTitle("Delete Student");
+                builder.setMessage("Are you sure you want to remove " + database.getFirstNameFromDatabase(accountID) + " " + database.getLastNameFromDatabase(accountID) + "?");
 
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        boolean deleteStudent = database.deleteStudent(accountID);
+                        if (deleteStudent)
+                            Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
+                        else
+                            Toast.makeText(getActivity(), "Delete failed", Toast.LENGTH_LONG).show();
 
-                // Navigate back to select user screen
-                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+                        // Navigate back to select user screen
+                        navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+                    }
+                });
+
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.cancel();
+                    }
+                });
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
             }
         });
 
