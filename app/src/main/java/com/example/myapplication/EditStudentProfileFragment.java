@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
@@ -102,6 +103,9 @@ public class EditStudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
+
+                Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
+
                 bundle.putLong("accountID", accountID);
                 getParentFragmentManager().setFragmentResult("accountID", bundle);
                 database.editStudentProfile(accountID, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
@@ -113,6 +117,9 @@ public class EditStudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
+
+                Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
+
                 bundle.putLong("accountID", accountID);
                 getParentFragmentManager().setFragmentResult("accountID", bundle);
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);

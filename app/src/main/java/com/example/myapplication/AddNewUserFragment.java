@@ -105,7 +105,7 @@ public class AddNewUserFragment extends Fragment {
                     MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
                     boolean success = databaseHelper.addStudent(profileModel);
                     if (success) {
-                        Toast.makeText(getActivity(), "Profile added", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getActivity(), "Profile created", Toast.LENGTH_LONG).show();
 
                         long id = databaseHelper.getLastStudentID();
 
@@ -124,6 +124,7 @@ public class AddNewUserFragment extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
                 navController.navigate(R.id.action_addNewUserFragment_to_secondFragment);
             }
         });
