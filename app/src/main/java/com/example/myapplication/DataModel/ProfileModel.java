@@ -1,5 +1,8 @@
 package com.example.myapplication.DataModel;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class ProfileModel {
     private static final int MIN_ALLOWED_AGE = 5;
     private static final int MAX_ALLOWED_AGE = 100;
@@ -60,7 +63,9 @@ public class ProfileModel {
     }
 
     public void setAge(String age) {
-        int age_num = Integer.parseInt(age);
+        String array[] = age.split("/");
+        Calendar calendar = Calendar.getInstance();
+        int age_num = calendar.get(Calendar.YEAR) - Integer.parseInt(array[2]);
         if (age_num < MIN_ALLOWED_AGE || age_num > MAX_ALLOWED_AGE) {
             throw new IllegalArgumentException("Invalid age (must be between 0 and 120");
         }

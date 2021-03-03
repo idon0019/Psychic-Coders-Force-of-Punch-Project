@@ -68,15 +68,13 @@ public class AddNewUserFragment extends Fragment {
 
                 int d = calendar.get(Calendar.DAY_OF_MONTH);
                 int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR);
+                int y = calendar.get(Calendar.YEAR)-10;
 
-                dialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        System.out.println("\nday : " + dayOfMonth + "\nmonth : " + month + "\nyear : " + year + "\n");
-                        txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year);
-                    }
-                }, d, m, y);
+                dialog = new DatePickerDialog(getActivity(),
+                        (view1, year, month, dayOfMonth) -> { txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
+                        y,
+                        m,
+                        d);
                 dialog.show();
             }
         });
