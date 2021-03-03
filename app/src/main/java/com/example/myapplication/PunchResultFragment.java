@@ -33,6 +33,7 @@ import java.util.List;
 
 public class PunchResultFragment extends Fragment {
 
+    public static final String REQUEST_KEY = "punchResult";
     private Button btnTryAgain, btnRecord;
     private NavController navController;
     private TextView txtPunchResult;
@@ -66,7 +67,7 @@ public class PunchResultFragment extends Fragment {
 
         Bundle bundle = new Bundle();
 
-        getParentFragmentManager().setFragmentResultListener("punchResult", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 DecimalFormat df = new DecimalFormat("####");
@@ -83,7 +84,7 @@ public class PunchResultFragment extends Fragment {
         btnTryAgain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
+                getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_punchResultFragment_to_phoneSecuredFragment);
             }
         });
@@ -96,7 +97,7 @@ public class PunchResultFragment extends Fragment {
                 PunchModel punch = new PunchModel(0, accountID, punchScore, time.getTime());
                 database.addPunch(punch);
 
-                getParentFragmentManager().setFragmentResult("studentProfile", bundle);
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_punchResultFragment_to_studentProfileFragment);
             }
         });

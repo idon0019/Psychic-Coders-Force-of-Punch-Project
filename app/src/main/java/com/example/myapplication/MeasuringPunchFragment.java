@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 public class MeasuringPunchFragment extends Fragment implements SensorEventListener {
 
+    public static final String REQUEST_KEY = "measuringPunch";
     private Button btnCancel, btnNext;
     private NavController navController;
     private SensorManager senManager;
@@ -62,7 +63,7 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
 
         bundle = new Bundle();
 
-        getParentFragmentManager().setFragmentResultListener("measuringPunch", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 accountID = result.getLong("accountID");
@@ -70,18 +71,20 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
             }
         });
 
+        // cancels measuring punch and moves back to previous page.
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
+                getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_measuringPunchFragment_to_phoneSecuredFragment);
             }
         });
 
+        // used for debugging purposes. moves to the next page.
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("punchResult", bundle);
+                getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
             }
         });
@@ -108,7 +111,7 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
             peakAcceleration = true;
             double punchScore = calculateForce();
             bundle.putDouble("punchScore", punchScore);
-            getParentFragmentManager().setFragmentResult("punchResult", bundle);
+            getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);
             navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
         }
     }
