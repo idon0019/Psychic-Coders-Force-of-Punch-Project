@@ -1,8 +1,5 @@
 package com.example.myapplication.DataModel;
 
-import com.example.myapplication.R;
-import com.example.myapplication.StudentGraph;
-
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;

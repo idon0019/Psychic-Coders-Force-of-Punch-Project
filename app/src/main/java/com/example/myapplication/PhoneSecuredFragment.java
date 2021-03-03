@@ -21,6 +21,7 @@ import java.util.List;
 
 public class PhoneSecuredFragment extends Fragment {
 
+    public static final String REQUEST_KEY = "phoneSecured";
     private Button btnCancel;
     private ImageButton imgBtnConfirm;
     private NavController navController;
@@ -47,7 +48,7 @@ public class PhoneSecuredFragment extends Fragment {
         imgBtnConfirm = view.findViewById(R.id.BtnConfirm);
         btnCancel = view.findViewById(R.id.BtnCancel);
 
-        getParentFragmentManager().setFragmentResultListener("phoneSecured", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 accountID = result.getLong("accountID");
@@ -55,18 +56,20 @@ public class PhoneSecuredFragment extends Fragment {
             }
         });
 
+        // confirm and move to measure punch
         imgBtnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("measuringPunch", bundle);
+                getParentFragmentManager().setFragmentResult(MeasuringPunchFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_phoneSecuredFragment_to_measuringPunchFragment);
             }
         });
 
+        // moves back to student profile.
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("studentProfile", bundle);
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_phoneSecuredFragment_to_studentProfileFragment);
             }
         });

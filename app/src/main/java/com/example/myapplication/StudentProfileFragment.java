@@ -47,6 +47,8 @@ import java.util.Random;
 
 public class StudentProfileFragment extends Fragment {
 
+    public static final String REQUEST_KEY = "studentProfile";
+
     private ImageButton btnBack, btnHome;
     private Button btnDeleteProfile, btnRecordPunch, btnEditProfile;
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult, txtGraph;
@@ -86,6 +88,7 @@ public class StudentProfileFragment extends Fragment {
         txtAge = view.findViewById(R.id.TxtAge);
         txtWeight = view.findViewById(R.id.TxtWeight);
         txtHeight = view.findViewById(R.id.TxtHeight);
+        txtForcePunchResult = view.findViewById(R.id.TxtPunchForceResult);
 
         graph = view.findViewById(R.id.Graphview);
         txtGraph = view.findViewById(R.id.TxtGraph);
@@ -96,8 +99,8 @@ public class StudentProfileFragment extends Fragment {
         // Database helper object
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
-
-        getParentFragmentManager().setFragmentResultListener("studentProfile", this, new FragmentResultListener() {
+        // Fragment listener that takes in account id to populate the profile with.
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 accountID = result.getLong("accountID");
@@ -105,16 +108,18 @@ public class StudentProfileFragment extends Fragment {
                 // Set the empty text in the student profile screen to the first name of the student
                 txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
                 txtLastName.setText(database.getLastNameFromDatabase(accountID));
-                txtAge.setText(database.getAgeFromDatabase(accountID) + ", Age: " + getStudentAge(database));
+                txtAge.setText(database.getAgeFromDatabase(accountID) + "\nAge: " + getStudentAge(database));
                 txtWeight.setText(database.getWeightFromDatabase(accountID));
                 txtHeight.setText(database.getHeightFromDatabase(accountID));
 
                 List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
                 if (punches.size() == 0) {
+                    // Debug method used to insert fake punch data for an account.
                     //insertFakePunchData(accountID, database);
                 }
 
-                if (hasPunchData(accountID, database)) { // if punch data exists navigate to studentgraph
+                // sets a click listener on the mini graph that moves to the StudentGraph fragment.
+                if (hasPunchData(accountID, database)) { // if punch data exists sets navigation to studentgraph
                     populateGraph(database, accountID);
                     graph.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -122,17 +127,19 @@ public class StudentProfileFragment extends Fragment {
                             // Navigate back to select a user screen
                             Bundle bundle = new Bundle();
                             bundle.putLong("accountID", accountID);
-                            getParentFragmentManager().setFragmentResult("studentgraph", bundle);
+                            getParentFragmentManager().setFragmentResult(StudentGraphFragment.REQUEST_KEY, bundle);
                             navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
                         }
                     });
-                } else { // if data doesn't exist then show an error toast
+                    txtForcePunchResult.setText(database.getHighScore(accountID));
+                } else { // if data doesn't exist then show an error toast when graph is tapped.
                     graph.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Toast.makeText(getContext(), R.string.no_punch_data, Toast.LENGTH_SHORT).show();
                         }
                     });
+                    txtForcePunchResult.setText("No data");
                 }
             }
         });
@@ -199,12 +206,13 @@ public class StudentProfileFragment extends Fragment {
             }
         });
 
+        // when pressed lets the user record a new punch.
         btnRecordPunch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
+                getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
             }
         });
@@ -214,13 +222,18 @@ public class StudentProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Bundle bundle2 = new Bundle();
-                bundle2.putLong("accountID2", accountID);
-                getParentFragmentManager().setFragmentResult("accountID2", bundle2);
+                bundle2.putLong("accountID", accountID);
+                getParentFragmentManager().setFragmentResult(EditStudentProfileFragment.REQUEST_KEY, bundle2);
                 navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
             }
         });
     }
 
+    /**
+     * Returns student age.
+     * @param database : Database helper class.
+     * @return Age of student.
+     */
     private int getStudentAge(MyAppProfileDatabase database) {
         Date date = null;
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -252,12 +265,15 @@ public class StudentProfileFragment extends Fragment {
     }
 
     /**
-     * Checks if user has punch data
+     * Checks if profile has previous punch data.
+     * @param accountID : Account ID to check for.
+     * @param database : database helper class
+     * @return True if account has punch data, false if otherwise.
      */
-    private boolean hasPunchData(long accountID, MyAppProfileDatabase db) {
+    private boolean hasPunchData(long accountID, MyAppProfileDatabase database) {
         List<PunchModel> punches;
 
-        punches = db.getAllPunchesFromProfile(accountID);
+        punches = database.getAllPunchesFromProfile(accountID);
 
         if (punches.size() != 0)
             return true;
@@ -266,7 +282,9 @@ public class StudentProfileFragment extends Fragment {
     }
 
     /**
-     * Populates the graph
+     * Populates the mini graph on the profile page.
+     * @param database : Database helper class.
+     * @param accountID : Account ID of profile.
      */
     private void populateGraph(MyAppProfileDatabase database, long accountID) {
         long date;
@@ -275,8 +293,11 @@ public class StudentProfileFragment extends Fragment {
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
         graph.addSeries(series);
 
+        // sets the minimum x-value
         date = punches.get(0).getDate();
         graph.getViewport().setMinX(date);
+
+        // inserts all data points on the graph and draws data points with default radius.
         series.appendData(new DataPoint(date, punches.get(0).getForce()), true, 100);
         series.setDrawDataPoints(true);
 
@@ -285,17 +306,19 @@ public class StudentProfileFragment extends Fragment {
             series.appendData(new DataPoint(date, punches.get(i).getForce()), true, 100);
         }
 
+        // sets the maximum x-value
         graph.getViewport().setMaxX(date);
 
+        // makes graph labels invisible.
         graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
         graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
         graph.getViewport().setXAxisBoundsManual(true);
     }
 
     /**
-     * Debug method to populate punch table with 20 data points
-     *
-     * @Test
+     * Debug method to insert fake punch data.
+     * @param accountID : Account to make fake data for.
+     * @param db : Database helper class.
      */
     public void insertFakePunchData(long accountID, MyAppProfileDatabase db) {
         Date date;
@@ -304,8 +327,9 @@ public class StudentProfileFragment extends Fragment {
         Random rand = new Random();
         PunchModel newPunch;
 
-        for (int i = 0; i < 20; i++) {
-            time.set(100 + i, 10, 12);
+        // This will insert a set number of fake data points with a random double punch value.
+        for (int i = 0; i < 12; i++) {
+            time.set(100, i, 12);
             date = time.getTime();
             newPunch = new PunchModel(0, accountID, rand.nextDouble(), date.getTime());
             db.addPunch(newPunch);

@@ -26,6 +26,7 @@ import java.util.Calendar;
 
 public class EditStudentProfileFragment extends Fragment {
 
+    public static final String REQUEST_KEY = "editStudent";
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
     private TextView txtAge;
     private Button btnSubmit, btnCancel, btnDate;
@@ -65,10 +66,10 @@ public class EditStudentProfileFragment extends Fragment {
         edtWeight = view.findViewById(R.id.EdtWeight);
         edtHeight = view.findViewById(R.id.EdtHeight);
 
-        getParentFragmentManager().setFragmentResultListener("accountID2", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getLong("accountID2");
+                accountID = result.getLong("accountID");
 
                 // Set the empty text in the student profile screen to the first name of the student
                 edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
@@ -107,7 +108,7 @@ public class EditStudentProfileFragment extends Fragment {
                 Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
 
                 bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult("accountID", bundle);
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
                 database.editStudentProfile(accountID, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
             }
@@ -121,7 +122,7 @@ public class EditStudentProfileFragment extends Fragment {
                 Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
 
                 bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult("accountID", bundle);
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
             }
         });

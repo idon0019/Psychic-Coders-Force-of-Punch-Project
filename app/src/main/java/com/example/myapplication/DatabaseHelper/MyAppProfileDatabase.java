@@ -10,8 +10,9 @@ import androidx.annotation.Nullable;
 
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
+import com.example.myapplication.FormatConstants.FormatConstants;
 
-import java.sql.SQLData;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,9 +34,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     private static final String PUNCH_FORCE = "FORCE";
     private static final String PUNCH_DATE = "DATE";
 
-    //TODO: Add in the names of the Punch tables. Also update the onCreate and onUpgrade methods.
     public ProfileModel pModel;
-
 
     public MyAppProfileDatabase(@Nullable Context context) {
         super(context, "MyAppDatabase.db", null, 3);
@@ -319,8 +318,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             return true;
     }
 
-    public long getDateFromPunchForce(double force) {
-        String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_FORCE + " = " + force;
+    /**
+     * Returns the date of a specific punch by using account id and punch force.
+     * @param accountID : ID of account to look at.
+     * @param force : Force value to search for.
+     * @return
+     */
+    public long getDateFromPunchForce(long accountID, double force) {
+        String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_FORCE + " = " + force + " AND " + PUNCH_ACCOUNT_ID + " = " + accountID;
         SQLiteDatabase db = this.getReadableDatabase();
         long value = 0;
 
@@ -333,6 +338,28 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         db.close();
 
         return value;
+    }
+
+    /**
+     * Gets the highest punch score of account.
+     * @param accountID : Account to look through.
+     * @return Punch score.
+     */
+    public String getHighScore(long accountID) {
+        DecimalFormat df = new DecimalFormat(FormatConstants.NUMBER_FORMAT);
+        String query = "SELECT * FROM " +
+                PUNCH_TABLE + " WHERE " +
+                PUNCH_ACCOUNT_ID + " = " +
+                accountID + " ORDER BY " +
+                PUNCH_FORCE + " DESC LIMIT 1";
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        cursor.moveToFirst();
+
+        return df.format(cursor.getDouble(2));
     }
 
     /**
