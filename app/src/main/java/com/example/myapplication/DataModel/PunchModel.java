@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * Data model for Punch
@@ -54,12 +55,10 @@ public class PunchModel {
     }
 
     public String toString (String dateFormat, String numFormat) {
-        DateFormat df = new SimpleDateFormat(dateFormat);
+        DateFormat df = new SimpleDateFormat(dateFormat, Locale.CANADA);
         Date date = new Date(this.date);
         DecimalFormat myFormat = new DecimalFormat(numFormat);
 
-        String text = "Force: " + myFormat.format(force) + "\nDate: " + df.format(date) + "\n\n";
-
-        return text;
+        return "Force: " + myFormat.format(force) + "\nDate: " + df.format(date) + "\n\n";
     }
 }

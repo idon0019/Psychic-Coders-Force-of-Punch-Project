@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -18,7 +19,6 @@ import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
-import com.example.myapplication.FormatConstants.FormatConstants;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.DataPointInterface;
@@ -42,6 +42,7 @@ public class StudentGraphFragment extends Fragment {
     private long accountID;
     private ImageButton btnHome, btnBack;
     private NavController navController;
+    private Resources res;
 
     public StudentGraphFragment() {
         // Required empty public constructor
@@ -68,6 +69,7 @@ public class StudentGraphFragment extends Fragment {
         btnHome = view.findViewById(R.id.BtnHome);
         txtPunchInfo = view.findViewById(R.id.TxtPunchInfo);
         txtPunchData = view.findViewById(R.id.TxtPunchData);
+        res = getResources();
 
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
@@ -129,8 +131,8 @@ public class StudentGraphFragment extends Fragment {
                 String text = "";
                 double force = dataPoint.getY();
                 Date date = new Date(database.getDateFromPunchForce(accountID, force));
-                DateFormat df = new SimpleDateFormat(FormatConstants.DATE_FORMAT);
-                DecimalFormat myFormat = new DecimalFormat(FormatConstants.NUMBER_FORMAT);
+                DateFormat df = new SimpleDateFormat(res.getString(R.string.date_format));
+                DecimalFormat myFormat = new DecimalFormat(res.getString(R.string.number_format));
 
                 text += "Attempt " + (int)dataPoint.getX() + ":\n";
                 text += "Date: " + df.format(date) + " \n";
@@ -198,7 +200,7 @@ public class StudentGraphFragment extends Fragment {
         }
 
         for (int i = 0; i < punchData.size(); i++) {
-            display += punchData.get(i).toString(FormatConstants.DATE_FORMAT, FormatConstants.NUMBER_FORMAT);
+            display += punchData.get(i).toString(res.getString(R.string.date_format), res.getString(R.string.number_format));
         }
 
         txtPunchData.setText(display);
