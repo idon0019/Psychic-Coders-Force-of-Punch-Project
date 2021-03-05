@@ -104,32 +104,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="10sp">>
+            android:layout_marginBottom="10sp"><![CDATA[>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Date of birth:"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:paddingRight="10sp"/>
+            ]]>
 
             <Button
                 android:id="@+id/BtnDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="date"
-                android:backgroundTint="@color/black"
                 android:layout_marginRight="20sp"
-                />
+                android:backgroundTint="@color/black"
+                android:text="Birthday" />
 
             <TextView
                 android:id="@+id/TxtAge"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="mm/dd/yyyy"
-                android:textSize="20sp"
-                />
+                android:hint="dd/mm/yyyy"
+                android:textSize="20sp" />
 
         </LinearLayout>
 

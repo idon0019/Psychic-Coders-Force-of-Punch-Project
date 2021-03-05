@@ -1,12 +1,12 @@
 package com.example.myapplication;
 
 import android.app.DatePickerDialog;
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,13 +28,13 @@ public class EditStudentProfileFragment extends Fragment {
     public static final String REQUEST_KEY = "editStudent";
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
     private TextView txtAge;
-    private Button btnSubmit, btnCancel, btnDate;
     private NavController navController;
     private long accountID;
     private MyAppProfileDatabase database;
 
     private Calendar calendar;
     private DatePickerDialog dialog;
+    private Resources res;
 
     public EditStudentProfileFragment() {
         // Required empty public constructor
@@ -56,9 +55,9 @@ public class EditStudentProfileFragment extends Fragment {
 
         database = new MyAppProfileDatabase(getActivity());
 
-        btnSubmit = view.findViewById(R.id.BtnSubmit);
-        btnCancel = view.findViewById(R.id.BtnCancel);
-        btnDate = view.findViewById(R.id.BtnDate);
+        Button btnSubmit = view.findViewById(R.id.BtnSubmit);
+        Button btnCancel = view.findViewById(R.id.BtnCancel);
+        Button btnDate = view.findViewById(R.id.BtnDate);
 
         edtFirstName = view.findViewById(R.id.EdtFirstName);
         edtLastName = view.findViewById(R.id.EdtLastName);
@@ -66,63 +65,53 @@ public class EditStudentProfileFragment extends Fragment {
         edtWeight = view.findViewById(R.id.EdtWeight);
         edtHeight = view.findViewById(R.id.EdtHeight);
 
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getLong("accountID");
+        res = getResources();
 
-                // Set the empty text in the student profile screen to the first name of the student
-                edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
-                edtLastName.setText(database.getLastNameFromDatabase(accountID));
-                txtAge.setText(database.getAgeFromDatabase(accountID));
-                edtWeight.setText(database.getWeightFromDatabase(accountID));
-                edtHeight.setText(database.getHeightFromDatabase(accountID));
-            }
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
+            accountID = result.getLong("accountID");
+
+            // Set the empty text in the student profile screen to the first name of the student
+            edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
+            edtLastName.setText(database.getLastNameFromDatabase(accountID));
+            txtAge.setText(database.getAgeFromDatabase(accountID));
+            edtWeight.setText(database.getWeightFromDatabase(accountID));
+            edtHeight.setText(database.getHeightFromDatabase(accountID));
         });
 
-        btnDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calendar = Calendar.getInstance();
+        btnDate.setOnClickListener(v -> {
+            calendar = Calendar.getInstance();
 
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR)-10;
+            int d = calendar.get(Calendar.DAY_OF_MONTH);
+            int m = calendar.get(Calendar.MONTH);
+            int y = calendar.get(Calendar.YEAR)-10;
 
-                dialog = new DatePickerDialog(getActivity(),
-                        (view1, year, month, dayOfMonth) -> { txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
-                        y,
-                        m,
-                        d);
-                dialog.show();
-            }
+            dialog = new DatePickerDialog(getActivity(),
+                    (view1, year, month, dayOfMonth) -> txtAge.setText(String.format(res.getString(R.string.date_picker_text), dayOfMonth, (month+1), year)), //txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
+                    y,
+                    m,
+                    d);
+            dialog.show();
         });
 
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
+        btnSubmit.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
 
-                Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
 
-                bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-                database.editStudentProfile(accountID, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
-                navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
-            }
+            bundle.putLong("accountID", accountID);
+            getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+            database.editStudentProfile(accountID, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
+            navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
+        btnCancel.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
 
-                Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
 
-                bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-                navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
-            }
+            bundle.putLong("accountID", accountID);
+            getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+            navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
         });
     }
 }

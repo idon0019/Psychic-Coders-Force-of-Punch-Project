@@ -17,6 +17,7 @@
     <!-- Strings used for formatting text -->
     <string name="number_format">####</string>
     <string name="date_format">dd MMM, yyyy \'at\' HH:mm</string>
+    <string name="date_picker_text">%d/%d/%d</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>
