@@ -1,0 +1,77 @@
+package com.example.myapplication.DataModel;
+
+public class ProfileModel {
+
+    private long id;
+    private String firstName;
+    private String lastName;
+    private String age;
+    private float weight;
+    private float height;
+
+
+    public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.age = age;
+        this.weight = weight;
+        this.height = height;
+    }
+
+    public ProfileModel() {
+
+    }
+
+    public String toString() {
+        return id + ". " + firstName + " " + lastName + ", " + age;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public float getWeight() {
+        return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = weight;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+}
