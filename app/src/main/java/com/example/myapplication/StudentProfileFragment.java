@@ -94,7 +94,7 @@ public class StudentProfileFragment extends Fragment {
 //                }
 
             // sets a click listener on the mini graph that moves to the StudentGraph fragment.
-            if (hasPunchData(accountID, database)) { // if punch data exists sets navigation to studentgraph
+            if (database.hasPunchData(accountID)) { // if punch data exists sets navigation to studentgraph
                 populateGraph(database, accountID);
                 graph.setOnClickListener(v -> {
                     // Navigate back to select a user screen
@@ -200,20 +200,6 @@ public class StudentProfileFragment extends Fragment {
             studentAge--;
         }
         return studentAge;
-    }
-
-    /**
-     * Checks if profile has previous punch data.
-     * @param accountID : Account ID to check for.
-     * @param database : database helper class
-     * @return True if account has punch data, false if otherwise.
-     */
-    private boolean hasPunchData(long accountID, MyAppProfileDatabase database) {
-        List<PunchModel> punches;
-
-        punches = database.getAllPunchesFromProfile(accountID);
-
-        return punches.size() != 0;
     }
 
     /**

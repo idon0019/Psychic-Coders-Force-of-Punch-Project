@@ -14,6 +14,10 @@
     <string name="punch_data_label">Punch History</string>
     <string name="graph_info_init_text">Tap a point for details.</string>
 
+    <!-- Strings used in PunchResultFragment -->
+    <string name="previous_record">Previous best:\n%sN</string>
+    <string name="new_highscore">New high score!</string>
+
     <!-- Strings used for formatting text -->
     <string name="number_format">####</string>
     <string name="date_format">dd MMM, yyyy \'at\' HH:mm</string>

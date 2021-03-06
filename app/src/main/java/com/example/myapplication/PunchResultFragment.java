@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 
@@ -36,11 +37,12 @@ public class PunchResultFragment extends Fragment {
     public static final String REQUEST_KEY = "punchResult";
     private Button btnTryAgain, btnRecord;
     private NavController navController;
-    private TextView txtPunchResult;
+    private TextView txtPunchResult, txtPreviousRecord, txtHighScore;
     private String punchString;
     private double punchScore;
     private long accountID;
     private MyAppProfileDatabase database;
+    private Resources res;
 
     public PunchResultFragment() {
         // Required empty public constructor
@@ -64,6 +66,10 @@ public class PunchResultFragment extends Fragment {
         btnRecord = view.findViewById(R.id.BtnRecord);
 
         txtPunchResult = view.findViewById(R.id.TxtPunchForceResult);
+        txtPreviousRecord = view.findViewById(R.id.TxtPreviousPunchForce);
+        txtHighScore = view.findViewById(R.id.TxtNewHighScore);
+
+        res = getResources();
 
         Bundle bundle = new Bundle();
 
@@ -71,12 +77,26 @@ public class PunchResultFragment extends Fragment {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 DecimalFormat df = new DecimalFormat("####");
+                double highScore;
                 punchScore = result.getDouble("punchScore");
                 punchString = df.format(punchScore) + " N";
                 txtPunchResult.setText(punchString);
 
                 accountID = result.getLong("accountID");
                 bundle.putLong("accountID", accountID);
+
+                // displays new high score message if necessary
+                if (punchScore < database.getHighScore(accountID))
+                    txtHighScore.setText(res.getText(R.string.new_highscore));
+
+                // displays the previous punch force record.
+                if (database.hasPunchData(accountID)) {
+                    highScore = database.getHighScore(accountID);
+                    if (punchScore < highScore)
+                        txtHighScore.setText(res.getText(R.string.new_highscore));
+
+                    txtPreviousRecord.setText(String.format(res.getString(R.string.previous_record), df.format(highScore)));
+                }
             }
         });
 
@@ -101,5 +121,15 @@ public class PunchResultFragment extends Fragment {
                 navController.navigate(R.id.action_punchResultFragment_to_studentProfileFragment);
             }
         });
+    }
+
+    public void isNewHighscore(long accountID, double punchScore) {
+        double currentHighScore;
+
+        currentHighScore = database.getHighScore(accountID);
+
+        if (currentHighScore > punchScore) {
+
+        }
     }
 }

@@ -366,16 +366,32 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 PUNCH_ACCOUNT_ID + " = " +
                 accountID + " ORDER BY " +
                 PUNCH_FORCE + " DESC LIMIT 1";
+        double value;
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
 
-        cursor.moveToFirst();
-        double value = cursor.getDouble(2);
+        if (cursor.moveToFirst())
+            value = cursor.getDouble(2);
+        else
+            value = 0;
+
         cursor.close();
 
         return value;
+    }
+
+    /**
+     * Checks if profile has previous punch data.
+     * @param accountID : Account ID to check for.
+     * @return True if account has punch data, false if otherwise.
+     */
+    public boolean hasPunchData(long accountID) {
+        List<PunchModel> punches;
+        punches = getAllPunchesFromProfile(accountID);
+
+        return punches.size() != 0;
     }
 
     /**
