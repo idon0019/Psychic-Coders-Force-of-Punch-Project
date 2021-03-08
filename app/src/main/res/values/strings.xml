@@ -18,6 +18,13 @@
     <string name="previous_record">Previous best:\n%sN</string>
     <string name="new_highscore">New high score!</string>
 
+    <!-- Strings used for the image picker dialog-->
+    <string name="dialog_name">Choose Image</string>
+    <string name="dialog_message">Take a picture using the camera or choose an image from the gallery.</string>
+    <string name="dialog_camera">Camera</string>
+    <string name="dialog_gallery">Gallery</string>
+    <string name="dialog_cancel">Cancel</string>
+
     <!-- Strings used for formatting text -->
     <string name="number_format">####</string>
     <string name="date_format">dd MMM, yyyy \'at\' HH:mm</string>

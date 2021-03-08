@@ -100,7 +100,7 @@ public class EditStudentProfileFragment extends Fragment {
 
             bundle.putLong("accountID", accountID);
             getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-            database.editStudentProfile(accountID, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
+            database.editStudentProfile(accountID, "temp", edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
             navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
         });
 

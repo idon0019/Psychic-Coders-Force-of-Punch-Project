@@ -8,6 +8,7 @@ public class ProfileModel {
     private static final int MAX_ALLOWED_AGE = 100;
 
     private long id;
+    private String photoUri;
     private String firstName;
     private String lastName;
     private String age;
@@ -15,8 +16,9 @@ public class ProfileModel {
     private float height;
 
 
-    public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
+    public ProfileModel(long id, String imageUri, String firstName, String lastName, String age, float weight, float height) {
         setId(id);
+        setPhotoUri(imageUri);
         setFirstName(firstName);
         setLastName(lastName);
         setAge(age);
@@ -38,6 +40,13 @@ public class ProfileModel {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getPhotoUri() {return  photoUri; }
+
+    public void setPhotoUri(String uri) {
+
+        this.photoUri = uri;
     }
 
     public String getFirstName() {

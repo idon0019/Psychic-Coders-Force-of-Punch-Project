@@ -49,8 +49,8 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ImgViewProfilePicture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="150sp"
+                android:layout_height="150sp"
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="20sp"
                 android:background="@color/cardview_dark_background"

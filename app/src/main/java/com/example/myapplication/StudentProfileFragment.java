@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.myapplication.DataModel.PunchModel;
@@ -35,6 +37,8 @@ public class StudentProfileFragment extends Fragment {
 
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult;
     private GraphView graph;
+    private ImageView imgViewProfile;
+    private String imageUri;
 
     private NavController navController;
     private Resources res;
@@ -62,6 +66,7 @@ public class StudentProfileFragment extends Fragment {
         Button btnRecordPunch = view.findViewById(R.id.BtnRecordPunch);
         Button btnEditProfile = view.findViewById(R.id.BtnEditProfile);
 
+        imgViewProfile = view.findViewById(R.id.ImgViewProfilePicture);
         txtFirstName = view.findViewById(R.id.TxtFirstName);
         txtLastName = view.findViewById(R.id.TxtLastName);
         txtAge = view.findViewById(R.id.TxtAge);
@@ -81,17 +86,21 @@ public class StudentProfileFragment extends Fragment {
             DecimalFormat df = new DecimalFormat(res.getString(R.string.number_format));
 
             // Set the empty text in the student profile screen to the first name of the student
+            imageUri = database.getImageUriFromDatabase(accountID);
             txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
             txtLastName.setText(database.getLastNameFromDatabase(accountID));
             txtAge.setText(String.format(res.getString(R.string.student_age), database.getAgeFromDatabase(accountID), getStudentAge(database)));
             txtWeight.setText(database.getWeightFromDatabase(accountID));
             txtHeight.setText(database.getHeightFromDatabase(accountID));
 
-//                Used to add fake punch data only.
-//                List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
-//                if (punches.size() == 0) {
-//                    insertFakePunchData(accountID, database);
-//                }
+            Uri uri = Uri.parse(imageUri);
+            imgViewProfile.setImageURI(uri);
+
+//           Used to add fake punch data only.
+//           List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
+//           if (punches.size() == 0) {
+//               insertFakePunchData(accountID, database);
+//           }
 
             // sets a click listener on the mini graph that moves to the StudentGraph fragment.
             if (database.hasPunchData(accountID)) { // if punch data exists sets navigation to studentgraph

@@ -18,6 +18,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     // Profile table
     public static final String STUDENT_TABLE = "STUDENT_TABLE";
+    public static final String COLUMN_STUDENT_PHOTO = "STUDENT_PHOTO";
     public static final String COLUMN_STUDENT_FIRSTNAME = "STUDENT_FIRSTNAME";
     public static final String COLUMN_STUDENT_LASTNAME = "STUDENT_LASTNAME";
     public static final String COLUMN_STUDENT_WEIGHT = "STUDENT_WEIGHT";
@@ -33,7 +34,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     private static final String PUNCH_DATE = "DATE";
 
     public MyAppProfileDatabase(@Nullable Context context) {
-        super(context, "MyAppDatabase.db", null, 4);
+        super(context, "MyAppDatabase.db", null, 5);
     }
 
     /**
@@ -44,6 +45,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         String createTableStatement = "CREATE TABLE " + STUDENT_TABLE
                 + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_STUDENT_PHOTO + " TEXT, "
                 + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
                 + COLUMN_STUDENT_LASTNAME + " TEXT, "
                 + COLUMN_STUDENT_AGE + " TEXT, "
@@ -71,6 +73,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase(); // Insert data
         ContentValues cv = new ContentValues(); // Stores data in pairs
 
+        cv.put(COLUMN_STUDENT_PHOTO, profileModel.getPhotoUri());
         cv.put(COLUMN_STUDENT_FIRSTNAME, profileModel.getFirstName());
         cv.put(COLUMN_STUDENT_LASTNAME, profileModel.getLastName());
         cv.put(COLUMN_STUDENT_AGE, profileModel.getAge());
@@ -114,13 +117,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     private ProfileModel createModelFromCursor(Cursor cursor) {
         int columnID = cursor.getInt(0);
-        String columnFirstName = cursor.getString(1);
-        String columnLastName = cursor.getString(2);
-        String columnAge = cursor.getString(3);
-        float columnWeight = cursor.getFloat(4);
-        float columnHeight = cursor.getFloat(5);
+        String imageUri = cursor.getString(1);
+        String columnFirstName = cursor.getString(2);
+        String columnLastName = cursor.getString(3);
+        String columnAge = cursor.getString(4);
+        float columnWeight = cursor.getFloat(5);
+        float columnHeight = cursor.getFloat(6);
 
-        return new ProfileModel(columnID, columnFirstName, columnLastName, columnAge, columnWeight, columnHeight);
+        return new ProfileModel(columnID, imageUri, columnFirstName, columnLastName, columnAge, columnWeight, columnHeight);
     }
     /**
      * Retrieves all profiles in database
@@ -163,6 +167,25 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         cursor.close();
 
         return num;
+    }
+
+    public String getImageUriFromDatabase(long accountID) {
+        String imageUri;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_PHOTO + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        if (cursor.getCount() < 0) {
+            return "";
+        }
+
+        cursor.moveToNext();
+        imageUri = cursor.getString(cursor.getPosition());
+        cursor.close();
+
+        return imageUri;
     }
 
     /**
@@ -295,12 +318,12 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * @param height : Height of student.
      * @return True if edit successful, false if otherwise.
      */
-    public boolean editStudentProfile(long id, String fname, String lname, String age, String weight, String height) {
+    public boolean editStudentProfile(long id, String imageUri, String fname, String lname, String age, String weight, String height) {
         ContentValues cv = new ContentValues();
         SQLiteDatabase database = this.getWritableDatabase();
 
         try{
-            new ProfileModel(id, fname, lname, age, Float.parseFloat(weight), Float.parseFloat(height));
+            new ProfileModel(id, imageUri, fname, lname, age, Float.parseFloat(weight), Float.parseFloat(height));
         } catch (IllegalArgumentException e) {
             return false;
         }
@@ -448,7 +471,23 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                         + PUNCH_DATE + " INTEGER)";
 
                 db.execSQL(createTable);
-            case 3:
+            case 3: // preserved for posterity. technically this case doesn't need execution since
+                    // later migrations already take care of the transition safely.
+//                dropTable = "DROP TABLE " + STUDENT_TABLE;
+//
+//                db.execSQL(dropTable); // deletes student table
+//                db.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
+//
+//                createTable = "CREATE TABLE " + STUDENT_TABLE
+//                        + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+//                        + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
+//                        + COLUMN_STUDENT_LASTNAME + " TEXT, "
+//                        + COLUMN_STUDENT_AGE + " TEXT, "
+//                        + COLUMN_STUDENT_WEIGHT + " FLOAT, "
+//                        + COLUMN_STUDENT_HEIGHT + " FLOAT)";
+//
+//                db.execSQL(createTable);
+            case 4:
                 dropTable = "DROP TABLE " + STUDENT_TABLE;
 
                 db.execSQL(dropTable); // deletes student table
@@ -456,6 +495,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
                 createTable = "CREATE TABLE " + STUDENT_TABLE
                         + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + COLUMN_STUDENT_PHOTO + " TEXT, "
                         + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
                         + COLUMN_STUDENT_LASTNAME + " TEXT, "
                         + COLUMN_STUDENT_AGE + " TEXT, "
