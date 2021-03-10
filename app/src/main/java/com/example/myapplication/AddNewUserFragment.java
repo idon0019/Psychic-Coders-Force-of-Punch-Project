@@ -2,11 +2,9 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -16,11 +14,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,14 +34,15 @@ import android.widget.Toast;
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class AddNewUserFragment extends Fragment {
-    private static final int IMAG_PICK_CODE = 1000;
-    private static final int PERMISSION_CODE = 1001;
 
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
-    private Button btnCancel, btnSubmit, btnDate;
     private TextView txtAge;
     private ImageButton imgAdd;
     private NavController navController;
@@ -48,17 +50,16 @@ public class AddNewUserFragment extends Fragment {
     private Resources res;
     private Calendar calendar;
     private DatePickerDialog dialog;
-    private Uri imageUri;
+    private Uri imageUri = null;
+    private boolean imageSet = false;
+    private File photo = null;
 
     // sets the launcher for getting an image from the camera
     ActivityResultLauncher<Intent> getCameraImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    Intent camera = result.getData();
-                    Bundle extras = camera.getExtras();
-                    Bitmap imageBitmap = (Bitmap) extras.get("data");
-                    imgAdd.setImageBitmap(imageBitmap);
+                    imgAdd.setImageURI(imageUri);
                 }
             });
 
@@ -68,9 +69,9 @@ public class AddNewUserFragment extends Fragment {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     Intent getImage = result.getData();
-                    Uri image = getImage.getData();
-                    imageUri = image;
-                    imgAdd.setImageURI(image);
+                    assert getImage != null;
+                    imageUri = getImage.getData();
+                    imgAdd.setImageURI(imageUri);
                 }
             });
 
@@ -90,9 +91,9 @@ public class AddNewUserFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         navController = Navigation.findNavController(view);
-        btnCancel = view.findViewById(R.id.BtnCancel);
-        btnSubmit = view.findViewById(R.id.BtnSubmit);
-        btnDate = view.findViewById(R.id.BtnDate);
+        Button btnCancel = view.findViewById(R.id.BtnCancel);
+        Button btnSubmit = view.findViewById(R.id.BtnSubmit);
+        Button btnDate = view.findViewById(R.id.BtnDate);
 
         edtFirstName = view.findViewById(R.id.EdtFirstName);
         edtLastName = view.findViewById(R.id.EdtLastName);
@@ -103,70 +104,62 @@ public class AddNewUserFragment extends Fragment {
         imgAdd = view.findViewById(R.id.ImgAdd);
         res = getResources();
 
-        btnDate.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                calendar = Calendar.getInstance();
+        btnDate.setOnClickListener(v -> {
+            calendar = Calendar.getInstance();
 
-                int d = calendar.get(Calendar.DAY_OF_MONTH);
-                int m = calendar.get(Calendar.MONTH);
-                int y = calendar.get(Calendar.YEAR)-10;
+            int d = calendar.get(Calendar.DAY_OF_MONTH);
+            int m = calendar.get(Calendar.MONTH);
+            int y = calendar.get(Calendar.YEAR)-10;
 
-                dialog = new DatePickerDialog(getActivity(),
-                        (view1, year, month, dayOfMonth) -> { txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
-                        y,
-                        m,
-                        d);
-                dialog.show();
-            }
+            dialog = new DatePickerDialog(getActivity(),
+                    (view1, year, month, dayOfMonth) -> { txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
+                    y,
+                    m,
+                    d);
+            dialog.show();
         });
 
-        btnSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ProfileModel profileModel = null;
-                boolean valid = false;
-                try {
-                    profileModel = new ProfileModel(
-                            -1,
-                            imageUri.toString(),
-                            edtFirstName.getText().toString(),
-                            edtLastName.getText().toString(),
-                            txtAge.getText().toString(),
-                            Float.parseFloat(edtWeight.getText().toString()),
-                            Float.parseFloat(edtHeight.getText().toString())
-                    );
-                    valid = true;
-                }catch (Exception e) {
-                    Toast.makeText(getActivity(), "Invalid Entry", Toast.LENGTH_LONG).show();
-                }
+        btnSubmit.setOnClickListener(v -> {
+            ProfileModel profileModel = null;
+            boolean valid = false;
+            try {
+                profileModel = new ProfileModel(
+                        -1,
+                        imageUri.toString(),
+                        edtFirstName.getText().toString(),
+                        edtLastName.getText().toString(),
+                        txtAge.getText().toString(),
+                        Float.parseFloat(edtWeight.getText().toString()),
+                        Float.parseFloat(edtHeight.getText().toString())
+                );
+                valid = true;
+            }catch (Exception e) {
+                Toast.makeText(getActivity(), "Invalid Entry", Toast.LENGTH_LONG).show();
+            }
 
-                if (valid) {
-                    // Reference to the new profile database
-                    MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
-                    boolean success = databaseHelper.addStudent(profileModel);
-                    if (success) {
-                        Toast.makeText(getActivity(), "Profile created", Toast.LENGTH_LONG).show();
+            if (valid) {
+                // Reference to the new profile database
+                MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
+                boolean success = databaseHelper.addStudent(profileModel);
+                if (success) {
+                    Toast.makeText(getActivity(), "Profile created", Toast.LENGTH_LONG).show();
 
-                        long id = databaseHelper.getLastStudentID();
+                    long id = databaseHelper.getLastStudentID();
 
-                        Bundle accountID = new Bundle();
-                        accountID.putLong("accountID", id);
-                        getParentFragmentManager().setFragmentResult("studentProfile", accountID);
-                        navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
-                    } else {
-                        Toast.makeText(getActivity(), "Profile could not be added", Toast.LENGTH_LONG).show();
-                    }
+                    Bundle accountID = new Bundle();
+                    accountID.putLong("accountID", id);
+                    getParentFragmentManager().setFragmentResult("studentProfile", accountID);
+                    navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
+                } else {
+                    Toast.makeText(getActivity(), "Profile could not be added", Toast.LENGTH_LONG).show();
                 }
             }
+
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
-                navController.navigate(R.id.action_addNewUserFragment_to_secondFragment);
-            }
+        btnCancel.setOnClickListener(v -> {
+            Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
+            navController.navigate(R.id.action_addNewUserFragment_to_secondFragment);
         });
 
         imgAdd.setOnClickListener(v -> {
@@ -176,24 +169,46 @@ public class AddNewUserFragment extends Fragment {
             builder.setMessage(res.getString(R.string.dialog_message));
 
             builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
-                Intent takePhoto = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                getCameraImage.launch(takePhoto);
+                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                // saves the photo to a file
+                try {
+                    photo = createImageFile();
+                } catch (IOException e) {
+                    //
+                }
+
+                if (photo != null) {
+                    imageUri = FileProvider.getUriForFile(getContext(), "com.example.myapplication.fileprovider", photo);
+                }
+
+                takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                getCameraImage.launch(takePhotoIntent);
             }));
 
             builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
-                Intent pickPhoto = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                getGalleryImage.launch(pickPhoto);
+                Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                getGalleryImage.launch(pickPhotoIntent);
             }));
 
-            builder.setNeutralButton(R.string.dialog_cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
+            builder.setNeutralButton(R.string.dialog_cancel,
+                    (dialog, which) -> dialog.dismiss());
 
             AlertDialog alertDialog = builder.create();
             alertDialog.show();
         });
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        return image;
     }
 }
