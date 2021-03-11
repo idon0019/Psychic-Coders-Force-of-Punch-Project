@@ -41,6 +41,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 
+@SuppressWarnings("ALL")
 public class EditStudentProfileFragment extends Fragment {
 
     public static final String REQUEST_KEY = "editStudent";
@@ -57,7 +58,6 @@ public class EditStudentProfileFragment extends Fragment {
 
     private Uri imageUri = null, // this uri will be the true uri of the final selected profile photo
             tempImageUri; // this uri will change any time the user taps the choose image option
-    private long imageSize = 0;
     private File photo = null;
     private File initialPhoto = null; // the profile picture the user started with. stored until the end when the user is done editing their profile
     private File oldPhoto = null;
@@ -68,7 +68,7 @@ public class EditStudentProfileFragment extends Fragment {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    imageSize = getSizeFromURI(tempImageUri);
+                    long imageSize = getSizeFromURI(tempImageUri);
                     if (imageSize == 0) { // if no photo was taken then delete the temp file and don't update the image
                         photo.delete();
                     } else { // if a photo was taken then update the photo and delete the old photo if one exists
@@ -151,7 +151,7 @@ public class EditStudentProfileFragment extends Fragment {
             int y = calendar.get(Calendar.YEAR)-10;
 
             dialog = new DatePickerDialog(getActivity(),
-                    (view1, year, month, dayOfMonth) -> txtAge.setText(String.format(res.getString(R.string.date_picker_text), dayOfMonth, (month+1), year)), //txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
+                    (view1, year, month, dayOfMonth) -> txtAge.setText(String.format(res.getString(R.string.date_picker_text), dayOfMonth, month+1, year)), //txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
                     y,
                     m,
                     d);

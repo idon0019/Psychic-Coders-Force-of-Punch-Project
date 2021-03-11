@@ -2,13 +2,10 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -26,7 +23,6 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
-import java.io.File;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -34,7 +30,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Random;
 
 public class StudentProfileFragment extends Fragment {
 
@@ -47,7 +42,6 @@ public class StudentProfileFragment extends Fragment {
     private NavController navController;
     private Resources res;
     private long accountID;
-    private File photo;
 
     public StudentProfileFragment() {
         // Required empty public constructor
@@ -97,12 +91,6 @@ public class StudentProfileFragment extends Fragment {
             txtAge.setText(String.format(res.getString(R.string.student_age), database.getAgeFromDatabase(accountID), getStudentAge(database)));
             txtWeight.setText(database.getWeightFromDatabase(accountID));
             txtHeight.setText(database.getHeightFromDatabase(accountID));
-
-//           Used to add fake punch data only.
-//           List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
-//           if (punches.size() == 0) {
-//               insertFakePunchData(accountID, database);
-//           }
 
             // sets a click listener on the mini graph that moves to the StudentGraph fragment.
             if (database.hasPunchData(accountID)) { // if punch data exists sets navigation to studentgraph
@@ -245,27 +233,5 @@ public class StudentProfileFragment extends Fragment {
         graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
         graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
         graph.getViewport().setXAxisBoundsManual(true);
-    }
-
-    /**
-     * Debug method to insert fake punch data.
-     * @param accountID : Account to make fake data for.
-     * @param db : Database helper class.
-     */
-    public void insertFakePunchData(long accountID, MyAppProfileDatabase db) {
-        Date date;
-        Calendar time;
-        time = Calendar.getInstance();
-        Random rand = new Random();
-        PunchModel newPunch;
-
-        // This will insert a set number of fake data points with a random double punch value.
-        for (int i = 0; i < 12; i++) {
-            time.set(100, i, 12);
-            date = time.getTime();
-            newPunch = new PunchModel(0, accountID, rand.nextDouble(), date.getTime());
-            db.addPunch(newPunch);
-        }
-
     }
 }

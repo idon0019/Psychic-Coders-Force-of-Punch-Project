@@ -303,7 +303,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
 
         File file = new File(getImagePathFromDatabase(accountID));
-        file.delete();
+        file.delete()
 
         int numDeleted = database.delete(STUDENT_TABLE, where, args);
         if (numDeleted > 0)

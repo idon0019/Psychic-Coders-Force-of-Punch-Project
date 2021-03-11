@@ -42,8 +42,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Locale;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class AddNewUserFragment extends Fragment {
 
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
@@ -56,7 +57,6 @@ public class AddNewUserFragment extends Fragment {
     private DatePickerDialog dialog;
     private Uri imageUri = null, // this uri will be the true uri of the final selected profile photo
             tempImageUri; // this uri will change any time the user taps the choose image option
-    private long imageSize = 0;
     private File photo = null;
     private File oldPhoto = null;
     private String photoPath = null;
@@ -67,7 +67,7 @@ public class AddNewUserFragment extends Fragment {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    imageSize = getSizeFromURI(tempImageUri);
+                    long imageSize = getSizeFromURI(tempImageUri);
                     if (imageSize == 0) { // if no photo was taken then delete the temp file and don't update the image
                         photo.delete();
                     } else { // if a photo was taken then update the photo and delete the old photo if one exists
@@ -91,25 +91,19 @@ public class AddNewUserFragment extends Fragment {
                         imgAdd.setImageURI(imageUri);
                         photoPath = getPicturePath(imageUri);
                         if (photo != null) // if a camera image already exists then delete it
+                        {
                             photo.delete();
+                        }
                     }
                 }
             });
 
     // Register the permissions callback, which handles the user's response to the
-// system permissions dialog. Save the return value, an instance of
-// ActivityResultLauncher, as an instance variable.
+    // system permissions dialog. Save the return value, an instance of
+    // ActivityResultLauncher, as an instance variable.
     ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    // persmission granted
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // features requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
-                }
+
             });
 
     public AddNewUserFragment() {
@@ -149,9 +143,7 @@ public class AddNewUserFragment extends Fragment {
             int y = calendar.get(Calendar.YEAR) - 10;
 
             dialog = new DatePickerDialog(getActivity(),
-                    (view1, year, month, dayOfMonth) -> {
-                        txtAge.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
-                    },
+                    (view1, year, month, dayOfMonth) -> txtAge.setText(String.format(res.getString(R.string.date_picker_text), dayOfMonth, month+1, year)),
                     y,
                     m,
                     d);
@@ -263,16 +255,15 @@ public class AddNewUserFragment extends Fragment {
 
     public File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).format(new Date());
         String fileName = "JPEG_" + timeStamp + "_";
         File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
+
+        return File.createTempFile(
                 fileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
-
-        return image;
     }
 
     public long getSizeFromURI(Uri contentURI) {
@@ -288,7 +279,7 @@ public class AddNewUserFragment extends Fragment {
     }
 
     private String getPicturePath(Uri uri) {
-        String path = "";
+        String path;
 
         String[] filePathColumn = { MediaStore.Images.Media.DATA };
 
