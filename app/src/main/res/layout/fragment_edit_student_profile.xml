@@ -27,13 +27,12 @@
 
     <ImageButton
         android:id="@+id/ImgAdd"
-        android:layout_width="60sp"
-        android:layout_height="60sp"
-        android:scaleType="fitCenter"
-        android:padding="10sp"
+        android:layout_width="80sp"
+        android:layout_height="80sp"
         android:layout_gravity="center"
         android:layout_marginTop="10sp"
-        />
+        android:padding="10sp"
+        android:scaleType="fitCenter" />
 
     <TextView
         android:id="@+id/TxtAddPhoto"

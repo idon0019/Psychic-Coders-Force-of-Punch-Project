@@ -2,10 +2,13 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -22,6 +25,8 @@ import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+
+import java.io.File;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -38,11 +43,11 @@ public class StudentProfileFragment extends Fragment {
     private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult;
     private GraphView graph;
     private ImageView imgViewProfile;
-    private String imageUri;
 
     private NavController navController;
     private Resources res;
     private long accountID;
+    private File photo;
 
     public StudentProfileFragment() {
         // Required empty public constructor
@@ -85,16 +90,13 @@ public class StudentProfileFragment extends Fragment {
             accountID = result.getLong("accountID");
             DecimalFormat df = new DecimalFormat(res.getString(R.string.number_format));
 
-            // Set the empty text in the student profile screen to the first name of the student
-            imageUri = database.getImageUriFromDatabase(accountID);
+            String path = database.getImagePathFromDatabase(accountID);
+            imgViewProfile.setImageBitmap(BitmapFactory.decodeFile(path));
             txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
             txtLastName.setText(database.getLastNameFromDatabase(accountID));
             txtAge.setText(String.format(res.getString(R.string.student_age), database.getAgeFromDatabase(accountID), getStudentAge(database)));
             txtWeight.setText(database.getWeightFromDatabase(accountID));
             txtHeight.setText(database.getHeightFromDatabase(accountID));
-
-            Uri uri = Uri.parse(imageUri);
-            imgViewProfile.setImageURI(uri);
 
 //           Used to add fake punch data only.
 //           List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
@@ -153,7 +155,7 @@ public class StudentProfileFragment extends Fragment {
             });
 
 
-            builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+            builder.setNeutralButton("Cancel", (dialog, which) -> dialog.cancel());
 
             AlertDialog alertDialog = builder.create();
             alertDialog.show();

@@ -26,14 +26,10 @@ import android.widget.TextView;
 public class MeasuringPunchFragment extends Fragment implements SensorEventListener {
 
     public static final String REQUEST_KEY = "measuringPunch";
-    private Button btnCancel, btnNext;
     private NavController navController;
     private SensorManager senManager;
     private Double maxAcceleration = 0.0;
-    private double acceleration = 0;
     private Sensor sen;
-    private boolean peakAcceleration = false;
-    private final double LOWER_ACCELERATION_THRESHOLD = 10.0;
     private long accountID;
     private Bundle bundle;
 
@@ -58,8 +54,8 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         senManager.registerListener(this, sen, SensorManager.SENSOR_DELAY_NORMAL);
 
         navController = Navigation.findNavController(view);
-        btnCancel = view.findViewById(R.id.BtnCancel);
-        btnNext = view.findViewById(R.id.BtnNext);
+        Button btnCancel = view.findViewById(R.id.BtnCancel);
+        Button btnNext = view.findViewById(R.id.BtnNext);
 
         bundle = new Bundle();
 
@@ -99,7 +95,7 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         float z = event.values[2];
 
         linAcceleration = Math.sqrt(x * x + y * y + z * z); //gets the total linear acceleration from each axis
-        this.acceleration = linAcceleration;
+        double acceleration = linAcceleration;
 
         // updates to a new maxAcceleration is newer value is larger
         if (this.maxAcceleration < linAcceleration) {
@@ -107,8 +103,9 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         }
 
         // if the acceleration more than 10% less than the peak, then the peak is stable
-        if (linAcceleration < (maxAcceleration*0.9) && maxAcceleration > LOWER_ACCELERATION_THRESHOLD) {
-            peakAcceleration = true;
+        double lowerAccelerationThreshold = 10.0;
+        if (linAcceleration < (maxAcceleration*0.9) && maxAcceleration > lowerAccelerationThreshold) {
+            boolean peakAcceleration = true;
             double punchScore = calculateForce();
             bundle.putDouble("punchScore", punchScore);
             getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);

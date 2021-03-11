@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -169,8 +170,8 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return num;
     }
 
-    public String getImageUriFromDatabase(long accountID) {
-        String imageUri;
+    public String getImagePathFromDatabase(long accountID) {
+        String imagePath;
 
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_PHOTO + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
@@ -182,10 +183,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         }
 
         cursor.moveToNext();
-        imageUri = cursor.getString(cursor.getPosition());
+        imagePath = cursor.getString(cursor.getPosition());
         cursor.close();
 
-        return imageUri;
+        return imagePath;
     }
 
     /**
@@ -300,6 +301,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         String where = "id=?";
         String[] args = {Long.toString(accountID)};
         SQLiteDatabase database = this.getWritableDatabase();
+
+        File file = new File(getImagePathFromDatabase(accountID));
+        file.delete();
+
         int numDeleted = database.delete(STUDENT_TABLE, where, args);
         if (numDeleted > 0)
             database.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", args);
@@ -327,6 +332,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         } catch (IllegalArgumentException e) {
             return false;
         }
+        cv.put(COLUMN_STUDENT_PHOTO, imageUri);
         cv.put(COLUMN_STUDENT_FIRSTNAME, fname);
         cv.put(COLUMN_STUDENT_LASTNAME, lname);
         cv.put(COLUMN_STUDENT_AGE, age);

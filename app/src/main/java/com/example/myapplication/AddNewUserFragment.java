@@ -1,10 +1,12 @@
 package com.example.myapplication;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -14,6 +16,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -21,7 +24,7 @@ import androidx.navigation.Navigation;
 
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.util.Log;
+import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +42,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class AddNewUserFragment extends Fragment {
 
@@ -50,16 +54,29 @@ public class AddNewUserFragment extends Fragment {
     private Resources res;
     private Calendar calendar;
     private DatePickerDialog dialog;
-    private Uri imageUri = null;
-    private boolean imageSet = false;
+    private Uri imageUri = null, // this uri will be the true uri of the final selected profile photo
+            tempImageUri; // this uri will change any time the user taps the choose image option
+    private long imageSize = 0;
     private File photo = null;
+    private File oldPhoto = null;
+    private String photoPath = null;
+
 
     // sets the launcher for getting an image from the camera
     ActivityResultLauncher<Intent> getCameraImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    imgAdd.setImageURI(imageUri);
+                    imageSize = getSizeFromURI(tempImageUri);
+                    if (imageSize == 0) { // if no photo was taken then delete the temp file and don't update the image
+                        photo.delete();
+                    } else { // if a photo was taken then update the photo and delete the old photo if one exists
+                        imgAdd.setImageURI(tempImageUri);
+                        imageUri = tempImageUri;
+                        photoPath = photo.toString();
+                        if (oldPhoto != null) // if an old photo exists then delete it
+                            oldPhoto.delete();
+                    }
                 }
             });
 
@@ -69,9 +86,29 @@ public class AddNewUserFragment extends Fragment {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     Intent getImage = result.getData();
-                    assert getImage != null;
-                    imageUri = getImage.getData();
-                    imgAdd.setImageURI(imageUri);
+                    if (getImage != null) { // sets the image if an image was chosen
+                        imageUri = getImage.getData();
+                        imgAdd.setImageURI(imageUri);
+                        photoPath = getPicturePath(imageUri);
+                        if (photo != null) // if a camera image already exists then delete it
+                            photo.delete();
+                    }
+                }
+            });
+
+    // Register the permissions callback, which handles the user's response to the
+// system permissions dialog. Save the return value, an instance of
+// ActivityResultLauncher, as an instance variable.
+    ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // persmission granted
+                } else {
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
                 }
             });
 
@@ -109,10 +146,12 @@ public class AddNewUserFragment extends Fragment {
 
             int d = calendar.get(Calendar.DAY_OF_MONTH);
             int m = calendar.get(Calendar.MONTH);
-            int y = calendar.get(Calendar.YEAR)-10;
+            int y = calendar.get(Calendar.YEAR) - 10;
 
             dialog = new DatePickerDialog(getActivity(),
-                    (view1, year, month, dayOfMonth) -> { txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
+                    (view1, year, month, dayOfMonth) -> {
+                        txtAge.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                    },
                     y,
                     m,
                     d);
@@ -125,7 +164,7 @@ public class AddNewUserFragment extends Fragment {
             try {
                 profileModel = new ProfileModel(
                         -1,
-                        imageUri.toString(),
+                        photoPath,
                         edtFirstName.getText().toString(),
                         edtLastName.getText().toString(),
                         txtAge.getText().toString(),
@@ -133,8 +172,8 @@ public class AddNewUserFragment extends Fragment {
                         Float.parseFloat(edtHeight.getText().toString())
                 );
                 valid = true;
-            }catch (Exception e) {
-                Toast.makeText(getActivity(), "Invalid Entry", Toast.LENGTH_LONG).show();
+            } catch (Exception e) {
+                Toast.makeText(getActivity(), "Please choose profile photo and fill out all fields", Toast.LENGTH_LONG).show();
             }
 
             if (valid) {
@@ -163,52 +202,104 @@ public class AddNewUserFragment extends Fragment {
         });
 
         imgAdd.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            builder.setTitle(res.getString(R.string.dialog_name));
-            builder.setMessage(res.getString(R.string.dialog_message));
+            if (ContextCompat.checkSelfPermission(
+                    getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    PackageManager.PERMISSION_GRANTED) {
+                // builds the image picker dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-            builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
-                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                // saves the photo to a file
-                try {
-                    photo = createImageFile();
-                } catch (IOException e) {
-                    //
-                }
+                builder.setTitle(res.getString(R.string.dialog_name));
+                builder.setMessage(res.getString(R.string.dialog_message));
 
-                if (photo != null) {
-                    imageUri = FileProvider.getUriForFile(getContext(), "com.example.myapplication.fileprovider", photo);
-                }
+                builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
+                    Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                getCameraImage.launch(takePhotoIntent);
-            }));
+                    // checks if a photo already exists
+                    if (photo != null)
+                        oldPhoto = photo;
 
-            builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
-                Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                getGalleryImage.launch(pickPhotoIntent);
-            }));
+                    // saves the photo to a file
+                    try {
+                        photo = createImageFile();
+                    } catch (IOException e) {
+                        //
+                    }
 
-            builder.setNeutralButton(R.string.dialog_cancel,
-                    (dialog, which) -> dialog.dismiss());
+                    if (photo != null && getContext() != null) {
+                        tempImageUri = FileProvider.getUriForFile(getContext(), "com.example.myapplication.fileprovider", photo);
+                    }
+                    takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri);
+                    getCameraImage.launch(takePhotoIntent);
+                }));
 
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+                builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
+                    Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    getGalleryImage.launch(pickPhotoIntent);
+                }));
+
+                builder.setNeutralButton(R.string.dialog_cancel,
+                        (dialog, which) -> dialog.dismiss());
+
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+            } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                AlertDialog.Builder permissionDialog = new AlertDialog.Builder(getActivity());
+
+                permissionDialog.setTitle(res.getString(R.string.permission_name));
+                permissionDialog.setMessage(res.getString(R.string.permission_message));
+                permissionDialog.setNeutralButton(R.string.permission_ok, (((dialog1, which) -> {})));
+                AlertDialog permissions = permissionDialog.create();
+                permissions.show();
+
+            } else{
+                // You can directly ask for the permission.
+                // The registered ActivityResultCallback gets the result of this request.
+                requestPermissionLauncher.launch(
+                        Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
         });
     }
 
-    private File createImageFile() throws IOException {
+    public File createImageFile() throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
+        String fileName = "JPEG_" + timeStamp + "_";
         File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = File.createTempFile(
-                imageFileName,  /* prefix */
+                fileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
 
         return image;
+    }
+
+    public long getSizeFromURI(Uri contentURI) {
+        long result = 0;
+        Cursor cursor = getContext().getContentResolver().query(contentURI, null, null, null, null);
+        if (cursor != null) { // Source is Dropbox or other similar local file path
+            cursor.moveToFirst();
+            int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
+            result = cursor.getLong(sizeIndex);
+            cursor.close();
+        }
+        return result;
+    }
+
+    private String getPicturePath(Uri uri) {
+        String path = "";
+
+        String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+        Cursor cursor = getContext().getContentResolver().query(uri,
+                filePathColumn, null, null, null);
+        cursor.moveToFirst();
+
+        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+        path = cursor.getString(columnIndex);
+        cursor.close();
+
+        return path;
     }
 }

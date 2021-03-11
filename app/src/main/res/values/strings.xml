@@ -25,6 +25,11 @@
     <string name="dialog_gallery">Gallery</string>
     <string name="dialog_cancel">Cancel</string>
 
+    <!-- Strings used for the permission dialog -->
+    <string name="permission_name">Permission Request</string>
+    <string name="permission_message">To set a custom profile photo the app needs to access external storage.</string>
+    <string name="permission_ok">Ok</string>
+
     <!-- Strings used for formatting text -->
     <string name="number_format">####</string>
     <string name="date_format">dd MMM, yyyy \'at\' HH:mm</string>

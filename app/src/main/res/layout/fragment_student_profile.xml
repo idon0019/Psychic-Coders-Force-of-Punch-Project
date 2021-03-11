@@ -59,17 +59,6 @@
                 />
 
             <TextView
-                android:id="@+id/TxtChangePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Change profile"
-                android:layout_below="@+id/ImgViewProfilePicture"
-                android:layout_marginLeft="25sp"
-                android:textStyle="bold"
-                android:textSize="15sp"
-                />
-
-            <TextView
                 android:id="@+id/TxtFName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
