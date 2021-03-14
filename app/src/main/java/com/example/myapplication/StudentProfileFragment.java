@@ -1,61 +1,47 @@
 package com.example.myapplication;
 
-import android.annotation.SuppressLint;
-import android.os.Build;
+import android.app.AlertDialog;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
-import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.GridLabelRenderer;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
-
+import java.util.Locale;
 
 public class StudentProfileFragment extends Fragment {
 
-    private ImageButton btnBack, btnHome;
-    private Button btnDeleteProfile, btnRecordPunch, btnEditProfile;
-    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult, txtGraph;
+    public static final String REQUEST_KEY = "studentProfile";
+
+    private TextView txtFirstName, txtLastName, txtAge, txtWeight, txtHeight, txtForcePunchResult;
     private GraphView graph;
+    private ImageView imgViewProfile;
 
     private NavController navController;
-    private LinearLayout parentLayout;
-    private ScrollView scrollView;
+    private Resources res;
     private long accountID;
-
-    private ProfileModel profileModel;
 
     public StudentProfileFragment() {
         // Required empty public constructor
@@ -73,136 +59,121 @@ public class StudentProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         navController = Navigation.findNavController(view);
-        btnBack = view.findViewById(R.id.BtnBack);
-        btnHome = view.findViewById(R.id.BtnHome);
-        btnDeleteProfile = view.findViewById(R.id.BtnDeleteProfile);
-        btnRecordPunch = view.findViewById(R.id.BtnRecordPunch);
-        btnEditProfile = view.findViewById(R.id.BtnEditProfile);
+        ImageButton btnBack = view.findViewById(R.id.BtnBack);
+        ImageButton btnHome = view.findViewById(R.id.BtnHome);
+        Button btnDeleteProfile = view.findViewById(R.id.BtnDeleteProfile);
+        Button btnRecordPunch = view.findViewById(R.id.BtnRecordPunch);
+        Button btnEditProfile = view.findViewById(R.id.BtnEditProfile);
 
+        imgViewProfile = view.findViewById(R.id.ImgViewProfilePicture);
         txtFirstName = view.findViewById(R.id.TxtFirstName);
         txtLastName = view.findViewById(R.id.TxtLastName);
         txtAge = view.findViewById(R.id.TxtAge);
         txtWeight = view.findViewById(R.id.TxtWeight);
         txtHeight = view.findViewById(R.id.TxtHeight);
+        txtForcePunchResult = view.findViewById(R.id.TxtPunchForceResult);
 
         graph = view.findViewById(R.id.Graphview);
-        txtGraph = view.findViewById(R.id.TxtGraph);
-        parentLayout = view.findViewById(R.id.parentLayout);
-        scrollView = view.findViewById(R.id.scrollview);
-        List<PunchModel> punchModels = new ArrayList<>();
+        res = getResources();
 
         // Database helper object
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
+        // Fragment listener that takes in account id to populate the profile with.
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
+            accountID = result.getLong("accountID");
+            DecimalFormat df = new DecimalFormat(res.getString(R.string.number_format));
 
-        getParentFragmentManager().setFragmentResultListener("studentProfile", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getLong("accountID");
+            String path = database.getImagePathFromDatabase(accountID);
+            imgViewProfile.setImageBitmap(BitmapFactory.decodeFile(path));
+            txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
+            txtLastName.setText(database.getLastNameFromDatabase(accountID));
+            txtAge.setText(String.format(res.getString(R.string.student_age), database.getAgeFromDatabase(accountID), getStudentAge(database)));
+            txtWeight.setText(database.getWeightFromDatabase(accountID));
+            txtHeight.setText(database.getHeightFromDatabase(accountID));
 
-                // Set the empty text in the student profile screen to the first name of the student
-                txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
-                txtLastName.setText(database.getLastNameFromDatabase(accountID));
-                txtAge.setText(database.getAgeFromDatabase(accountID) + ", Age: " + getStudentAge(database));
-                txtWeight.setText(database.getWeightFromDatabase(accountID));
-                txtHeight.setText(database.getHeightFromDatabase(accountID));
-
-                List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
-                if (punches.size() == 0) {
-                    //insertFakePunchData(accountID, database);
-                }
-
-                if (hasPunchData(accountID, database)) { // if punch data exists navigate to studentgraph
-                    populateGraph(database, accountID);
-                    graph.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            // Navigate back to select a user screen
-                            Bundle bundle = new Bundle();
-                            bundle.putLong("accountID", accountID);
-                            getParentFragmentManager().setFragmentResult("studentgraph", bundle);
-                            navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
-                        }
-                    });
-                } else { // if data doesn't exist then show an error toast
-                    graph.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Toast.makeText(getContext(), R.string.no_punch_data, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                }
+            // sets a click listener on the mini graph that moves to the StudentGraph fragment.
+            if (database.hasPunchData(accountID)) { // if punch data exists sets navigation to studentgraph
+                populateGraph(database, accountID);
+                graph.setOnClickListener(v -> {
+                    // Navigate back to select a user screen
+                    Bundle bundle = new Bundle();
+                    bundle.putLong("accountID", accountID);
+                    getParentFragmentManager().setFragmentResult(StudentGraphFragment.REQUEST_KEY, bundle);
+                    navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
+                });
+                txtForcePunchResult.setText(df.format(database.getHighScore(accountID)));
+            } else { // if data doesn't exist then show an error toast when graph is tapped.
+                graph.setOnClickListener(v -> Toast.makeText(getContext(), R.string.no_punch_data, Toast.LENGTH_SHORT).show());
+                txtForcePunchResult.setText(R.string.no_punch_record);
             }
         });
 
-        /**
-         * Back button - Navigate to previous screen
-         */
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate back to select a user screen
-                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
-            }
+        // Back button - navigates to the user select (second fragment)
+        btnBack.setOnClickListener(v -> {
+            // Navigate back to select a user screen
+            navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
         });
 
-        /**
-         * Home button - Navigate back to Main Menu
-         */
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        // Home button - navigates to the FirstFragment
+        btnHome.setOnClickListener(v -> {
 
-                // Navigate to main menu
-                navController.navigate(R.id.action_studentProfileFragment_to_firstFragment);
-            }
+            // Navigate to main menu
+            navController.navigate(R.id.action_studentProfileFragment_to_firstFragment);
         });
 
-        /**
-         * Delete button - Delete student profile
-         */
-        btnDeleteProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
+        // Deletes the profile. Will popup a dialog asking the user to confirm this action.
+        btnDeleteProfile.setOnClickListener(v -> {
+            MyAppProfileDatabase database1 = new MyAppProfileDatabase(getActivity());
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
-                boolean deleteStudent = database.deleteStudent(accountID);
+            // shows a popup to confirm deletion
+            builder.setTitle("Delete Student");
+            builder.setMessage("Are you sure you want to remove " + database1.getFirstNameFromDatabase(accountID) + " " + database1.getLastNameFromDatabase(accountID) + "?");
+
+            builder.setPositiveButton("Yes", (dialog, which) -> {
+                boolean deleteStudent = database1.deleteStudent(accountID);
                 if (deleteStudent)
                     Toast.makeText(getActivity(), "Account deleted", Toast.LENGTH_LONG).show();
                 else
                     Toast.makeText(getActivity(), "Delete failed", Toast.LENGTH_LONG).show();
 
-
                 // Navigate back to select user screen
                 navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
-            }
+            });
+
+
+            builder.setNeutralButton("Cancel", (dialog, which) -> dialog.cancel());
+
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
         });
 
-        btnRecordPunch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
-                navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
-            }
+        // when pressed lets the user record a new punch.
+        btnRecordPunch.setOnClickListener(v -> {
+            Bundle bundle = new Bundle();
+            bundle.putLong("accountID", accountID);
+            getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
+            navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
         });
 
-
-        btnEditProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bundle bundle2 = new Bundle();
-                bundle2.putLong("accountID2", accountID);
-                getParentFragmentManager().setFragmentResult("accountID2", bundle2);
-                navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
-            }
+        // moves to EditStudentProfile
+        btnEditProfile.setOnClickListener(v -> {
+            Bundle bundle2 = new Bundle();
+            bundle2.putLong("accountID", accountID);
+            getParentFragmentManager().setFragmentResult(EditStudentProfileFragment.REQUEST_KEY, bundle2);
+            navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
         });
     }
 
+    /**
+     * Returns student age.
+     * @param database : Database helper class.
+     * @return Age of student.
+     */
     private int getStudentAge(MyAppProfileDatabase database) {
         Date date = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
         try {
             date = sdf.parse(database.getAgeFromDatabase(accountID));
         } catch (ParseException e) {
@@ -220,7 +191,7 @@ public class StudentProfileFragment extends Fragment {
         int month = studentDOB.get(Calendar.MONTH);
         int day = studentDOB.get(Calendar.DAY_OF_MONTH);
 
-        studentDOB.set(year, month + 1, day);
+        studentDOB.set(year, month, day);
 
         int studentAge = todayDate.get(Calendar.YEAR) - studentDOB.get(Calendar.YEAR);
 
@@ -231,21 +202,9 @@ public class StudentProfileFragment extends Fragment {
     }
 
     /**
-     * Checks if user has punch data
-     */
-    private boolean hasPunchData(long accountID, MyAppProfileDatabase db) {
-        List<PunchModel> punches;
-
-        punches = db.getAllPunchesFromProfile(accountID);
-
-        if (punches.size() != 0)
-            return true;
-        else
-            return false;
-    }
-
-    /**
-     * Populates the graph
+     * Populates the mini graph on the profile page.
+     * @param database : Database helper class.
+     * @param accountID : Account ID of profile.
      */
     private void populateGraph(MyAppProfileDatabase database, long accountID) {
         long date;
@@ -254,8 +213,11 @@ public class StudentProfileFragment extends Fragment {
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
         graph.addSeries(series);
 
+        // sets the minimum x-value
         date = punches.get(0).getDate();
         graph.getViewport().setMinX(date);
+
+        // inserts all data points on the graph and draws data points with default radius.
         series.appendData(new DataPoint(date, punches.get(0).getForce()), true, 100);
         series.setDrawDataPoints(true);
 
@@ -264,31 +226,12 @@ public class StudentProfileFragment extends Fragment {
             series.appendData(new DataPoint(date, punches.get(i).getForce()), true, 100);
         }
 
+        // sets the maximum x-value
         graph.getViewport().setMaxX(date);
 
+        // makes graph labels invisible.
         graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
         graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
         graph.getViewport().setXAxisBoundsManual(true);
-    }
-
-    /**
-     * Debug method to populate punch table with 20 data points
-     *
-     * @Test
-     */
-    public void insertFakePunchData(long accountID, MyAppProfileDatabase db) {
-        Date date;
-        Calendar time;
-        time = Calendar.getInstance();
-        Random rand = new Random();
-        PunchModel newPunch;
-
-        for (int i = 0; i < 20; i++) {
-            time.set(100 + i, 10, 12);
-            date = time.getTime();
-            newPunch = new PunchModel(0, accountID, rand.nextDouble(), date.getTime());
-            db.addPunch(newPunch);
-        }
-
     }
 }

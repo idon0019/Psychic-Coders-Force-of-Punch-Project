@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -13,14 +14,12 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
-import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -33,21 +32,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.parsers.FactoryConfigurationError;
-
-public class StudentGraph extends Fragment {
+public class StudentGraphFragment extends Fragment {
     public static final String GRAPH_TITLE = "Punch Force vs Attempts";
     public static final float POINT_RADIUS = 15f;
     public static final float TEXT_SIZE = 80;
-    public static final String NUMBER_FORMAT = "####";
-    public static final String DATE_FORMAT = "dd/MMMM/yy 'at' HH:mm";
+    public static final String REQUEST_KEY = "studentGraph";
     private GraphView graph;
     private TextView txtPunchInfo, txtPunchData;
     private long accountID;
     private ImageButton btnHome, btnBack;
     private NavController navController;
+    private Resources res;
 
-    public StudentGraph() {
+    public StudentGraphFragment() {
         // Required empty public constructor
     }
 
@@ -72,10 +69,11 @@ public class StudentGraph extends Fragment {
         btnHome = view.findViewById(R.id.BtnHome);
         txtPunchInfo = view.findViewById(R.id.TxtPunchInfo);
         txtPunchData = view.findViewById(R.id.TxtPunchData);
+        res = getResources();
 
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
-        getParentFragmentManager().setFragmentResultListener("studentgraph", this, new FragmentResultListener() {
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
             @Override
             public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
                 accountID = result.getLong("accountID");
@@ -94,7 +92,7 @@ public class StudentGraph extends Fragment {
                 // Navigate back to select a user screen
                 Bundle bundle = new Bundle();
                 bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult("accountID", bundle);
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
                 navController.navigate(R.id.action_studentGraph_to_studentProfileFragment);
             }
         });
@@ -118,7 +116,6 @@ public class StudentGraph extends Fragment {
      * Populates the graph
      */
     private void populateGraph(MyAppProfileDatabase database, long accountID) {
-        long date;
         int i;
         List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
 
@@ -133,9 +130,9 @@ public class StudentGraph extends Fragment {
             public void onTap(Series series, DataPointInterface dataPoint) {
                 String text = "";
                 double force = dataPoint.getY();
-                Date date = new Date(database.getDateFromPunchForce(force));
-                DateFormat df = new SimpleDateFormat(DATE_FORMAT);
-                DecimalFormat myFormat = new DecimalFormat(NUMBER_FORMAT);
+                Date date = new Date(database.getDateFromPunchForce(accountID, force));
+                DateFormat df = new SimpleDateFormat(res.getString(R.string.date_format));
+                DecimalFormat myFormat = new DecimalFormat(res.getString(R.string.number_format));
 
                 text += "Attempt " + (int)dataPoint.getX() + ":\n";
                 text += "Date: " + df.format(date) + " \n";
@@ -203,7 +200,7 @@ public class StudentGraph extends Fragment {
         }
 
         for (int i = 0; i < punchData.size(); i++) {
-            display += punchData.get(i).toString(DATE_FORMAT, NUMBER_FORMAT);
+            display += punchData.get(i).toString(res.getString(R.string.date_format), res.getString(R.string.number_format));
         }
 
         txtPunchData.setText(display);

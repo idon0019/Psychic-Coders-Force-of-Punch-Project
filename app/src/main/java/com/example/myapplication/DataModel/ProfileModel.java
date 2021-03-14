@@ -1,10 +1,14 @@
 package com.example.myapplication.DataModel;
 
+import java.util.Calendar;
+import java.util.Date;
+
 public class ProfileModel {
     private static final int MIN_ALLOWED_AGE = 5;
     private static final int MAX_ALLOWED_AGE = 100;
 
     private long id;
+    private String photoUri;
     private String firstName;
     private String lastName;
     private String age;
@@ -12,8 +16,9 @@ public class ProfileModel {
     private float height;
 
 
-    public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
+    public ProfileModel(long id, String imageUri, String firstName, String lastName, String age, float weight, float height) {
         setId(id);
+        setPhotoUri(imageUri);
         setFirstName(firstName);
         setLastName(lastName);
         setAge(age);
@@ -35,6 +40,13 @@ public class ProfileModel {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public String getPhotoUri() {return  photoUri; }
+
+    public void setPhotoUri(String uri) {
+
+        this.photoUri = uri;
     }
 
     public String getFirstName() {
@@ -60,7 +72,9 @@ public class ProfileModel {
     }
 
     public void setAge(String age) {
-        int age_num = Integer.parseInt(age);
+        String array[] = age.split("/");
+        Calendar calendar = Calendar.getInstance();
+        int age_num = calendar.get(Calendar.YEAR) - Integer.parseInt(array[2]);
         if (age_num < MIN_ALLOWED_AGE || age_num > MAX_ALLOWED_AGE) {
             throw new IllegalArgumentException("Invalid age (must be between 0 and 120");
         }

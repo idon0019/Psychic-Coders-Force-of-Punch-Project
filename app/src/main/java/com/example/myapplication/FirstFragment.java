@@ -14,15 +14,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class FirstFragment extends Fragment {
 
-    private static int FADE_DURATION_MS = 500;
-    private static float IMAGE_ALPHA_MAX = 1.0f;
-    private static float IMAGE_ALPHA_MIN = 0.2f;
+    private static final int FADE_DURATION_MS = 500;
+    private static final float IMAGE_ALPHA_MAX = 1.0f;
+    private static final float IMAGE_ALPHA_MIN = 0.2f;
     private NavController navController;
 
     public FirstFragment() {
@@ -48,12 +47,7 @@ public class FirstFragment extends Fragment {
 
         ImageView img = view.findViewById(R.id.logo);
         //Set up tap functionality for the text.
-        tx.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navController.navigate(R.id.action_firstFragment_to_secondFragment);
-            }
-        });
+        tx.setOnClickListener(v -> navController.navigate(R.id.action_firstFragment_to_secondFragment));
 
         Animation fadeIn = new AlphaAnimation(IMAGE_ALPHA_MIN,IMAGE_ALPHA_MAX);
         fadeIn.setDuration(FADE_DURATION_MS);

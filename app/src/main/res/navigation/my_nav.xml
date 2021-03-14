@@ -112,7 +112,7 @@
     </fragment>
     <fragment
         android:id="@+id/studentGraph"
-        android:name="com.example.myapplication.StudentGraph"
+        android:name="com.example.myapplication.StudentGraphFragment"
         android:label="fragment_student_graph"
         tools:layout="@layout/fragment_student_graph" >
         <action

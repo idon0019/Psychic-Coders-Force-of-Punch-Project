@@ -49,24 +49,13 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/ImgViewProfilePicture"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="150sp"
+                android:layout_height="150sp"
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="20sp"
                 android:background="@color/cardview_dark_background"
                 android:src="@drawable/ic_launcher_foreground"
 
-                />
-
-            <TextView
-                android:id="@+id/TxtChangePhoto"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Change profile"
-                android:layout_below="@+id/ImgViewProfilePicture"
-                android:layout_marginLeft="25sp"
-                android:textStyle="bold"
-                android:textSize="15sp"
                 />
 
             <TextView
@@ -88,11 +77,11 @@
                 android:layout_below="@+id/TxtFName"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:layout_marginRight="20sp"
-                />
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/TxtLName"
@@ -114,11 +103,11 @@
                 android:layout_below="@+id/TxtLName"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:layout_marginRight="20sp"
-                />
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/TxtDateOfBirth"
@@ -140,11 +129,11 @@
                 android:layout_below="@+id/TxtDateOfBirth"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="20sp"
+                android:gravity="center"
                 android:text="2/9/1998, Age: 22"
-                />
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <com.jjoe64.graphview.GraphView
                 android:id="@+id/Graphview"
@@ -185,11 +174,11 @@
                 android:layout_below="@+id/Txtweight"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
+                android:layout_marginRight="28sp"
+                android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginRight="28sp"
-                />
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/Txtheight"
@@ -211,33 +200,32 @@
                 android:layout_below="@+id/Txtheight"
                 android:layout_alignEnd="@id/TxtFName"
                 android:layout_marginTop="10sp"
-                android:textSize="20sp"
-                android:textColor="@color/white"
-                android:textStyle="bold"
                 android:layout_marginRight="28sp"
-                />
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Force of punch:"
-                android:textSize="20sp"
-                android:textStyle="bold"
                 android:layout_alignBottom="@+id/TxtDateOfBirth"
                 android:layout_marginLeft="20sp"
-                />
+                android:text="Highest Record:"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/TxtPunchForceResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2000N"
-                android:textStyle="bold"
-                android:textSize="20sp"
-                android:textColor="@color/white"
                 android:layout_alignBottom="@+id/TxtAge"
                 android:layout_marginLeft="20sp"
-                />
+                android:gravity="left"
+                android:text="2000N"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <RelativeLayout
                 android:layout_width="match_parent"

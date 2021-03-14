@@ -6,33 +6,25 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 
 public class MeasuringPunchFragment extends Fragment implements SensorEventListener {
 
-    private Button btnCancel, btnNext;
+    public static final String REQUEST_KEY = "measuringPunch";
     private NavController navController;
     private SensorManager senManager;
     private Double maxAcceleration = 0.0;
-    private double acceleration = 0;
     private Sensor sen;
-    private boolean peakAcceleration = false;
-    private final double LOWER_ACCELERATION_THRESHOLD = 10.0;
     private long accountID;
     private Bundle bundle;
 
@@ -50,40 +42,32 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        boolean loop = true;
 
         senManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         sen = senManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         senManager.registerListener(this, sen, SensorManager.SENSOR_DELAY_NORMAL);
 
         navController = Navigation.findNavController(view);
-        btnCancel = view.findViewById(R.id.BtnCancel);
-        btnNext = view.findViewById(R.id.BtnNext);
+        Button btnCancel = view.findViewById(R.id.BtnCancel);
+        Button btnNext = view.findViewById(R.id.BtnNext);
 
         bundle = new Bundle();
 
-        getParentFragmentManager().setFragmentResultListener("measuringPunch", this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getLong("accountID");
-                bundle.putLong("accountID", accountID);
-            }
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
+            accountID = result.getLong("accountID");
+            bundle.putLong("accountID", accountID);
         });
 
-        btnCancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("phoneSecured", bundle);
-                navController.navigate(R.id.action_measuringPunchFragment_to_phoneSecuredFragment);
-            }
+        // cancels measuring punch and moves back to previous page.
+        btnCancel.setOnClickListener(v -> {
+            getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
+            navController.navigate(R.id.action_measuringPunchFragment_to_phoneSecuredFragment);
         });
 
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getParentFragmentManager().setFragmentResult("punchResult", bundle);
-                navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
-            }
+        // used for debugging purposes. moves to the next page.
+        btnNext.setOnClickListener(v -> {
+            getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);
+            navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
         });
     }
 
@@ -96,7 +80,6 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         float z = event.values[2];
 
         linAcceleration = Math.sqrt(x * x + y * y + z * z); //gets the total linear acceleration from each axis
-        this.acceleration = linAcceleration;
 
         // updates to a new maxAcceleration is newer value is larger
         if (this.maxAcceleration < linAcceleration) {
@@ -104,11 +87,11 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         }
 
         // if the acceleration more than 10% less than the peak, then the peak is stable
-        if (linAcceleration < (maxAcceleration*0.9) && maxAcceleration > LOWER_ACCELERATION_THRESHOLD) {
-            peakAcceleration = true;
+        double lowerAccelerationThreshold = 10.0;
+        if (linAcceleration < (maxAcceleration*0.9) && maxAcceleration > lowerAccelerationThreshold) {
             double punchScore = calculateForce();
             bundle.putDouble("punchScore", punchScore);
-            getParentFragmentManager().setFragmentResult("punchResult", bundle);
+            getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);
             navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
         }
     }

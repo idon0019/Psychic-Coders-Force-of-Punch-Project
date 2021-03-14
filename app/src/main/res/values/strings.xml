@@ -3,10 +3,37 @@
     <string name="tap_to_select_user">Tap to Select User</string>
     <string name="add_new_user">Add New User</string>
     <string name="title_activity_add_new_user">AddNewUser</string>
+
+    <!-- Strings used in StudentProfileFragment -->
+    <string name="no_punch_data">No punch data to show.</string>
+    <string name="no_punch_record">No data</string>
+    <string name="student_age">%s\nAge: %2d</string>
     <string name="mini_graph_label">Tap graph for more</string>
+
+    <!-- Strings used in StudentGraphFragment -->
     <string name="punch_data_label">Punch History</string>
     <string name="graph_info_init_text">Tap a point for details.</string>
-    <string name="no_punch_data">No punch data to show.</string>
+
+    <!-- Strings used in PunchResultFragment -->
+    <string name="previous_record">Previous best:\n%sN</string>
+    <string name="new_highscore">New high score!</string>
+
+    <!-- Strings used for the image picker dialog-->
+    <string name="dialog_name">Choose Image</string>
+    <string name="dialog_message">Take a picture using the camera or choose an image from the gallery.</string>
+    <string name="dialog_camera">Camera</string>
+    <string name="dialog_gallery">Gallery</string>
+    <string name="dialog_cancel">Cancel</string>
+
+    <!-- Strings used for the permission dialog -->
+    <string name="permission_name">Permission Request</string>
+    <string name="permission_message">To set a custom profile photo the app needs to access external storage.</string>
+    <string name="permission_ok">Ok</string>
+
+    <!-- Strings used for formatting text -->
+    <string name="number_format">####</string>
+    <string name="date_format">dd MMM, yyyy \'at\' HH:mm</string>
+    <string name="date_picker_text">%d/%d/%d</string>
 
     <!-- Strings used for fragments for navigation -->
     <string name="next">Next</string>

@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 
-import java.sql.SQLData;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +19,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     // Profile table
     public static final String STUDENT_TABLE = "STUDENT_TABLE";
+    public static final String COLUMN_STUDENT_PHOTO = "STUDENT_PHOTO";
     public static final String COLUMN_STUDENT_FIRSTNAME = "STUDENT_FIRSTNAME";
     public static final String COLUMN_STUDENT_LASTNAME = "STUDENT_LASTNAME";
     public static final String COLUMN_STUDENT_WEIGHT = "STUDENT_WEIGHT";
@@ -33,25 +34,22 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     private static final String PUNCH_FORCE = "FORCE";
     private static final String PUNCH_DATE = "DATE";
 
-    //TODO: Add in the names of the Punch tables. Also update the onCreate and onUpgrade methods.
-    public ProfileModel pModel;
-
-
     public MyAppProfileDatabase(@Nullable Context context) {
-        super(context, "MyAppDatabase.db", null, 3);
+        super(context, "MyAppDatabase.db", null, 5);
     }
 
     /**
      * Method gets called first time the database is accessed
-     * @param db
+     * @param db : Database to operate on.
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTableStatement = "CREATE TABLE " + STUDENT_TABLE
                 + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                + COLUMN_STUDENT_PHOTO + " TEXT, "
                 + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
                 + COLUMN_STUDENT_LASTNAME + " TEXT, "
-                + COLUMN_STUDENT_AGE + " STRING, "
+                + COLUMN_STUDENT_AGE + " TEXT, "
                 + COLUMN_STUDENT_WEIGHT + " FLOAT, "
                 + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
@@ -69,13 +67,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Add a student to the database
-     * @param profileModel
-     * @return
+     * @param profileModel : Profile object to add into database.
+     * @return True if insertion is successful, false if otherwise.
      */
     public boolean addStudent(ProfileModel profileModel) {
         SQLiteDatabase db = this.getWritableDatabase(); // Insert data
         ContentValues cv = new ContentValues(); // Stores data in pairs
 
+        cv.put(COLUMN_STUDENT_PHOTO, profileModel.getPhotoUri());
         cv.put(COLUMN_STUDENT_FIRSTNAME, profileModel.getFirstName());
         cv.put(COLUMN_STUDENT_LASTNAME, profileModel.getLastName());
         cv.put(COLUMN_STUDENT_AGE, profileModel.getAge());
@@ -84,10 +83,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         long insert = db.insert(STUDENT_TABLE, null, cv);
 
-        if (insert == -1)
-            return false;
-        else
-            return true;
+        return insert != -1;
     }
 
     // gets the last student added
@@ -108,8 +104,6 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     public ProfileModel findStudent(long accountID) {
-        ProfileModel model = null;
-
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT *" + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
@@ -124,14 +118,14 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     private ProfileModel createModelFromCursor(Cursor cursor) {
         int columnID = cursor.getInt(0);
-        String columnFirstName = cursor.getString(1);
-        String columnLastName = cursor.getString(2);
-        String columnAge = cursor.getString(3);
-        float columnWeight = cursor.getFloat(4);
-        float columnHeight = cursor.getFloat(5);
+        String imageUri = cursor.getString(1);
+        String columnFirstName = cursor.getString(2);
+        String columnLastName = cursor.getString(3);
+        String columnAge = cursor.getString(4);
+        float columnWeight = cursor.getFloat(5);
+        float columnHeight = cursor.getFloat(6);
 
-        ProfileModel newProfile = new ProfileModel(columnID, columnFirstName, columnLastName, columnAge, columnWeight, columnHeight);
-        return newProfile;
+        return new ProfileModel(columnID, imageUri, columnFirstName, columnLastName, columnAge, columnWeight, columnHeight);
     }
     /**
      * Retrieves all profiles in database
@@ -148,8 +142,6 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 ProfileModel newProfile = createModelFromCursor(cursor);
                 returnList.add(newProfile);
             }while(cursor.moveToNext());
-        } else {
-            // empty
         }
 
         cursor.close();
@@ -159,8 +151,8 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * Gets the number of students in the database
-     * @return
+     * Gets the number of students in the database.
+     * @return The number of students.
      */
     public int getNumberOfStudentsFromDatabase() {
         int num = 0;
@@ -178,10 +170,29 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return num;
     }
 
+    public String getImagePathFromDatabase(long accountID) {
+        String imagePath;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String queryString = "SELECT " + COLUMN_STUDENT_PHOTO + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
+
+        Cursor cursor = db.rawQuery(queryString, null);
+
+        if (cursor.getCount() < 0) {
+            return "";
+        }
+
+        cursor.moveToNext();
+        imagePath = cursor.getString(cursor.getPosition());
+        cursor.close();
+
+        return imagePath;
+    }
+
     /**
      * Gets the first name of the student of which profile the user chose.
-     * @param accountID
-     * @return
+     * @param accountID : ID of account to look through.
+     * @return Student first name.
      */
     public String getFirstNameFromDatabase(long accountID) {
         String studentFirstName;
@@ -195,12 +206,17 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             return "";
         }
         cursor.moveToNext();
-
         studentFirstName = cursor.getString(cursor.getPosition());
+        cursor.close();
 
         return studentFirstName;
     }
 
+    /**
+     * Gets the last name of the student.
+     * @param accountID : ID of account to look through.
+     * @return Student last name.
+     */
     public String getLastNameFromDatabase(long accountID) {
         String studentLastName;
 
@@ -208,14 +224,18 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         String queryString = "SELECT " + COLUMN_STUDENT_LASTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
         Cursor cursor = db.rawQuery(queryString, null);
-
         cursor.moveToNext();
-
         studentLastName = cursor.getString(cursor.getPosition());
+        cursor.close();
 
         return studentLastName;
     }
 
+    /**
+     * Gets the age of the student.
+     * @param accountID : ID of account to look through.
+     * @return A string representation of their birthday in dd/mm/yyyy
+     */
     public String getAgeFromDatabase(long accountID) {
         String studentAge;
 
@@ -223,14 +243,18 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         String queryString = "SELECT " + COLUMN_STUDENT_AGE + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
         Cursor cursor = db.rawQuery(queryString, null);
-
         cursor.moveToNext();
-
         studentAge = cursor.getString(cursor.getPosition());
+        cursor.close();
 
         return studentAge;
     }
 
+    /**
+     * Gets the weight of the student.
+     * @param accountID : ID of account to look through.
+     * @return Student weight.
+     */
     public String getWeightFromDatabase(long accountID) {
         String studentWeight;
 
@@ -242,10 +266,16 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         cursor.moveToNext();
 
         studentWeight = cursor.getString(cursor.getPosition());
+        cursor.close();
 
         return studentWeight;
     }
 
+    /**
+     * Gets the height of the student.
+     * @param accountID : ID of account to look through.
+     * @return Student height.
+     */
     public String getHeightFromDatabase(long accountID) {
         String studentHeight;
 
@@ -257,6 +287,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         cursor.moveToNext();
 
         studentHeight = cursor.getString(cursor.getPosition());
+        cursor.close();
 
         return studentHeight;
     }
@@ -268,24 +299,40 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      */
     public boolean deleteStudent(long accountID) {
         String where = "id=?";
-        String args[] = {Long.toString(accountID)};
+        String[] args = {Long.toString(accountID)};
         SQLiteDatabase database = this.getWritableDatabase();
+
+        File file = new File(getImagePathFromDatabase(accountID));
+        file.delete()
+
         int numDeleted = database.delete(STUDENT_TABLE, where, args);
         if (numDeleted > 0)
             database.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", args);
 
+        database.close();
         return numDeleted > 0;
     }
 
-    public boolean editStudentProfile(long id, String fname, String lname, String age, String weight, String height) {
+    /**
+     * Edits the student profile.
+     * @param id : ID of account to edit.
+     * @param fname : First name of student.
+     * @param lname : Last name of student.
+     * @param age : Age of student.
+     * @param weight : Weight of student.
+     * @param height : Height of student.
+     * @return True if edit successful, false if otherwise.
+     */
+    public boolean editStudentProfile(long id, String imageUri, String fname, String lname, String age, String weight, String height) {
         ContentValues cv = new ContentValues();
         SQLiteDatabase database = this.getWritableDatabase();
 
         try{
-            ProfileModel p = new ProfileModel(id, fname, lname, age, Float.parseFloat(weight), Float.parseFloat(height));
+            new ProfileModel(id, imageUri, fname, lname, age, Float.parseFloat(weight), Float.parseFloat(height));
         } catch (IllegalArgumentException e) {
             return false;
         }
+        cv.put(COLUMN_STUDENT_PHOTO, imageUri);
         cv.put(COLUMN_STUDENT_FIRSTNAME, fname);
         cv.put(COLUMN_STUDENT_LASTNAME, lname);
         cv.put(COLUMN_STUDENT_AGE, age);
@@ -298,10 +345,9 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Creates a new punch in the table
-     * @param punchModel
-     * @return
+     * @param punchModel : Punch to insert into database.
+     * @return True if insertion successful, false if otherwise.
      */
-
     public boolean addPunch(PunchModel punchModel) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues newData = new ContentValues();
@@ -313,14 +359,17 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         long insert = db.insert(PUNCH_TABLE, null, newData);
         db.close();
 
-        if (insert == -1)
-            return false;
-        else
-            return true;
+        return insert != -1;
     }
 
-    public long getDateFromPunchForce(double force) {
-        String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_FORCE + " = " + force;
+    /**
+     * Returns the date of a specific punch by using account id and punch force.
+     * @param accountID : ID of account to look at.
+     * @param force : Force value to search for.
+     * @return String representation of the punch date.
+     */
+    public long getDateFromPunchForce(long accountID, double force) {
+        String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_FORCE + " = " + force + " AND " + PUNCH_ACCOUNT_ID + " = " + accountID;
         SQLiteDatabase db = this.getReadableDatabase();
         long value = 0;
 
@@ -336,8 +385,48 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * Returns all punches in the database
-     * @return
+     * Gets the highest punch score of account.
+     * @param accountID : Account to look through.
+     * @return Punch score.
+     */
+    public double getHighScore(long accountID) {
+        String query = "SELECT * FROM " +
+                PUNCH_TABLE + " WHERE " +
+                PUNCH_ACCOUNT_ID + " = " +
+                accountID + " ORDER BY " +
+                PUNCH_FORCE + " DESC LIMIT 1";
+        double value;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        if (cursor.moveToFirst())
+            value = cursor.getDouble(2);
+        else
+            value = 0;
+
+        cursor.close();
+
+        return value;
+    }
+
+    /**
+     * Checks if profile has previous punch data.
+     * @param accountID : Account ID to check for.
+     * @return True if account has punch data, false if otherwise.
+     */
+    public boolean hasPunchData(long accountID) {
+        List<PunchModel> punches;
+        punches = getAllPunchesFromProfile(accountID);
+
+        return punches.size() != 0;
+    }
+
+    /**
+     * Returns all punches of a given account id.
+     * @param accountID : ID of account to look through.
+     * @return An array of all matching punches.
      */
     public List<PunchModel> getAllPunchesFromProfile(long accountID) {
         List<PunchModel> returnList = new ArrayList<>();
@@ -365,22 +454,62 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * This method gets called whenever the version of the database changes
-     * @param db
-     * @param oldVersion
-     * @param newVersion
+     * @param db : Database to migrate.
+     * @param oldVersion : Old version
+     * @param newVersion : New version
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        String dropTable = "DROP TABLE PUNCH_TABLE";
+        String dropTable;
+        String createTable;
 
-        db.execSQL(dropTable);
+        // Updates the database based on previous versions.
+        switch (oldVersion) {
+            case 2:
+                dropTable = "DROP TABLE " + PUNCH_TABLE;
 
-        String createTable = "CREATE TABLE " + PUNCH_TABLE
-                + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-                + PUNCH_ACCOUNT_ID + " INTEGER, "
-                + PUNCH_FORCE + " REAL, "
-                + PUNCH_DATE + " INTEGER)";
+                db.execSQL(dropTable);
 
-        db.execSQL(createTable);
+                createTable = "CREATE TABLE " + PUNCH_TABLE
+                        + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + PUNCH_ACCOUNT_ID + " INTEGER, "
+                        + PUNCH_FORCE + " REAL, "
+                        + PUNCH_DATE + " INTEGER)";
+
+                db.execSQL(createTable);
+            case 3: // preserved for posterity. technically this case doesn't need execution since
+                    // later migrations already take care of the transition safely.
+//                dropTable = "DROP TABLE " + STUDENT_TABLE;
+//
+//                db.execSQL(dropTable); // deletes student table
+//                db.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
+//
+//                createTable = "CREATE TABLE " + STUDENT_TABLE
+//                        + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+//                        + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
+//                        + COLUMN_STUDENT_LASTNAME + " TEXT, "
+//                        + COLUMN_STUDENT_AGE + " TEXT, "
+//                        + COLUMN_STUDENT_WEIGHT + " FLOAT, "
+//                        + COLUMN_STUDENT_HEIGHT + " FLOAT)";
+//
+//                db.execSQL(createTable);
+            case 4:
+                dropTable = "DROP TABLE " + STUDENT_TABLE;
+
+                db.execSQL(dropTable); // deletes student table
+                db.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
+
+                createTable = "CREATE TABLE " + STUDENT_TABLE
+                        + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
+                        + COLUMN_STUDENT_PHOTO + " TEXT, "
+                        + COLUMN_STUDENT_FIRSTNAME + " TEXT, "
+                        + COLUMN_STUDENT_LASTNAME + " TEXT, "
+                        + COLUMN_STUDENT_AGE + " TEXT, "
+                        + COLUMN_STUDENT_WEIGHT + " FLOAT, "
+                        + COLUMN_STUDENT_HEIGHT + " FLOAT)";
+
+                db.execSQL(createTable);
+
+        }
     }
 }
