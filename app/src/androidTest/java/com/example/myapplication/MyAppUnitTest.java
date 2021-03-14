@@ -20,13 +20,20 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+
 /**
- * Instrumented test, which will execute on an Android device.
- *
- * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
+ * Before committing/pushing ANY changes,
+ * make sure you run this UT suite.
+ * Any errors MUST be fixed before
+ * committing, even if it means you have to change
+ * the testing script.
  */
 @RunWith(AndroidJUnit4.class)
 public class MyAppUnitTest {
+    /* DD/MM/YYYY */
+    private static final String INVALID_AGE_OLD = "20/12/1800";
+    private static final String VALID_AGE = "20/12/1990";
+    private static final String INVALID_AGE_FUTURE = "20/12/2150";
 
     private Context appContext;
     ProfileModel sampleProfile;
@@ -34,7 +41,7 @@ public class MyAppUnitTest {
     MyAppProfileDatabase databaseHelper;
     public MyAppUnitTest() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        sampleProfile = new ProfileModel(0, "bob","tom", "28", 100.5f, 167.5f);
+        sampleProfile = new ProfileModel(0, "bob","tom", VALID_AGE, 100.5f, 167.5f);
         databaseHelper = new MyAppProfileDatabase(appContext);
     }
     @Before
@@ -63,28 +70,28 @@ public class MyAppUnitTest {
 
         //Invalid age (negative)
         try {
-            profile = new ProfileModel(0, "bob", "tom", "-28", 100.5f, 167.5f);
+            profile = new ProfileModel(0, "bob", "tom", INVALID_AGE_FUTURE, 100.5f, 167.5f);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
         }
         //Invalid age (too old!)
         try {
-            profile = new ProfileModel(0, "bob", "tom", "101", 100.5f, 167.5f);
+            profile = new ProfileModel(0, "bob", "tom", INVALID_AGE_OLD, 100.5f, 167.5f);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
         }
         //invalid weight
         try {
-            profile = new ProfileModel(0, "bob", "tom", "28", -2, 167.5f);
+            profile = new ProfileModel(0, "bob", "tom", "20/12/1990", -2, 167.5f);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
         }
         //invalid height
         try {
-            profile = new ProfileModel(0, "bob", "tom", "28", 100, -100);
+            profile = new ProfileModel(0, "bob", "tom", VALID_AGE, 100, -100);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
@@ -167,7 +174,7 @@ public class MyAppUnitTest {
         databaseHelper.addStudent(sampleProfile);
         long lastID = databaseHelper.getLastStudentID();
 
-        assertTrue(databaseHelper.editStudentProfile(lastID, "John", "Doe", "20", "100", "100"));
+        assertTrue(databaseHelper.editStudentProfile(lastID, "","John", "Doe", VALID_AGE, "100", "100"));
         assertTrue(databaseHelper.deleteStudent(lastID));
     }
 
@@ -179,10 +186,10 @@ public class MyAppUnitTest {
         databaseHelper.addStudent(sampleProfile);
         long lastID = databaseHelper.getLastStudentID();
 
-        assertFalse(databaseHelper.editStudentProfile(lastID, "John", "Doe", "-1", "100", "100"));
-        assertFalse(databaseHelper.editStudentProfile(lastID, "John", "Doe", "102", "100", "100"));
-        assertFalse(databaseHelper.editStudentProfile(lastID, "John", "Doe", "28", "-2", "100"));
-        assertFalse(databaseHelper.editStudentProfile(lastID, "John", "Doe", "28", "100", "-1"));
+        assertFalse(databaseHelper.editStudentProfile(lastID, "", "John", "Doe", INVALID_AGE_FUTURE, "100", "100"));
+        assertFalse(databaseHelper.editStudentProfile(lastID, "","John", "Doe", INVALID_AGE_OLD, "100", "100"));
+        assertFalse(databaseHelper.editStudentProfile(lastID, "","John", "Doe", VALID_AGE, "-2", "100"));
+        assertFalse(databaseHelper.editStudentProfile(lastID, "", "John", "Doe", VALID_AGE, "100", "-1"));
 
         assertTrue(databaseHelper.deleteStudent(lastID));
     }
