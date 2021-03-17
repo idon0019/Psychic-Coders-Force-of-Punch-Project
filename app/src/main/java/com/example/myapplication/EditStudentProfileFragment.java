@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -32,6 +33,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 
 import java.io.File;
@@ -133,6 +135,7 @@ public class EditStudentProfileFragment extends Fragment {
             accountID = result.getLong("accountID");
 
             photo = new File(database.getImagePathFromDatabase(accountID));
+            photoPath = photo.toString();
             initialPhoto = photo;
             imgAdd.setImageBitmap(BitmapFactory.decodeFile(photo.toString()));
             edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
@@ -160,34 +163,56 @@ public class EditStudentProfileFragment extends Fragment {
 
         btnSubmit.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
+            ProfileModel profileModel = null;
+            boolean valid = false;
 
-            Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
+            try {
+                profileModel = new ProfileModel(
+                        -1,
+                        photoPath,
+                        edtFirstName.getText().toString(),
+                        edtLastName.getText().toString(),
+                        txtAge.getText().toString(),
+                        Float.parseFloat(edtWeight.getText().toString()),
+                        Float.parseFloat(edtHeight.getText().toString())
+                );
+                valid = true;
 
-            // lock in the changes, thus deleting initialPhoto if it is not the same as photo
-            if (initialPhoto != null && !photoPath.equals(initialPhoto.toString())){
-                initialPhoto.delete();
+                if (edtFirstName.getText().toString().equals("") || edtLastName.getText().toString().equals(""))
+                    valid = false;
+            } catch (Exception e) {
+                //
             }
 
-            bundle.putLong("accountID", accountID);
-            getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-            database.editStudentProfile(accountID, photoPath, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
-            navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
+            if (valid) {
+                Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
+
+                // lock in the changes, thus deleting initialPhoto if it is not the same as photo
+                if (initialPhoto != null && !photoPath.equals(initialPhoto.toString())) {
+                    initialPhoto.delete();
+                }
+
+                bundle.putLong("accountID", accountID);
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+                database.editStudentProfile(accountID, photoPath, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
+                navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
+            } else {
+                Toast.makeText(getActivity(), "Please choose profile photo and fill out all fields", Toast.LENGTH_LONG).show();
+            }
         });
 
         btnCancel.setOnClickListener(v -> {
-            Bundle bundle = new Bundle();
-
-            Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
-
-            // undo the changes, thus deleting photo if it is not the same as initialPhoto
-            if (photo != initialPhoto && initialPhoto != null) {
-                photo.delete();
-            }
-
-            bundle.putLong("accountID", accountID);
-            getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-            navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
+            onBackEvent();
         });
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackEvent();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         imgAdd.setOnClickListener(v -> {
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -270,6 +295,21 @@ public class EditStudentProfileFragment extends Fragment {
         cursor.close();
 
         return path;
+    }
+
+    private void onBackEvent() {
+        Bundle bundle = new Bundle();
+
+        Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
+
+        // undo the changes, thus deleting photo if it is not the same as initialPhoto
+        if (photo != initialPhoto && initialPhoto != null) {
+            photo.delete();
+        }
+
+        bundle.putLong("accountID", accountID);
+        getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+        navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
     }
 
 }

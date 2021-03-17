@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -164,8 +165,11 @@ public class AddNewUserFragment extends Fragment {
                         Float.parseFloat(edtHeight.getText().toString())
                 );
                 valid = true;
+
+                if (edtFirstName.getText().toString().equals("") || edtLastName.getText().toString().equals(""))
+                    valid = false;
             } catch (Exception e) {
-                Toast.makeText(getActivity(), "Please choose profile photo and fill out all fields", Toast.LENGTH_LONG).show();
+                // no special error handler.
             }
 
             if (valid) {
@@ -173,7 +177,7 @@ public class AddNewUserFragment extends Fragment {
                 MyAppProfileDatabase databaseHelper = new MyAppProfileDatabase(getActivity());
                 boolean success = databaseHelper.addStudent(profileModel);
                 if (success) {
-                    Toast.makeText(getActivity(), "Profile created", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Profile created", Toast.LENGTH_SHORT).show();
 
                     long id = databaseHelper.getLastStudentID();
 
@@ -182,15 +186,12 @@ public class AddNewUserFragment extends Fragment {
                     getParentFragmentManager().setFragmentResult("studentProfile", accountID);
                     navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
                 } else {
-                    Toast.makeText(getActivity(), "Profile could not be added", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Profile could not be added", Toast.LENGTH_SHORT).show();
                 }
+            } else {
+                Toast.makeText(getActivity(), "Please choose profile photo and fill out all fields", Toast.LENGTH_LONG).show();
             }
 
-        });
-
-        btnCancel.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_LONG).show();
-            navController.navigate(R.id.action_addNewUserFragment_to_secondFragment);
         });
 
         imgAdd.setOnClickListener(v -> {
@@ -251,6 +252,24 @@ public class AddNewUserFragment extends Fragment {
                         Manifest.permission.READ_EXTERNAL_STORAGE);
             }
         });
+
+        btnCancel.setOnClickListener(v -> {
+            onBackEvent();
+        });
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackEvent();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+    }
+
+    private void onBackEvent() {
+        Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_SHORT).show();
+        navController.navigate(R.id.action_addNewUserFragment_to_secondFragment);
     }
 
     public File createImageFile() throws IOException {

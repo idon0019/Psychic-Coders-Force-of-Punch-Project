@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -53,9 +54,22 @@ public class PhoneSecuredFragment extends Fragment {
 
         // moves back to student profile.
         btnCancel.setOnClickListener(v -> {
-            getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-            navController.navigate(R.id.action_phoneSecuredFragment_to_studentProfileFragment);
+            onBackEvent(bundle);
         });
 
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackEvent(bundle);
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+    }
+
+    private void onBackEvent(Bundle bundle) {
+        getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+        navController.navigate(R.id.action_phoneSecuredFragment_to_studentProfileFragment);
     }
 }

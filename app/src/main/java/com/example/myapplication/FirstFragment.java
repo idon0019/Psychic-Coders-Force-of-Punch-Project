@@ -1,7 +1,9 @@
 package com.example.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -84,29 +86,17 @@ public class FirstFragment extends Fragment {
         //myAnimation.setRepeatCount(10);
         img.startAnimation(fadeIn);
 
-
-
-
-
-
-
-
-
-
-
-
-        /*
-        NavController navController
-
-
-        Button btnNext = view.findViewById(R.id.BtnNext);
-        btnNext.setOnClickListener(new View.OnClickListener() {
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
-            public void onClick(View v) {
-                navController.navigate(R.id.action_firstFragment_to_secondFragment);
+            public void handleOnBackPressed() {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_HOME);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
             }
-        });
-        */
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
     }
 

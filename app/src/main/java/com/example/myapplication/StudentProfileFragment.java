@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -114,6 +116,15 @@ public class StudentProfileFragment extends Fragment {
             // Navigate back to select a user screen
             navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
         });
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navController.navigate(R.id.action_studentProfileFragment_to_secondFragment);
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         // Home button - navigates to the FirstFragment
         btnHome.setOnClickListener(v -> {

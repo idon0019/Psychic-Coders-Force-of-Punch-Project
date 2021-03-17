@@ -4,10 +4,10 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentResultListener;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
@@ -21,16 +21,14 @@ import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
-import com.jjoe64.graphview.series.DataPointInterface;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.series.OnDataPointTapListener;
-import com.jjoe64.graphview.series.Series;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class StudentGraphFragment extends Fragment {
     public static final String GRAPH_TITLE = "Punch Force vs Attempts";
@@ -40,7 +38,6 @@ public class StudentGraphFragment extends Fragment {
     private GraphView graph;
     private TextView txtPunchInfo, txtPunchData;
     private long accountID;
-    private ImageButton btnHome, btnBack;
     private NavController navController;
     private Resources res;
 
@@ -65,54 +62,55 @@ public class StudentGraphFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         graph = view.findViewById(R.id.Graph);
         navController = Navigation.findNavController(view);
-        btnBack = view.findViewById(R.id.BtnBack);
-        btnHome = view.findViewById(R.id.BtnHome);
+        ImageButton btnBack = view.findViewById(R.id.BtnBack);
+        ImageButton btnHome = view.findViewById(R.id.BtnHome);
         txtPunchInfo = view.findViewById(R.id.TxtPunchInfo);
         txtPunchData = view.findViewById(R.id.TxtPunchData);
         res = getResources();
 
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
 
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, new FragmentResultListener() {
-            @Override
-            public void onFragmentResult(@NonNull String requestKey, @NonNull Bundle result) {
-                accountID = result.getLong("accountID");
-                populateGraph(database, accountID);
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
+            accountID = result.getLong("accountID");
+            populateGraph(database, accountID);
 
-                populatePunchData(accountID, database);
-            }
+            populatePunchData(accountID, database);
         });
 
-        /**
+        /*
          * Back button - Navigate to previous screen
          */
-        btnBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Navigate back to select a user screen
-                Bundle bundle = new Bundle();
-                bundle.putLong("accountID", accountID);
-                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
-                navController.navigate(R.id.action_studentGraph_to_studentProfileFragment);
-            }
-        });
+        btnBack.setOnClickListener(v -> onBackEvent());
 
-        /**
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackEvent();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+        /*
          * Home button - Navigate back to Main Menu
          */
-        btnHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                // Navigate to main menu
-                navController.navigate(R.id.action_studentGraph_to_firstFragment);
-            }
+        btnHome.setOnClickListener(v -> {
+            // Navigate to main menu
+            navController.navigate(R.id.action_studentGraph_to_firstFragment);
         });
 
 
     }
 
-    /**
+    private void onBackEvent() {
+        // Navigate back to select a user screen
+        Bundle bundle = new Bundle();
+        bundle.putLong("accountID", accountID);
+        getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+        navController.navigate(R.id.action_studentGraph_to_studentProfileFragment);
+    }
+
+    /*
      * Populates the graph
      */
     private void populateGraph(MyAppProfileDatabase database, long accountID) {
@@ -125,21 +123,18 @@ public class StudentGraphFragment extends Fragment {
         series.setDrawDataPoints(true);
 
         // adds a listener to respond when data points are tapped
-        series.setOnDataPointTapListener(new OnDataPointTapListener() {
-            @Override
-            public void onTap(Series series, DataPointInterface dataPoint) {
-                String text = "";
-                double force = dataPoint.getY();
-                Date date = new Date(database.getDateFromPunchForce(accountID, force));
-                DateFormat df = new SimpleDateFormat(res.getString(R.string.date_format));
-                DecimalFormat myFormat = new DecimalFormat(res.getString(R.string.number_format));
+        series.setOnDataPointTapListener((series1, dataPoint) -> {
+            String text = "";
+            double force = dataPoint.getY();
+            Date date = new Date(database.getDateFromPunchForce(accountID, force));
+            DateFormat df = new SimpleDateFormat(res.getString(R.string.date_format), Locale.CANADA);
+            DecimalFormat myFormat = new DecimalFormat(res.getString(R.string.number_format));
 
-                text += "Attempt " + (int)dataPoint.getX() + ":\n";
-                text += "Date: " + df.format(date) + " \n";
-                text += "Force: " + myFormat.format(force);
+            text += "Attempt " + (int)dataPoint.getX() + ":\n";
+            text += "Date: " + df.format(date) + " \n";
+            text += "Force: " + myFormat.format(force);
 
-                txtPunchInfo.setText(text);
-            }
+            txtPunchInfo.setText(text);
         });
 
 
@@ -185,26 +180,18 @@ public class StudentGraphFragment extends Fragment {
     }
 
     /**
-     * Populates the punchData textview
+     * Populates the punchData textview.
      *
-     * @return
      */
-    private boolean populatePunchData(long accountID, MyAppProfileDatabase db) {
-        boolean hasPunch = true;
-
+    private void populatePunchData(long accountID, MyAppProfileDatabase db) {
         List<PunchModel> punchData = db.getAllPunchesFromProfile(accountID);
-        String display = "";
+        StringBuilder display = new StringBuilder();
 
-        if (punchData.size() == 0) {
-            hasPunch = false;
-        }
 
         for (int i = 0; i < punchData.size(); i++) {
-            display += punchData.get(i).toString(res.getString(R.string.date_format), res.getString(R.string.number_format));
+            display.append(punchData.get(i).toString(res.getString(R.string.date_format), res.getString(R.string.number_format)));
         }
 
-        txtPunchData.setText(display);
-
-        return hasPunch;
+        txtPunchData.setText(display.toString());
     }
 }

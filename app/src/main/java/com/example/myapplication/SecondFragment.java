@@ -4,18 +4,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.example.myapplication.DataModel.ProfileModel;
@@ -57,10 +56,16 @@ public class SecondFragment extends Fragment {
 
         btnBack.setOnClickListener(v -> navController.navigate(R.id.action_secondFragment_to_firstFragment));
 
-        btnHome.setOnClickListener(v -> {
-            NavOptions navOptions = new NavOptions.Builder().setPopUpTo(R.id.firstFragment, true).build();
-            navController.navigate(R.id.action_secondFragment_to_firstFragment);
-        });
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                navController.navigate(R.id.action_secondFragment_to_firstFragment);
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
+
+        btnHome.setOnClickListener(v -> navController.navigate(R.id.action_secondFragment_to_firstFragment));
 
         btnAdd.setOnClickListener(v -> navController.navigate(R.id.action_secondFragment_to_addNewUserFragment));
 
@@ -98,7 +103,7 @@ public class SecondFragment extends Fragment {
      * @param profileDatabase - Database helper class
      */
     private void showStudentsInList(MyAppProfileDatabase profileDatabase) {
-        ArrayAdapter studentArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, profileDatabase.getStudents());
+        ArrayAdapter<ProfileModel> studentArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, profileDatabase.getStudents());
         listView.setAdapter(studentArrayAdapter);
     }
 }

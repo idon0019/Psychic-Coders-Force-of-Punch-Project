@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -60,15 +61,28 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
 
         // cancels measuring punch and moves back to previous page.
         btnCancel.setOnClickListener(v -> {
-            getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
-            navController.navigate(R.id.action_measuringPunchFragment_to_phoneSecuredFragment);
+            onBackEvent();
         });
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                onBackEvent();
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         // used for debugging purposes. moves to the next page.
         btnNext.setOnClickListener(v -> {
             getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);
             navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
         });
+    }
+
+    private void onBackEvent() {
+        getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
+        navController.navigate(R.id.action_measuringPunchFragment_to_phoneSecuredFragment);
     }
 
     @Override

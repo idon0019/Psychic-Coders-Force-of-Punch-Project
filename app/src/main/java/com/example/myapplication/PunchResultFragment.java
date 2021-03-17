@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.content.res.Resources;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
@@ -86,12 +88,13 @@ public class PunchResultFragment extends Fragment {
             }
         });
 
-
+        // Navigates tp the phone secured fragment, allowing the user to measure their punch again.
         btnTryAgain.setOnClickListener(v -> {
             getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
             navController.navigate(R.id.action_punchResultFragment_to_phoneSecuredFragment);
         });
 
+        // Records the punch in the database and goes back to user profile.
         btnRecord.setOnClickListener(v -> {
             Date time = Calendar.getInstance().getTime();
 
@@ -101,5 +104,17 @@ public class PunchResultFragment extends Fragment {
             getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
             navController.navigate(R.id.action_punchResultFragment_to_studentProfileFragment);
         });
+
+        // Navigates back to student profile without recording punch.
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Toast.makeText(getActivity(), "Punch not recorded.", Toast.LENGTH_SHORT).show();
+                getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
+                navController.navigate(R.id.action_punchResultFragment_to_studentProfileFragment);
+            }
+        };
+
+        requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
     }
 }
