@@ -26,6 +26,10 @@ public class ProfileModel {
         setHeight(height);
     }
 
+    public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
+        this(id, "", firstName, lastName, age, weight, height);
+    }
+
     public ProfileModel() {
 
     }

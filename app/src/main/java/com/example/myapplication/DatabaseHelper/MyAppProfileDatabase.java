@@ -178,7 +178,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(queryString, null);
 
-        if (cursor.getCount() < 0) {
+        if (cursor.getCount() == 0) {
             return "";
         }
 
@@ -302,8 +302,11 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         String[] args = {Long.toString(accountID)};
         SQLiteDatabase database = this.getWritableDatabase();
 
-        File file = new File(getImagePathFromDatabase(accountID));
-        file.delete();
+        String filePath = getImagePathFromDatabase(accountID);
+        if (!filePath.isEmpty()) {
+            File file = new File(getImagePathFromDatabase(accountID));
+            file.delete();
+        }
 
         int numDeleted = database.delete(STUDENT_TABLE, where, args);
         if (numDeleted > 0)
