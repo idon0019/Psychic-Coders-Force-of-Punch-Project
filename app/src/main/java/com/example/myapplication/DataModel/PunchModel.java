@@ -54,11 +54,11 @@ public class PunchModel {
         this.date = date;
     }
 
-    public String toString (String dateFormat, String numFormat) {
+    public String toString (int attempt, String dateFormat, String numFormat) {
         DateFormat df = new SimpleDateFormat(dateFormat, Locale.CANADA);
         Date date = new Date(this.date);
         DecimalFormat myFormat = new DecimalFormat(numFormat);
 
-        return "Force: " + myFormat.format(force) + "\nDate: " + df.format(date) + "\n\n";
+        return String.format("Attempt %d:\nForce: %sN\nDate: %s\n\n", attempt, myFormat.format(force), df.format(date));
     }
 }

@@ -102,15 +102,19 @@ public class StudentGraphFragment extends Fragment {
 
     }
 
+    /**
+     * Sets the back event interaction. Moves back to the student profile screen along with
+     * appropriate accountID.
+     */
     private void onBackEvent() {
         // Navigate back to select a user screen
         Bundle bundle = new Bundle();
-        bundle.putLong("accountID", accountID);
+        bundle.putLong(res.getString(R.string.account_id_key), accountID);
         getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
         navController.navigate(R.id.action_studentGraph_to_studentProfileFragment);
     }
 
-    /*
+    /**
      * Populates the graph
      */
     private void populateGraph(MyAppProfileDatabase database, long accountID) {
@@ -124,19 +128,13 @@ public class StudentGraphFragment extends Fragment {
 
         // adds a listener to respond when data points are tapped
         series.setOnDataPointTapListener((series1, dataPoint) -> {
-            String text = "";
             double force = dataPoint.getY();
             Date date = new Date(database.getDateFromPunchForce(accountID, force));
-            DateFormat df = new SimpleDateFormat(res.getString(R.string.date_format), Locale.CANADA);
-            DecimalFormat myFormat = new DecimalFormat(res.getString(R.string.number_format));
+            DateFormat dateFormat = new SimpleDateFormat(res.getString(R.string.date_format), Locale.CANADA);
+            DecimalFormat decimalFormat = new DecimalFormat(res.getString(R.string.number_format));
 
-            text += "Attempt " + (int)dataPoint.getX() + ":\n";
-            text += "Date: " + df.format(date) + " \n";
-            text += "Force: " + myFormat.format(force);
-
-            txtPunchInfo.setText(text);
+            txtPunchInfo.setText(String.format(res.getString(R.string.data_point_details), (int)dataPoint.getX(), dateFormat.format(date), decimalFormat.format(force)));
         });
-
 
         graph.addSeries(series);
 
@@ -162,21 +160,11 @@ public class StudentGraphFragment extends Fragment {
         //graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
         graph.getGridLabelRenderer().setNumHorizontalLabels(3); // only 4 because of the space
 
-        // activate horizontal zooming and scrolling
+        // sets the axis and viewport to be scrollable and scalable
         graph.getViewport().setScalable(true);
-
-        // activate horizontal scrolling
         graph.getViewport().setScrollable(true);
-
-        // activate horizontal and vertical zooming and scrolling
         graph.getViewport().setScalableY(true);
-
-        // activate vertical scrolling
         graph.getViewport().setScrollableY(true);
-
-        // as we use dates as labels, the human rounding to nice readable numbers
-        // is not necessary
-        //graph.getGridLabelRenderer().setHumanRounding(false);
     }
 
     /**
@@ -189,7 +177,7 @@ public class StudentGraphFragment extends Fragment {
 
 
         for (int i = 0; i < punchData.size(); i++) {
-            display.append(punchData.get(i).toString(res.getString(R.string.date_format), res.getString(R.string.number_format)));
+            display.append(punchData.get(i).toString(i, res.getString(R.string.date_format), res.getString(R.string.number_format)));
         }
 
         txtPunchData.setText(display.toString());

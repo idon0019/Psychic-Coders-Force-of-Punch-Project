@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -23,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.view.LayoutInflater;
@@ -37,13 +37,11 @@ import android.widget.Toast;
 
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
+import com.example.myapplication.ImageMaker.BitmapMaker;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class AddNewUserFragment extends Fragment {
@@ -72,12 +70,16 @@ public class AddNewUserFragment extends Fragment {
                     if (imageSize == 0) { // if no photo was taken then delete the temp file and don't update the image
                         photo.delete();
                     } else { // if a photo was taken then update the photo and delete the old photo if one exists
-                        imgAdd.setImageURI(tempImageUri);
                         imageUri = tempImageUri;
                         photoPath = photo.toString();
+                        BitmapMaker.setImage(photoPath, imgAdd);
+
+                        // saves a downscaled version of the image instead of a full version. Uses ImgViewProfilePicture to maximize quality.
+                        BitmapMaker.downscaleAndSaveBitMap(photoPath, imgAdd, photo);
                         if (oldPhoto != null) // if an old photo exists then delete it
                             oldPhoto.delete();
                     }
+                    imgAdd.setBackgroundResource(R.color.image_background_transparent);
                 }
             });
 
@@ -87,14 +89,24 @@ public class AddNewUserFragment extends Fragment {
                 @Override
                 public void onActivityResult(ActivityResult result) {
                     Intent getImage = result.getData();
+                    Bitmap bitmap = null;
                     if (getImage != null) { // sets the image if an image was chosen
                         imageUri = getImage.getData();
-                        imgAdd.setImageURI(imageUri);
-                        photoPath = getPicturePath(imageUri);
-                        if (photo != null) // if a camera image already exists then delete it
-                        {
-                            photo.delete();
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+                        photoPath = photo.toString();
+                        BitmapMaker.bitmapToFile(bitmap, photo);
+                        BitmapMaker.downscaleAndSaveBitMap(photoPath, imgAdd, photo);
+                        BitmapMaker.setImage(photoPath, imgAdd);
+
+                        if (oldPhoto != null) // if a camera image already exists then delete it
+                            oldPhoto.delete();
+                        imgAdd.setBackgroundResource(R.color.image_background_transparent);
+                    } else {
+                        photo.delete();
                     }
                 }
             });
@@ -102,10 +114,7 @@ public class AddNewUserFragment extends Fragment {
     // Register the permissions callback, which handles the user's response to the
     // system permissions dialog. Save the return value, an instance of
     // ActivityResultLauncher, as an instance variable.
-    ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-
-            });
+    ActivityResultLauncher<String> requestPermissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> { }); // empty
 
     public AddNewUserFragment() {
         // Required empty public constructor
@@ -136,6 +145,7 @@ public class AddNewUserFragment extends Fragment {
         imgAdd = view.findViewById(R.id.ImgAdd);
         res = getResources();
 
+        // Opens date picker dialog to choose birthday.
         btnDate.setOnClickListener(v -> {
             calendar = Calendar.getInstance();
 
@@ -151,6 +161,7 @@ public class AddNewUserFragment extends Fragment {
             dialog.show();
         });
 
+        // Creates new profile if all fields are filled, or prompts user for more information.
         btnSubmit.setOnClickListener(v -> {
             ProfileModel profileModel = null;
             boolean valid = false;
@@ -164,10 +175,8 @@ public class AddNewUserFragment extends Fragment {
                         Float.parseFloat(edtWeight.getText().toString()),
                         Float.parseFloat(edtHeight.getText().toString())
                 );
-                valid = true;
 
-                if (edtFirstName.getText().toString().equals("") || edtLastName.getText().toString().equals(""))
-                    valid = false;
+                valid = !edtFirstName.getText().toString().equals("") && !edtLastName.getText().toString().equals("") && photoPath != null;
             } catch (Exception e) {
                 // no special error handler.
             }
@@ -182,7 +191,7 @@ public class AddNewUserFragment extends Fragment {
                     long id = databaseHelper.getLastStudentID();
 
                     Bundle accountID = new Bundle();
-                    accountID.putLong("accountID", id);
+                    accountID.putLong(res.getString(R.string.account_id_key), id);
                     getParentFragmentManager().setFragmentResult("studentProfile", accountID);
                     navController.navigate(R.id.action_addNewUserFragment_to_studentProfileFragment);
                 } else {
@@ -194,8 +203,8 @@ public class AddNewUserFragment extends Fragment {
 
         });
 
+        // Opens image picker to let user choose a profile image.
         imgAdd.setOnClickListener(v -> {
-
             if (ContextCompat.checkSelfPermission(
                     getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED) {
@@ -208,26 +217,27 @@ public class AddNewUserFragment extends Fragment {
                 builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
                     Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                    // checks if a photo already exists
-                    if (photo != null)
-                        oldPhoto = photo;
-
-                    // saves the photo to a file
+                    // creates a temp file and return its uri
                     try {
-                        photo = createImageFile();
+                        tempImageUri = createImageFileURI();
                     } catch (IOException e) {
-                        //
+                        e.printStackTrace();
                     }
 
-                    if (photo != null && getContext() != null) {
-                        tempImageUri = FileProvider.getUriForFile(getContext(), "com.example.myapplication.fileprovider", photo);
-                    }
                     takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri);
                     getCameraImage.launch(takePhotoIntent);
                 }));
 
                 builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
-                    Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    // creates a temp file and return its uri
+                    try {
+                        tempImageUri = createImageFileURI();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
+                    pickPhotoIntent.setType("image/*");
                     getGalleryImage.launch(pickPhotoIntent);
                 }));
 
@@ -253,9 +263,7 @@ public class AddNewUserFragment extends Fragment {
             }
         });
 
-        btnCancel.setOnClickListener(v -> {
-            onBackEvent();
-        });
+        btnCancel.setOnClickListener(v -> onBackEvent());
 
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
@@ -267,24 +275,39 @@ public class AddNewUserFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
     }
 
+    /**
+     * Sets the appropriate back event interaction. Navigates back to user select screen.
+     */
     private void onBackEvent() {
+        if (photo != null)
+            photo.delete();
         Toast.makeText(getActivity(), "Canceled", Toast.LENGTH_SHORT).show();
         navController.navigate(R.id.action_addNewUserFragment_to_secondFragment);
     }
 
-    public File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).format(new Date());
-        String fileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    /**
+     * Creates an empty image file with an auto-generated name and stores it on the file system for later use.
+     * Returns a URI of the created file.
+     * @return An image file URI.
+     * @throws IOException Creating file failed.
+     */
+    public Uri createImageFileURI() throws IOException {
+        if (photo != null)
+            oldPhoto = photo;
 
-        return File.createTempFile(
-                fileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        photo = BitmapMaker.createNewImageFile(getContext());
+
+        if (photo != null && getContext() != null)
+            return FileProvider.getUriForFile(getContext(), "com.example.myapplication.fileprovider", photo);
+        else
+            return null;
     }
 
+    /**
+     * Gets the size of a photo from its URI.
+     * @param contentURI Photo URI.
+     * @return Size of the photo.
+     */
     public long getSizeFromURI(Uri contentURI) {
         long result = 0;
         Cursor cursor = getContext().getContentResolver().query(contentURI, null, null, null, null);
@@ -295,21 +318,5 @@ public class AddNewUserFragment extends Fragment {
             cursor.close();
         }
         return result;
-    }
-
-    private String getPicturePath(Uri uri) {
-        String path;
-
-        String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-        Cursor cursor = getContext().getContentResolver().query(uri,
-                filePathColumn, null, null, null);
-        cursor.moveToFirst();
-
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        path = cursor.getString(columnIndex);
-        cursor.close();
-
-        return path;
     }
 }

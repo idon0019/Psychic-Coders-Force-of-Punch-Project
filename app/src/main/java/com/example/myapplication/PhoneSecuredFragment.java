@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +20,7 @@ public class PhoneSecuredFragment extends Fragment {
     public static final String REQUEST_KEY = "phoneSecured";
     private NavController navController;
     private long accountID;
+    private Resources res;
 
     public PhoneSecuredFragment() {
         // Required empty public constructor
@@ -37,13 +39,14 @@ public class PhoneSecuredFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = new Bundle();
         navController = Navigation.findNavController(view);
+        res = getResources();
 
         ImageButton imgBtnConfirm = view.findViewById(R.id.BtnConfirm);
         Button btnCancel = view.findViewById(R.id.BtnCancel);
 
         getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
-            accountID = result.getLong("accountID");
-            bundle.putLong("accountID", accountID);
+            accountID = result.getLong(res.getString(R.string.account_id_key));
+            bundle.putLong(res.getString(R.string.account_id_key), accountID);
         });
 
         // confirm and move to measure punch

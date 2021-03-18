@@ -99,5 +99,4 @@ public class FirstFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
     }
-
 }

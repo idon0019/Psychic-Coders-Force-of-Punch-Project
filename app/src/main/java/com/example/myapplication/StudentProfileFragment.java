@@ -2,7 +2,6 @@ package com.example.myapplication;
 
 import android.app.AlertDialog;
 import android.content.res.Resources;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -21,17 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.example.myapplication.DataModel.PunchModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
+import com.example.myapplication.ImageMaker.BitmapMaker;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class StudentProfileFragment extends Fragment {
 
@@ -83,14 +78,14 @@ public class StudentProfileFragment extends Fragment {
 
         // Fragment listener that takes in account id to populate the profile with.
         getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
-            accountID = result.getLong("accountID");
+            accountID = result.getLong(res.getString(R.string.account_id_key));
             DecimalFormat df = new DecimalFormat(res.getString(R.string.number_format));
 
             String path = database.getImagePathFromDatabase(accountID);
-            imgViewProfile.setImageBitmap(BitmapFactory.decodeFile(path));
+            BitmapMaker.setImage(path, imgViewProfile);
             txtFirstName.setText(database.getFirstNameFromDatabase(accountID));
             txtLastName.setText(database.getLastNameFromDatabase(accountID));
-            txtAge.setText(String.format(res.getString(R.string.student_age), database.getAgeFromDatabase(accountID), getStudentAge(database)));
+            txtAge.setText(String.format(res.getString(R.string.student_age), database.getDOBFromDatabase(accountID), database.getAgeFromDatabase(accountID)));
             txtWeight.setText(database.getWeightFromDatabase(accountID));
             txtHeight.setText(database.getHeightFromDatabase(accountID));
 
@@ -100,11 +95,11 @@ public class StudentProfileFragment extends Fragment {
                 graph.setOnClickListener(v -> {
                     // Navigate back to select a user screen
                     Bundle bundle = new Bundle();
-                    bundle.putLong("accountID", accountID);
+                    bundle.putLong(res.getString(R.string.account_id_key), accountID);
                     getParentFragmentManager().setFragmentResult(StudentGraphFragment.REQUEST_KEY, bundle);
                     navController.navigate(R.id.action_studentProfileFragment_to_studentGraph);
                 });
-                txtForcePunchResult.setText(df.format(database.getHighScore(accountID)));
+                txtForcePunchResult.setText(String.format(res.getString(R.string.punch_highscore), df.format(database.getHighScore(accountID))));
             } else { // if data doesn't exist then show an error toast when graph is tapped.
                 graph.setOnClickListener(v -> Toast.makeText(getContext(), R.string.no_punch_data, Toast.LENGTH_SHORT).show());
                 txtForcePunchResult.setText(R.string.no_punch_record);
@@ -163,7 +158,7 @@ public class StudentProfileFragment extends Fragment {
         // when pressed lets the user record a new punch.
         btnRecordPunch.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
-            bundle.putLong("accountID", accountID);
+            bundle.putLong(res.getString(R.string.account_id_key), accountID);
             getParentFragmentManager().setFragmentResult(PhoneSecuredFragment.REQUEST_KEY, bundle);
             navController.navigate(R.id.action_studentProfileFragment_to_phoneSecuredFragment);
         });
@@ -171,45 +166,10 @@ public class StudentProfileFragment extends Fragment {
         // moves to EditStudentProfile
         btnEditProfile.setOnClickListener(v -> {
             Bundle bundle2 = new Bundle();
-            bundle2.putLong("accountID", accountID);
+            bundle2.putLong(res.getString(R.string.account_id_key), accountID);
             getParentFragmentManager().setFragmentResult(EditStudentProfileFragment.REQUEST_KEY, bundle2);
             navController.navigate(R.id.action_studentProfileFragment_to_editStudentProfileFragment);
         });
-    }
-
-    /**
-     * Returns student age.
-     * @param database : Database helper class.
-     * @return Age of student.
-     */
-    private int getStudentAge(MyAppProfileDatabase database) {
-        Date date = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
-        try {
-            date = sdf.parse(database.getAgeFromDatabase(accountID));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (date == null) return 0;
-
-        Calendar studentDOB = Calendar.getInstance();
-        Calendar todayDate = Calendar.getInstance();
-
-        studentDOB.setTime(date);
-
-        int year = studentDOB.get(Calendar.YEAR);
-        int month = studentDOB.get(Calendar.MONTH);
-        int day = studentDOB.get(Calendar.DAY_OF_MONTH);
-
-        studentDOB.set(year, month, day);
-
-        int studentAge = todayDate.get(Calendar.YEAR) - studentDOB.get(Calendar.YEAR);
-
-        if (todayDate.get(Calendar.DAY_OF_YEAR) < studentDOB.get(Calendar.DAY_OF_YEAR)) {
-            studentAge--;
-        }
-        return studentAge;
     }
 
     /**

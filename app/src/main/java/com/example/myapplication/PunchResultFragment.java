@@ -71,8 +71,8 @@ public class PunchResultFragment extends Fragment {
             punchString = df.format(punchScore) + " N";
             txtPunchResult.setText(punchString);
 
-            accountID = result.getLong("accountID");
-            bundle.putLong("accountID", accountID);
+            accountID = result.getLong(res.getString(R.string.account_id_key));
+            bundle.putLong(res.getString(R.string.account_id_key), accountID);
 
             // displays new high score message if necessary
             if (punchScore < database.getHighScore(accountID))

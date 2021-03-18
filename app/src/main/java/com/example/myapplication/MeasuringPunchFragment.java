@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -28,6 +29,7 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
     private Sensor sen;
     private long accountID;
     private Bundle bundle;
+    private Resources res;
 
     public MeasuringPunchFragment() {
         // Required empty public constructor
@@ -51,12 +53,13 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         navController = Navigation.findNavController(view);
         Button btnCancel = view.findViewById(R.id.BtnCancel);
         Button btnNext = view.findViewById(R.id.BtnNext);
+        res = getResources();
 
         bundle = new Bundle();
 
         getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
-            accountID = result.getLong("accountID");
-            bundle.putLong("accountID", accountID);
+            accountID = result.getLong(res.getString(R.string.account_id_key));
+            bundle.putLong(res.getString(R.string.account_id_key), accountID);
         });
 
         // cancels measuring punch and moves back to previous page.

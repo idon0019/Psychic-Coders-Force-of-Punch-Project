@@ -12,8 +12,13 @@ import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
@@ -74,7 +79,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase(); // Insert data
         ContentValues cv = new ContentValues(); // Stores data in pairs
 
-        cv.put(COLUMN_STUDENT_PHOTO, profileModel.getPhotoUri());
+        cv.put(COLUMN_STUDENT_PHOTO, profileModel.getPhotoPath());
         cv.put(COLUMN_STUDENT_FIRSTNAME, profileModel.getFirstName());
         cv.put(COLUMN_STUDENT_LASTNAME, profileModel.getLastName());
         cv.put(COLUMN_STUDENT_AGE, profileModel.getAge());
@@ -232,21 +237,56 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     /**
-     * Gets the age of the student.
+     * Gets the birth date of the student.
      * @param accountID : ID of account to look through.
      * @return A string representation of their birthday in dd/mm/yyyy
      */
-    public String getAgeFromDatabase(long accountID) {
-        String studentAge;
+    public String getDOBFromDatabase(long accountID) {
+        String studentDOB;
 
         SQLiteDatabase db = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_AGE + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
         Cursor cursor = db.rawQuery(queryString, null);
         cursor.moveToNext();
-        studentAge = cursor.getString(cursor.getPosition());
+        studentDOB = cursor.getString(cursor.getPosition());
         cursor.close();
 
+        return studentDOB;
+    }
+
+    /**
+     * Returns student age.
+     * @param accountID : ID of account to look through
+     * @return Age of student.
+     */
+    public int getAgeFromDatabase(long accountID) {
+        Date date = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.CANADA);
+        try {
+            date = sdf.parse(getDOBFromDatabase(accountID));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if (date == null) return 0;
+
+        Calendar studentDOB = Calendar.getInstance();
+        Calendar todayDate = Calendar.getInstance();
+
+        studentDOB.setTime(date);
+
+        int year = studentDOB.get(Calendar.YEAR);
+        int month = studentDOB.get(Calendar.MONTH);
+        int day = studentDOB.get(Calendar.DAY_OF_MONTH);
+
+        studentDOB.set(year, month, day);
+
+        int studentAge = todayDate.get(Calendar.YEAR) - studentDOB.get(Calendar.YEAR);
+
+        if (todayDate.get(Calendar.DAY_OF_YEAR) < studentDOB.get(Calendar.DAY_OF_YEAR)) {
+            studentAge--;
+        }
         return studentAge;
     }
 
@@ -303,7 +343,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         SQLiteDatabase database = this.getWritableDatabase();
 
         String filePath = getImagePathFromDatabase(accountID);
-        if (!filePath.isEmpty()) {
+        if (filePath != null && !filePath.isEmpty()) {
             File file = new File(getImagePathFromDatabase(accountID));
             file.delete();
         }

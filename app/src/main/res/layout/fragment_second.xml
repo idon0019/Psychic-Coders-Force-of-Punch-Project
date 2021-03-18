@@ -51,34 +51,12 @@
         android:id="@+id/TxtSelectAccount"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Please select an account"
-        android:textSize="30sp"
-        android:textColor="@color/white"
-        android:textStyle="bold"
         android:layout_gravity="left"
         android:padding="20sp"
-        />
-
-    <Button
-        android:id="@+id/BtnShowAll"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20sp"
-        android:layout_marginBottom="10sp"
-        android:backgroundTint="@color/black"
-        android:text="Show all"
-        android:textColor="#FFFFFF" />
-
-    <TextView
-        android:id="@+id/TxtNumResults"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Results: 0"
-        android:textSize="20sp"
+        android:text="Please select an account"
         android:textColor="@color/white"
-        android:paddingLeft="20sp"
-        android:layout_marginBottom="10sp"
-        />
+        android:textSize="24sp"
+        android:textStyle="bold" />
 
     <ListView
         android:id="@+id/ListProfiles"

@@ -1,14 +1,13 @@
 package com.example.myapplication.DataModel;
 
 import java.util.Calendar;
-import java.util.Date;
 
 public class ProfileModel {
     private static final int MIN_ALLOWED_AGE = 5;
     private static final int MAX_ALLOWED_AGE = 100;
 
     private long id;
-    private String photoUri;
+    private String photoPath;
     private String firstName;
     private String lastName;
     private String age;
@@ -16,26 +15,14 @@ public class ProfileModel {
     private float height;
 
 
-    public ProfileModel(long id, String imageUri, String firstName, String lastName, String age, float weight, float height) {
+    public ProfileModel(long id, String imagePath, String firstName, String lastName, String age, float weight, float height) {
         setId(id);
-        setPhotoUri(imageUri);
+        setPhotoPath(imagePath);
         setFirstName(firstName);
         setLastName(lastName);
         setAge(age);
         setWeight(weight);
         setHeight(height);
-    }
-
-    public ProfileModel(long id, String firstName, String lastName, String age, float weight, float height) {
-        this(id, "", firstName, lastName, age, weight, height);
-    }
-
-    public ProfileModel() {
-
-    }
-
-    public String toString() {
-        return id + ". " + firstName + " " + lastName + ", " + age;
     }
 
     public long getId() {
@@ -46,11 +33,11 @@ public class ProfileModel {
         this.id = id;
     }
 
-    public String getPhotoUri() {return  photoUri; }
+    public String getPhotoPath() {return  photoPath; }
 
-    public void setPhotoUri(String uri) {
+    public void setPhotoPath(String uri) {
 
-        this.photoUri = uri;
+        this.photoPath = uri;
     }
 
     public String getFirstName() {
@@ -106,5 +93,9 @@ public class ProfileModel {
             throw new IllegalArgumentException("Invalid Height");
         }
         this.height = height;
+    }
+
+    public String toString() {
+        return String.format("%s, %s.", firstName, lastName);
     }
 }

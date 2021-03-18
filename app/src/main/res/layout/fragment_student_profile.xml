@@ -53,9 +53,7 @@
                 android:layout_height="150sp"
                 android:layout_marginLeft="20sp"
                 android:layout_marginTop="20sp"
-                android:background="@color/cardview_dark_background"
-                android:src="@drawable/ic_launcher_foreground"
-
+                android:background="@color/image_background_transparent"
                 />
 
             <TextView
@@ -207,6 +205,7 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/TxtHighScore"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/TxtDateOfBirth"
@@ -219,7 +218,7 @@
                 android:id="@+id/TxtPunchForceResult"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignBottom="@+id/TxtAge"
+                android:layout_below="@id/TxtHighScore"
                 android:layout_marginLeft="20sp"
                 android:gravity="left"
                 android:text="2000N"

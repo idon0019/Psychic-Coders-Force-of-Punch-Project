@@ -1,12 +1,13 @@
 package com.example.myapplication;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -17,8 +18,12 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.example.myapplication.Adapters.ProfileAdapter;
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
+
+import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 public class SecondFragment extends Fragment {
 
@@ -26,7 +31,7 @@ public class SecondFragment extends Fragment {
     private ListView listView;
     private NavController navController;
     private MyAppProfileDatabase profileDatabase;
-
+    private Resources res;
 
     public SecondFragment() {
         // Required empty public constructor
@@ -47,10 +52,8 @@ public class SecondFragment extends Fragment {
         ImageButton btnBack = view.findViewById(R.id.BtnBack);
         ImageButton btnHome = view.findViewById(R.id.BtnHome);
         ImageButton btnAdd = view.findViewById(R.id.BtnAddAccount);
-        Button btnShowAll = view.findViewById(R.id.BtnShowAll);
         listView = view.findViewById(R.id.ListProfiles);
-        txtNumResults = view.findViewById(R.id.TxtNumResults);
-
+        res = getResources();
 
         profileDatabase = new MyAppProfileDatabase(getActivity());
 
@@ -64,24 +67,10 @@ public class SecondFragment extends Fragment {
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
-
         btnHome.setOnClickListener(v -> navController.navigate(R.id.action_secondFragment_to_firstFragment));
-
         btnAdd.setOnClickListener(v -> navController.navigate(R.id.action_secondFragment_to_addNewUserFragment));
 
-        /*
-         * Show all button - Displays all the students in the database.
-         * Calls the getNumberOfStudentsFromDatabase method in the database helper class and returns
-         * the number of students in the database, and passes the database helper object to the
-         * showStudentsInList() method within this class.
-         */
-        btnShowAll.setOnClickListener(v -> {
-
-            int results = profileDatabase.getNumberOfStudentsFromDatabase();
-            txtNumResults.setText("Results: " + results);
-            showStudentsInList(profileDatabase);
-
-        });
+        showStudentsInList(profileDatabase);
 
         /*
          * A listener for when the user clicks on an item in the list
@@ -90,12 +79,11 @@ public class SecondFragment extends Fragment {
             ProfileModel profileModel = (ProfileModel) parent.getItemAtPosition(position);
 
             Bundle bundle = new Bundle();
-            bundle.putLong("accountID", profileModel.getId());
+            bundle.putLong(res.getString(R.string.account_id_key), profileModel.getId());
             getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
             // Navigate to student profile screen
             navController.navigate(R.id.action_secondFragment_to_studentProfileFragment);
         });
-
     }
 
     /**
@@ -103,7 +91,7 @@ public class SecondFragment extends Fragment {
      * @param profileDatabase - Database helper class
      */
     private void showStudentsInList(MyAppProfileDatabase profileDatabase) {
-        ArrayAdapter<ProfileModel> studentArrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, profileDatabase.getStudents());
+        ProfileAdapter studentArrayAdapter = new ProfileAdapter(getContext(), R.layout.list_item, (ArrayList<ProfileModel>) profileDatabase.getStudents());
         listView.setAdapter(studentArrayAdapter);
     }
 }
