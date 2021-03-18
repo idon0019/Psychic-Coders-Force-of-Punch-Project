@@ -21,6 +21,7 @@ import java.util.concurrent.Executor;
 
 /**
  * Class used to down scale bitmaps into smaller sizes so the app loads faster.
+ * Also handles the creation and saving of bitmaps.
  */
 public class BitmapMaker {
     /**

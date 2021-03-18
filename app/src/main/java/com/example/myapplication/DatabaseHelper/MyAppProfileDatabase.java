@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+@SuppressWarnings("ResultOfMethodCallIgnored")
 public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     // Profile table
@@ -45,10 +46,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Method gets called first time the database is accessed
-     * @param db : Database to operate on.
+     * @param database : Database to operate on.
      */
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate(SQLiteDatabase database) {
         String createTableStatement = "CREATE TABLE " + STUDENT_TABLE
                 + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_STUDENT_PHOTO + " TEXT, "
@@ -58,7 +59,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 + COLUMN_STUDENT_WEIGHT + " FLOAT, "
                 + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
-        db.execSQL(createTableStatement);
+        database.execSQL(createTableStatement);
 
         String createTable = "CREATE TABLE " + PUNCH_TABLE
                 + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -66,7 +67,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 + PUNCH_FORCE + " REAL, "
                 + PUNCH_DATE + " INTEGER)";
 
-        db.execSQL(createTable);
+        database.execSQL(createTable);
     }
 
 
@@ -76,7 +77,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * @return True if insertion is successful, false if otherwise.
      */
     public boolean addStudent(ProfileModel profileModel) {
-        SQLiteDatabase db = this.getWritableDatabase(); // Insert data
+        SQLiteDatabase database = this.getWritableDatabase(); // Insert data
         ContentValues cv = new ContentValues(); // Stores data in pairs
 
         cv.put(COLUMN_STUDENT_PHOTO, profileModel.getPhotoPath());
@@ -86,7 +87,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         cv.put(COLUMN_STUDENT_WEIGHT, profileModel.getWeight());
         cv.put(COLUMN_STUDENT_HEIGHT, profileModel.getHeight());
 
-        long insert = db.insert(STUDENT_TABLE, null, cv);
+        long insert = database.insert(STUDENT_TABLE, null, cv);
 
         return insert != -1;
     }
@@ -94,8 +95,8 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     // gets the last student added
     public long getLastStudentID() {
         String queryString = "SELECT * FROM " + STUDENT_TABLE + " ORDER BY " + COLUMN_ID + " DESC LIMIT 1";
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(queryString, null);
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(queryString, null);
         long id = -1;
 
         if (cursor.getCount() > 0) {
@@ -109,10 +110,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     public ProfileModel findStudent(long accountID) {
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT *" + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
         if (cursor.getCount() == 0) {
             return null;
         }
@@ -139,8 +140,8 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public List<ProfileModel> getStudents() {
         List<ProfileModel> returnList = new ArrayList<>();
         String queryString = "SELECT * FROM " + STUDENT_TABLE;
-        SQLiteDatabase db = this.getReadableDatabase();
-        Cursor cursor = db.rawQuery(queryString, null);
+        SQLiteDatabase database = this.getReadableDatabase();
+        Cursor cursor = database.rawQuery(queryString, null);
 
         if (cursor.moveToFirst()) { // Moves cursor to the first row, returns false if list is empty
             do {
@@ -150,38 +151,23 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         }
 
         cursor.close();
-        db.close();
+        database.close();
 
         return returnList;
     }
 
     /**
-     * Gets the number of students in the database.
-     * @return The number of students.
+     * Returns the image path of an account.
+     * @param accountID Account ID to look at.
+     * @return A string path.
      */
-    public int getNumberOfStudentsFromDatabase() {
-        int num = 0;
-
-        String stringQuery = "SELECT COUNT(*) FROM " + STUDENT_TABLE;
-        Cursor cursor = getReadableDatabase().rawQuery(stringQuery, null);
-
-        if (cursor.getCount() > 0) {
-            cursor.moveToFirst();
-            num = cursor.getInt(0);
-        }
-
-        cursor.close();
-
-        return num;
-    }
-
     public String getImagePathFromDatabase(long accountID) {
         String imagePath;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_PHOTO + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
 
         if (cursor.getCount() == 0) {
             return "";
@@ -195,6 +181,30 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     /**
+     * Returns a list of all paths used by all profiles.
+     * @return A list of all stored paths.
+     */
+    public List<String> getAllImagePathsFromDatabase() {
+        List<String> allImagePaths = new ArrayList<>();
+        SQLiteDatabase database = this.getReadableDatabase();
+        String query = "SELECT " + COLUMN_STUDENT_PHOTO + " FROM " + STUDENT_TABLE;
+
+        Cursor cursor = database.rawQuery(query, null);
+
+        if (cursor.getCount() < 1) {
+            return null;
+        }
+
+        cursor.moveToFirst();
+        do {
+            allImagePaths.add(cursor.getString(0));
+        } while (cursor.moveToNext());
+
+        cursor.close();
+        return allImagePaths;
+    }
+
+    /**
      * Gets the first name of the student of which profile the user chose.
      * @param accountID : ID of account to look through.
      * @return Student first name.
@@ -202,12 +212,12 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public String getFirstNameFromDatabase(long accountID) {
         String studentFirstName;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_FIRSTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
 
-        if (cursor.getCount() < 0 ) {
+        if (cursor.getCount() < 1 ) {
             return "";
         }
         cursor.moveToNext();
@@ -225,10 +235,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public String getLastNameFromDatabase(long accountID) {
         String studentLastName;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_LASTNAME + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
         cursor.moveToNext();
         studentLastName = cursor.getString(cursor.getPosition());
         cursor.close();
@@ -244,10 +254,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public String getDOBFromDatabase(long accountID) {
         String studentDOB;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_AGE + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
         cursor.moveToNext();
         studentDOB = cursor.getString(cursor.getPosition());
         cursor.close();
@@ -298,10 +308,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public String getWeightFromDatabase(long accountID) {
         String studentWeight;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_WEIGHT + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
 
         cursor.moveToNext();
 
@@ -319,10 +329,10 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     public String getHeightFromDatabase(long accountID) {
         String studentHeight;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT " + COLUMN_STUDENT_HEIGHT + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
 
-        Cursor cursor = db.rawQuery(queryString, null);
+        Cursor cursor = database.rawQuery(queryString, null);
 
         cursor.moveToNext();
 
@@ -392,15 +402,15 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * @return True if insertion successful, false if otherwise.
      */
     public boolean addPunch(PunchModel punchModel) {
-        SQLiteDatabase db = this.getWritableDatabase();
+        SQLiteDatabase database = this.getWritableDatabase();
         ContentValues newData = new ContentValues();
 
         newData.put(PUNCH_ACCOUNT_ID, punchModel.getAccountID());
         newData.put(PUNCH_FORCE, punchModel.getForce());
         newData.put(PUNCH_DATE, punchModel.getDate());
 
-        long insert = db.insert(PUNCH_TABLE, null, newData);
-        db.close();
+        long insert = database.insert(PUNCH_TABLE, null, newData);
+        database.close();
 
         return insert != -1;
     }
@@ -413,16 +423,16 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      */
     public long getDateFromPunchForce(long accountID, double force) {
         String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_FORCE + " = " + force + " AND " + PUNCH_ACCOUNT_ID + " = " + accountID;
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
         long value = 0;
 
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = database.rawQuery(query, null);
 
         if (cursor.moveToFirst())
             value = (long) cursor.getDouble(3);
 
         cursor.close();
-        db.close();
+        database.close();
 
         return value;
     }
@@ -440,9 +450,9 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                 PUNCH_FORCE + " DESC LIMIT 1";
         double value;
 
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = database.rawQuery(query, null);
 
         if (cursor.moveToFirst())
             value = cursor.getDouble(2);
@@ -475,9 +485,9 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         List<PunchModel> returnList = new ArrayList<>();
 
         String query = "SELECT * FROM " + PUNCH_TABLE + " WHERE " + PUNCH_ACCOUNT_ID + " = " + accountID;
-        SQLiteDatabase db = this.getReadableDatabase();
+        SQLiteDatabase database = this.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery(query, null);
+        Cursor cursor = database.rawQuery(query, null);
 
         if (cursor.moveToFirst()) {
             do {
@@ -491,18 +501,18 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             } while(cursor.moveToNext());
         }
         cursor.close();
-        db.close();
+        database.close();
         return returnList;
     }
 
     /**
      * This method gets called whenever the version of the database changes
-     * @param db : Database to migrate.
+     * @param database : Database to migrate.
      * @param oldVersion : Old version
      * @param newVersion : New version
      */
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {
         String dropTable;
         String createTable;
 
@@ -511,7 +521,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
             case 2:
                 dropTable = "DROP TABLE " + PUNCH_TABLE;
 
-                db.execSQL(dropTable);
+                database.execSQL(dropTable);
 
                 createTable = "CREATE TABLE " + PUNCH_TABLE
                         + " (" + PUNCH_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -519,13 +529,13 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                         + PUNCH_FORCE + " REAL, "
                         + PUNCH_DATE + " INTEGER)";
 
-                db.execSQL(createTable);
+                database.execSQL(createTable);
             case 3: // preserved for posterity. technically this case doesn't need execution since
                     // later migrations already take care of the transition safely.
 //                dropTable = "DROP TABLE " + STUDENT_TABLE;
 //
-//                db.execSQL(dropTable); // deletes student table
-//                db.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
+//                database.execSQL(dropTable); // deletes student table
+//                database.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
 //
 //                createTable = "CREATE TABLE " + STUDENT_TABLE
 //                        + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -535,12 +545,12 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 //                        + COLUMN_STUDENT_WEIGHT + " FLOAT, "
 //                        + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 //
-//                db.execSQL(createTable);
+//                database.execSQL(createTable);
             case 4:
                 dropTable = "DROP TABLE " + STUDENT_TABLE;
 
-                db.execSQL(dropTable); // deletes student table
-                db.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
+                database.execSQL(dropTable); // deletes student table
+                database.execSQL("DELETE FROM "+PUNCH_TABLE); // must delete all values from punch table as well
 
                 createTable = "CREATE TABLE " + STUDENT_TABLE
                         + " (" + COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -551,7 +561,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                         + COLUMN_STUDENT_WEIGHT + " FLOAT, "
                         + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
-                db.execSQL(createTable);
+                database.execSQL(createTable);
 
         }
     }

@@ -105,7 +105,7 @@ public class EditStudentProfileFragment extends Fragment {
                         BitmapMaker.downscaleAndSaveBitMap(photoPath, imgEdit, photo);
                         BitmapMaker.setImage(photoPath, imgEdit);
 
-                        if (oldPhoto != null) // if a camera image already exists then delete it
+                        if (oldPhoto != null && oldPhoto != initialPhoto) // if a camera image already exists then delete it
                             oldPhoto.delete();
                         imgEdit.setBackgroundResource(R.color.image_background_transparent);
                     } else {
@@ -145,6 +145,7 @@ public class EditStudentProfileFragment extends Fragment {
 
         res = getResources();
 
+        // Populates existing fields with profile information.
         getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
             accountID = result.getLong(res.getString(R.string.account_id_key));
 
@@ -160,6 +161,7 @@ public class EditStudentProfileFragment extends Fragment {
 
         });
 
+        // Launches dialog to pick date of birth.
         btnDate.setOnClickListener(v -> {
             calendar = Calendar.getInstance();
 
@@ -175,6 +177,7 @@ public class EditStudentProfileFragment extends Fragment {
             dialog.show();
         });
 
+        // submits profile changes.
         btnSubmit.setOnClickListener(v -> {
             Bundle bundle = new Bundle();
             ProfileModel profileModel = null;

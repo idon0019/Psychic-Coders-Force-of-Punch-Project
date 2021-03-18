@@ -1,5 +1,6 @@
 package com.example.myapplication.Adapters;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.LayoutInflater;
@@ -17,6 +18,9 @@ import com.example.myapplication.R;
 import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
+/**
+ * Custom ArrayAdapter to display an image icon and a text box.
+ */
 public class ProfileAdapter extends ArrayAdapter<ProfileModel> {
     private final ArrayList<ProfileModel> models;
     private final Executor executor = new ImageExecutor();
@@ -25,6 +29,7 @@ public class ProfileAdapter extends ArrayAdapter<ProfileModel> {
         this.models = models;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public View getView(int position, View convertView, ViewGroup parent){
         View v = convertView;
@@ -37,17 +42,22 @@ public class ProfileAdapter extends ArrayAdapter<ProfileModel> {
         ProfileModel model = models.get(position);
 
         if (model != null) {
-            ImageView image = (ImageView) v.findViewById(R.id.ImgViewProfileIcon);
-            TextView text = (TextView) v.findViewById(R.id.TxtProfile);
+            ImageView image = v.findViewById(R.id.ImgViewProfileIcon);
+            TextView text = v.findViewById(R.id.TxtProfile);
 
             if (image != null) {
                 String path = model.getPhotoPath();
-                Runnable active = new Runnable() {
-                    @Override
-                    public void run() {
-                        final Bitmap bitmap = BitmapMaker.decodeSampledBitmapFromResource(path, image.getMaxWidth(), image.getMaxHeight());
-                        image.post(() -> image.setImageBitmap(bitmap));
-                    }
+                /*
+                Creates a new runnable that is fed into an executor. This is necessary
+                since using [new Thread(() -> ... image.post(...) );] like in BitmapMaker.setImage()
+                will cause the images to display out of order randomly. While the cause of this bug
+                is likely not actually random, the team doesn't know the cause of the bug, and so
+                we have found that using a separate executor will alleviate the problem of mismatched
+                profile icons.
+                 */
+                Runnable active = () -> {
+                    final Bitmap bitmap = BitmapMaker.decodeSampledBitmapFromResource(path, image.getMaxWidth(), image.getMaxHeight());
+                    image.post(() -> image.setImageBitmap(bitmap));
                 };
                 executor.execute(active);
             }
