@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 
 
 /**
+ * !!! IMPORTANT !!!
  * Before committing/pushing ANY changes,
  * make sure you run this UT suite.
  * Any errors MUST be fixed before
@@ -41,7 +42,7 @@ public class MyAppUnitTest {
     MyAppProfileDatabase databaseHelper;
     public MyAppUnitTest() {
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        sampleProfile = new ProfileModel(0, "bob","tom", VALID_AGE, 100.5f, 167.5f);
+        sampleProfile = new ProfileModel(0, "","bob","tom", VALID_AGE, 100.5f, 167.5f);
         databaseHelper = new MyAppProfileDatabase(appContext);
     }
     @Before
@@ -70,28 +71,28 @@ public class MyAppUnitTest {
 
         //Invalid age (negative)
         try {
-            profile = new ProfileModel(0, "bob", "tom", INVALID_AGE_FUTURE, 100.5f, 167.5f);
+            profile = new ProfileModel(0, "","bob", "tom", INVALID_AGE_FUTURE, 100.5f, 167.5f);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
         }
         //Invalid age (too old!)
         try {
-            profile = new ProfileModel(0, "bob", "tom", INVALID_AGE_OLD, 100.5f, 167.5f);
+            profile = new ProfileModel(0, "","bob", "tom", INVALID_AGE_OLD, 100.5f, 167.5f);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
         }
         //invalid weight
         try {
-            profile = new ProfileModel(0, "bob", "tom", "20/12/1990", -2, 167.5f);
+            profile = new ProfileModel(0, "", "bob", "tom", "20/12/1990", -2, 167.5f);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
         }
         //invalid height
         try {
-            profile = new ProfileModel(0, "bob", "tom", VALID_AGE, 100, -100);
+            profile = new ProfileModel(0, "","bob", "tom", VALID_AGE, 100, -100);
         }
         catch(IllegalArgumentException e) {
             numExceptionsCaught++;
@@ -148,7 +149,7 @@ public class MyAppUnitTest {
         databaseHelper.addStudent(sampleProfile);
         long lastID = databaseHelper.getLastStudentID();
         Date time = Calendar.getInstance().getTime();
-        PunchModel pm = new PunchModel(0, 99999, 5, time.getTime());
+        PunchModel pm = new PunchModel(0, lastID, 5, time.getTime());
         assertTrue(databaseHelper.addPunch(pm));
         assertTrue(databaseHelper.deleteStudent(lastID));
 
@@ -158,7 +159,7 @@ public class MyAppUnitTest {
      * Verifies TC #7. This one is failing, so it is disabled. Please resolve addPunch() method to ensure
      * user exists!
      */
-    //@Test
+    @Test
     public void addPunchUserInvalid() {
         long ID = INVALID_ID;
         Date time = Calendar.getInstance().getTime();
@@ -192,6 +193,15 @@ public class MyAppUnitTest {
         assertFalse(databaseHelper.editStudentProfile(lastID, "", "John", "Doe", VALID_AGE, "100", "-1"));
 
         assertTrue(databaseHelper.deleteStudent(lastID));
+    }
+
+    /**
+     * Verifies TC #11
+     */
+
+    @Test
+    public void editUserInfoNonExisting() {
+        assertFalse(databaseHelper.editStudentProfile(INVALID_ID, "", "bob", "the builder", VALID_AGE, "100", "100.0"));
     }
 
     @After

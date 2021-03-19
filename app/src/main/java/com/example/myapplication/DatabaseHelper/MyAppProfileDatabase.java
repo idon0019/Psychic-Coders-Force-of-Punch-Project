@@ -397,14 +397,20 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
 
     /**
-     * Creates a new punch in the table
+     * Creates a new punch in the table.
+     * The student id for punch model *must* be for an
+     * existing record in the Students db.
      * @param punchModel : Punch to insert into database.
      * @return True if insertion successful, false if otherwise.
      */
     public boolean addPunch(PunchModel punchModel) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues newData = new ContentValues();
+        long accountID = punchModel.getAccountID();
 
+        if (findStudent(accountID) == null) {
+            return false; /* do not add if user doesn't exist */
+        }
         newData.put(PUNCH_ACCOUNT_ID, punchModel.getAccountID());
         newData.put(PUNCH_FORCE, punchModel.getForce());
         newData.put(PUNCH_DATE, punchModel.getDate());
