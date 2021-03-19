@@ -445,7 +445,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the highest punch score of account.
-     * @param accountID : Account to look through.
+     * @param accountID Account to look through.
      * @return Punch score.
      */
     public double getHighScore(long accountID) {
@@ -472,7 +472,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Checks if profile has previous punch data.
-     * @param accountID : Account ID to check for.
+     * @param accountID Account ID to check for.
      * @return True if account has punch data, false if otherwise.
      */
     public boolean hasPunchData(long accountID) {

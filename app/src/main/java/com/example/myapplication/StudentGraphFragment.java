@@ -177,7 +177,7 @@ public class StudentGraphFragment extends Fragment {
 
 
         for (int i = 0; i < punchData.size(); i++) {
-            display.append(punchData.get(i).toString(i, res.getString(R.string.date_format), res.getString(R.string.number_format)));
+            display.append(punchData.get(i).toString(i+1, res.getString(R.string.date_format), res.getString(R.string.number_format)));
         }
 
         txtPunchData.setText(display.toString());

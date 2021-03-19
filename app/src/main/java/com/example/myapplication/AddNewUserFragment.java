@@ -229,7 +229,7 @@ public class AddNewUserFragment extends Fragment {
                     Toast.makeText(getActivity(), "Profile could not be added", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
             }
 
         });

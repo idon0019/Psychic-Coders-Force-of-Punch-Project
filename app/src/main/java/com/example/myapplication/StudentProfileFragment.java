@@ -71,6 +71,9 @@ public class StudentProfileFragment extends Fragment {
         txtForcePunchResult = view.findViewById(R.id.TxtPunchForceResult);
 
         graph = view.findViewById(R.id.Graphview);
+        // makes graph labels invisible.
+        graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
+        graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
         res = getResources();
 
         // Database helper object
@@ -179,6 +182,7 @@ public class StudentProfileFragment extends Fragment {
      */
     private void populateGraph(MyAppProfileDatabase database, long accountID) {
         long date;
+        int i = 0;
         List<PunchModel> punches = database.getAllPunchesFromProfile(accountID);
 
         LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
@@ -189,20 +193,16 @@ public class StudentProfileFragment extends Fragment {
         graph.getViewport().setMinX(date);
 
         // inserts all data points on the graph and draws data points with default radius.
-        series.appendData(new DataPoint(date, punches.get(0).getForce()), true, 100);
         series.setDrawDataPoints(true);
 
-        for (int i = 1; i < punches.size(); i++) {
-            date = punches.get(i).getDate();
-            series.appendData(new DataPoint(date, punches.get(i).getForce()), true, 100);
+        graph.getViewport().setMinX(0);
+        series.appendData(new DataPoint(1, punches.get(0).getForce()), true, 100);
+
+        for (i = 1; i < punches.size(); i++) {
+            series.appendData(new DataPoint(i+1, punches.get(i).getForce()), true, 100);
         }
 
-        // sets the maximum x-value
-        graph.getViewport().setMaxX(date);
-
-        // makes graph labels invisible.
-        graph.getGridLabelRenderer().setVerticalLabelsVisible(false);
-        graph.getGridLabelRenderer().setHorizontalLabelsVisible(false);
+        graph.getViewport().setMaxX(i+1);
         graph.getViewport().setXAxisBoundsManual(true);
     }
 }

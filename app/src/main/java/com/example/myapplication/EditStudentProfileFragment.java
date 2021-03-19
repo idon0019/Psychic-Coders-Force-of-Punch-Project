@@ -241,7 +241,7 @@ public class EditStudentProfileFragment extends Fragment {
                 database.editStudentProfile(accountID, photoPath, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
             } else {
-                Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), error, Toast.LENGTH_SHORT).show();
             }
         });
 

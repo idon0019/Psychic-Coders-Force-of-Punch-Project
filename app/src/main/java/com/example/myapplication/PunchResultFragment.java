@@ -75,15 +75,14 @@ public class PunchResultFragment extends Fragment {
             bundle.putLong(res.getString(R.string.account_id_key), accountID);
 
             // displays new high score message if necessary
-            if (punchScore < database.getHighScore(accountID))
+            if (punchScore > database.getHighScore(accountID))
                 txtHighScore.setText(res.getText(R.string.new_highscore));
+            else
+                txtHighScore.setText("");
 
             // displays the previous punch force record.
             if (database.hasPunchData(accountID)) {
                 highScore = database.getHighScore(accountID);
-                if (punchScore < highScore)
-                    txtHighScore.setText(res.getText(R.string.new_highscore));
-
                 txtPreviousRecord.setText(String.format(res.getString(R.string.previous_record), df.format(highScore)));
             }
         });
