@@ -2,17 +2,18 @@ package com.example.myapplication.Adapters;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
+
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.Executors.ImageExecutor;
-import com.example.myapplication.ImageMaker.BitmapMaker;
 import com.example.myapplication.R;
 
 import java.util.ArrayList;
@@ -49,16 +50,18 @@ public class ProfileAdapter extends ArrayAdapter<ProfileModel> {
                 String path = model.getPhotoPath();
                 /*
                 Creates a new runnable that is fed into an executor. This is necessary
-                since using [new Thread(() -> ... image.post(...) );] like in BitmapMaker.setImage()
-                will cause the images to display out of order randomly. While the cause of this bug
-                is likely not actually random, the team doesn't know the cause of the bug, and so
-                we have found that using a separate executor will alleviate the problem of mismatched
-                profile icons.
+                since using:
+
+                    new Thread(() -> {
+                        ... ;
+                        image.post(...);
+                    });
+
+                like in BitmapMaker.setImage() will cause the images to display out of order randomly,
+                or not show at all. While the cause of this bug is unlikely to be random it is not known.
+                Using a separate executor will alleviate the problem of mismatched/disappearing profile icons.
                  */
-                Runnable active = () -> {
-                    final Bitmap bitmap = BitmapMaker.decodeSampledBitmapFromResource(path, image.getMaxWidth(), image.getMaxHeight());
-                    image.post(() -> image.setImageBitmap(bitmap));
-                };
+                Runnable active = () -> image.post(() -> image.setImageBitmap(BitmapFactory.decodeFile(path)));
                 executor.execute(active);
             }
 

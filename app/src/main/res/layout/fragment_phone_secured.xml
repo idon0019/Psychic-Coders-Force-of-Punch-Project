@@ -10,7 +10,7 @@
 
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".PhoneSecuredFragment"
     android:orientation="vertical"
     >
@@ -18,7 +18,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hit the confirm button once the device is locked into place"
+        android:text="@string/device_locked_confirmation"
         android:textColor="@color/white"
         android:textSize="40sp"
         android:textAlignment="center"
@@ -38,17 +38,17 @@
         android:background="@color/red"
         android:scaleType="fitCenter"
         android:src="@drawable/ic_confirm_button"
-        />
+        android:contentDescription="@string/confirm_secured" />
 
     <Button
         android:id="@+id/BtnCancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="cancel"
-        android:backgroundTint="@color/black"
         android:layout_gravity="center"
         android:layout_marginTop="100sp"
-        />
+        android:backgroundTint="@color/black"
+        android:text="cancel"
+        android:textColor="@color/white" />
 
 </LinearLayout>
 

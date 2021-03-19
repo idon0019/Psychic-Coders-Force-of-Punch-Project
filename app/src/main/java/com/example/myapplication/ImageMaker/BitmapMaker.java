@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.Environment;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.example.myapplication.Executors.ImageExecutor;
 import com.example.myapplication.R;
@@ -44,6 +45,7 @@ public class BitmapMaker {
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false;
         return BitmapFactory.decodeFile(path, options);
+
     }
 
     /**
@@ -54,8 +56,7 @@ public class BitmapMaker {
      * @param reqHeight Height of desired image.
      * @return Sample size.
      */
-    public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -82,11 +83,35 @@ public class BitmapMaker {
      *
      * @param path  Path of the image file.
      * @param image ImageView to populate.
+     * @param progressBar Progress bar view to set invisible.
+     */
+    public static void setImage(String path, ImageView image, ProgressBar progressBar) {
+        Runnable run = () -> {
+            final Bitmap bitmap = BitmapMaker.decodeSampledBitmapFromResource(path, image.getMaxWidth(), image.getMaxHeight());
+            image.post(() -> {
+                progressBar.setVisibility(View.GONE);
+                image.setVisibility(View.VISIBLE);
+                image.setImageBitmap(bitmap);
+            });
+        };
+
+        Executor executor = new ImageExecutor();
+        executor.execute(run);
+    }
+
+    /**
+     * Sets the image using a separate thread.
+     *
+     * @param path  Path of the image file.
+     * @param image ImageView to populate.
      */
     public static void setImage(String path, ImageView image) {
         Runnable run = () -> {
             final Bitmap bitmap = BitmapMaker.decodeSampledBitmapFromResource(path, image.getMaxWidth(), image.getMaxHeight());
-            image.post(() -> image.setImageBitmap(bitmap));
+            image.post(() -> {
+                image.setVisibility(View.VISIBLE);
+                image.setImageBitmap(bitmap);
+            });
         };
 
         Executor executor = new ImageExecutor();
@@ -102,13 +127,13 @@ public class BitmapMaker {
     public static File createNewImageFile(Context context) throws IOException {
         // Create an image file name
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CANADA).format(new Date());
-        String fileName = "JPEG_" + timeStamp + "_";
+        String fileName = "WEBP_" + timeStamp + "_";
 
         File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
 
         return File.createTempFile(
                 fileName,  /* prefix */
-                ".jpg",         /* suffix */
+                ".webp",         /* suffix */
                 storageDir      /* directory */
         );
     }
@@ -123,7 +148,8 @@ public class BitmapMaker {
         try {
             //Convert bitmap to byte array
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 75, bos); // YOU can also save it in JPEG
+            //noinspection deprecation
+            bitmap.compress(Bitmap.CompressFormat.WEBP, 50, bos); // The quality variable is ignored.
             byte[] bitmapdata = bos.toByteArray();
 
             //write the bytes in file

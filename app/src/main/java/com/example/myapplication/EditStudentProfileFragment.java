@@ -30,6 +30,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.example.myapplication.ImageMaker.BitmapMaker;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -49,9 +51,11 @@ public class EditStudentProfileFragment extends Fragment {
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
     private TextView txtAge;
     private ImageView imgEdit;
+    private ProgressBar progressBar;
     private NavController navController;
     private long accountID;
     private MyAppProfileDatabase database;
+    private boolean imageLoaded = true;
 
     private Calendar calendar;
     private DatePickerDialog dialog;
@@ -69,20 +73,32 @@ public class EditStudentProfileFragment extends Fragment {
             new ActivityResultCallback<ActivityResult>() {
                 @Override
                 public void onActivityResult(ActivityResult result) {
-                    long imageSize = getSizeFromURI(tempImageUri);
-                    if (imageSize == 0) { // if no photo was taken then delete the temp file and don't update the image
+                    Bitmap bitmap = null;
+                    if (getSizeFromURI(imageUri) == 0) { // if no photo was taken then delete the temp file and don't update the image
                         photo.delete();
                     } else { // if a photo was taken then update the photo and delete the old photo if one exists
-                        imageUri = tempImageUri;
+                        imgEdit.setVisibility(View.GONE);
+                        imageLoaded = true;
+                        progressBar.setVisibility(View.VISIBLE);
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), imageUri);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         photoPath = photo.toString();
-                        BitmapMaker.setImage(photoPath, imgEdit);
 
-                        // saves a downscaled version of the image instead of a full version. Uses ImgViewProfilePicture to maximize quality.
-                        BitmapMaker.downscaleAndSaveBitMap(photoPath, imgEdit, photo);
+                        Bitmap finalBitmap = bitmap;
+                        new Thread(() -> {
+                            BitmapMaker.bitmapToFile(finalBitmap, photo);
+                            BitmapMaker.downscaleAndSaveBitMap(photoPath, imgEdit, photo);
+                            imageLoaded = true;
+                            BitmapMaker.setImage(photoPath, imgEdit, progressBar);
+                        }).start();
                         if (oldPhoto != null && oldPhoto != initialPhoto) // if an old photo exists then delete it
                             oldPhoto.delete();
+
+                        imgEdit.setBackgroundResource(R.color.image_background_transparent);
                     }
-                    imgEdit.setBackgroundResource(R.color.image_background_transparent);
                 }
             });
 
@@ -94,18 +110,27 @@ public class EditStudentProfileFragment extends Fragment {
                     Intent getImage = result.getData();
                     Bitmap bitmap = null;
                     if (getImage != null) { // sets the image if an image was chosen
-                        imageUri = getImage.getData();
+                        // this uri will be the true uri of the final selected profile photo
+                        imgEdit.setVisibility(View.GONE);
+                        imageLoaded = false;
+                        progressBar.setVisibility(View.VISIBLE);
                         try {
-                            bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), imageUri);
+                            bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), getImage.getData());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         photoPath = photo.toString();
-                        BitmapMaker.bitmapToFile(bitmap, photo);
-                        BitmapMaker.downscaleAndSaveBitMap(photoPath, imgEdit, photo);
-                        BitmapMaker.setImage(photoPath, imgEdit);
+                        Bitmap finalBitmap = bitmap;
 
-                        if (oldPhoto != null && oldPhoto != initialPhoto) // if a camera image already exists then delete it
+                        new Thread(() -> {
+                            BitmapMaker.bitmapToFile(finalBitmap, photo);
+                            BitmapMaker.downscaleAndSaveBitMap(photoPath, imgEdit, photo);
+                            imageLoaded = true;
+                            BitmapMaker.setImage(photoPath, imgEdit, progressBar);
+                        }).start();
+
+
+                        if (oldPhoto != null) // if a camera image already exists then delete it
                             oldPhoto.delete();
                         imgEdit.setBackgroundResource(R.color.image_background_transparent);
                     } else {
@@ -128,11 +153,8 @@ public class EditStudentProfileFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         navController = Navigation.findNavController(view);
-
         database = new MyAppProfileDatabase(getActivity());
-
         Button btnSubmit = view.findViewById(R.id.BtnSubmit);
         Button btnCancel = view.findViewById(R.id.BtnCancel);
         Button btnDate = view.findViewById(R.id.BtnDate);
@@ -142,7 +164,8 @@ public class EditStudentProfileFragment extends Fragment {
         txtAge = view.findViewById(R.id.TxtAge);
         edtWeight = view.findViewById(R.id.EdtWeight);
         edtHeight = view.findViewById(R.id.EdtHeight);
-
+        progressBar = view.findViewById(R.id.editUserProgressBar);
+        progressBar.setVisibility(View.GONE);
         res = getResources();
 
         // Populates existing fields with profile information.
@@ -182,6 +205,7 @@ public class EditStudentProfileFragment extends Fragment {
             Bundle bundle = new Bundle();
             ProfileModel profileModel = null;
             boolean valid = false;
+            String error = res.getString(R.string.submit_missing_fields);
 
             try {
                 profileModel = new ProfileModel(
@@ -199,6 +223,11 @@ public class EditStudentProfileFragment extends Fragment {
                 //
             }
 
+            if (!imageLoaded) {
+                error = res.getString(R.string.submit_image_not_loaded);
+                valid = false;
+            }
+
             if (valid) {
                 Toast.makeText(getActivity(), "Updated", Toast.LENGTH_LONG).show();
 
@@ -212,7 +241,7 @@ public class EditStudentProfileFragment extends Fragment {
                 database.editStudentProfile(accountID, photoPath, edtFirstName.getText().toString(), edtLastName.getText().toString(), txtAge.getText().toString(), edtWeight.getText().toString(), edtHeight.getText().toString());
                 navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
             } else {
-                Toast.makeText(getActivity(), "Please choose profile photo and fill out all fields", Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity(), error, Toast.LENGTH_LONG).show();
             }
         });
 
@@ -239,28 +268,31 @@ public class EditStudentProfileFragment extends Fragment {
             builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
                 Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                // creates a temp file and return its uri
+                // creates a temp file
+                oldPhoto = photo;
                 try {
-                    tempImageUri = createImageFileURI();
+                    photo = BitmapMaker.createNewImageFile(requireContext());
+                    imageUri = FileProvider.getUriForFile(getContext(),
+                            "com.example.myapplication.fileprovider",
+                            photo);
+                    takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    getCameraImage.launch(takePhotoIntent);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, tempImageUri);
-                getCameraImage.launch(takePhotoIntent);
             }));
 
             builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
                 // creates a temp file and return its uri
+                oldPhoto = photo;
                 try {
-                    tempImageUri = createImageFileURI();
+                    photo = BitmapMaker.createNewImageFile(requireContext());
+                    Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
+                    pickPhotoIntent.setType("image/*");
+                    getGalleryImage.launch(pickPhotoIntent);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-
-                Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
-                pickPhotoIntent.setType("image/*");
-                getGalleryImage.launch(pickPhotoIntent);
             }));
 
             builder.setNeutralButton(R.string.dialog_cancel,
@@ -287,24 +319,6 @@ public class EditStudentProfileFragment extends Fragment {
         bundle.putLong(res.getString(R.string.account_id_key), accountID);
         getParentFragmentManager().setFragmentResult(StudentProfileFragment.REQUEST_KEY, bundle);
         navController.navigate(R.id.action_editStudentProfileFragment_to_studentProfileFragment);
-    }
-
-    /**
-     * Creates an empty image file with an auto-generated name and stores it on the file system for later use.
-     * Returns a URI of the created file.
-     * @return An image file URI.
-     * @throws IOException Creating file failed.
-     */
-    public Uri createImageFileURI() throws IOException {
-        if (photo != null)
-            oldPhoto = photo;
-
-        photo = BitmapMaker.createNewImageFile(getContext());
-
-        if (photo != null && getContext() != null)
-            return FileProvider.getUriForFile(getContext(), "com.example.myapplication.fileprovider", photo);
-        else
-            return null;
     }
 
     /**

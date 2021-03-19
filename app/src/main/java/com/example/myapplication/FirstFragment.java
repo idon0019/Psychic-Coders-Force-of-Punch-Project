@@ -125,8 +125,9 @@ public class FirstFragment extends Fragment {
         File[] files = directory.listFiles();
         boolean delete = true;
 
-        if (files == null)
+        if (files == null || allImagePaths == null)
             return;
+
 
         for (File file: files) {
             for (String fileName: allImagePaths) {

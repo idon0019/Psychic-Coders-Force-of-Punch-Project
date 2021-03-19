@@ -53,9 +53,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="left"
         android:padding="20sp"
-        android:text="Please select an account"
+        android:text="Please select or create an account"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <ListView

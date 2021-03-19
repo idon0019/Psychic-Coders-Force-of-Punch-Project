@@ -10,7 +10,7 @@
 
 <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".PunchResultFragment"
     android:orientation="vertical"
     >
@@ -19,7 +19,6 @@
         android:id="@+id/TxtPunchForceResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="2000N of force!"
         android:textSize="40sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -31,7 +30,6 @@
         android:id="@+id/TxtNewHighScore"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="New high score!"
         android:textSize="30sp"
         android:textStyle="bold"
         android:textColor="@color/white"
@@ -55,7 +53,7 @@
         android:layout_gravity="center"
         android:layout_marginTop="50sp"
         android:alpha="0.2"
-        />
+        android:contentDescription="@string/logo" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -68,19 +66,19 @@
             android:id="@+id/BtnTryAgain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Try again"
-            android:backgroundTint="@color/black"
             android:layout_alignParentStart="true"
-            />
+            android:backgroundTint="@color/black"
+            android:text="@string/try_again"
+            android:textColor="@color/white" />
 
         <Button
             android:id="@+id/BtnRecord"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Record"
-            android:backgroundTint="@color/black"
             android:layout_alignParentEnd="true"
-            />
+            android:backgroundTint="@color/black"
+            android:text="@string/record"
+            android:textColor="@color/white" />
 
     </RelativeLayout>
 
