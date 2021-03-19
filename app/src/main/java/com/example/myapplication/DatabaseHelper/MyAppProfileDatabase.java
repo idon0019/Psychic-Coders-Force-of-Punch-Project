@@ -11,6 +11,8 @@ import androidx.annotation.Nullable;
 import com.example.myapplication.DataModel.ProfileModel;
 import com.example.myapplication.DataModel.PunchModel;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -109,6 +111,11 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return id;
     }
 
+    /**
+     * Find a specific student based on account ID.
+     * @param accountID Account ID to search for.
+     * @return A profile model with account ID.
+     */
     public ProfileModel findStudent(long accountID) {
         SQLiteDatabase database = this.getReadableDatabase();
         String queryString = "SELECT *" + " FROM " + STUDENT_TABLE + " WHERE " + COLUMN_ID + " = " + accountID;
@@ -122,6 +129,11 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return createModelFromCursor(cursor);
     }
 
+    /**
+     * Convenience method to convert a profilemodel cursur to a profile model.
+     * @param cursor Cursor to convert.
+     * @return A profile model.
+     */
     private ProfileModel createModelFromCursor(Cursor cursor) {
         int columnID = cursor.getInt(0);
         String imageUri = cursor.getString(1);
@@ -133,6 +145,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
         return new ProfileModel(columnID, imageUri, columnFirstName, columnLastName, columnAge, columnWeight, columnHeight);
     }
+
     /**
      * Retrieves all profiles in database
      * @return all user profiles in database
@@ -374,7 +387,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * @param age : Age of student.
      * @param weight : Weight of student.
      * @param height : Height of student.
-     * @return True if edit successful, false if otherwise.
+     * @return True if edit successful, false if otherwise. Needed for unit testing.
      */
     public boolean editStudentProfile(long id, String imageUri, String fname, String lname, String age, String weight, String height) {
         ContentValues cv = new ContentValues();
@@ -401,9 +414,9 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * The student id for punch model *must* be for an
      * existing record in the Students db.
      * @param punchModel : Punch to insert into database.
-     * @return True if insertion successful, false if otherwise.
+     * @return True if insertion successful, false if otherwise. Needed for unit testing.
      */
-    public boolean addPunch(PunchModel punchModel) {
+    public boolean addPunch(@NotNull PunchModel punchModel) {
         SQLiteDatabase database = this.getWritableDatabase();
         ContentValues newData = new ContentValues();
         long accountID = punchModel.getAccountID();

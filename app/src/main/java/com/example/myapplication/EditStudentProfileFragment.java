@@ -39,7 +39,6 @@ import com.example.myapplication.DatabaseHelper.MyAppProfileDatabase;
 import com.example.myapplication.ImageMaker.BitmapMaker;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -61,8 +60,7 @@ public class EditStudentProfileFragment extends Fragment {
     private DatePickerDialog dialog;
     private Resources res;
 
-    private Uri imageUri = null, // this uri will be the true uri of the final selected profile photo
-            tempImageUri; // this uri will change any time the user taps the choose image option
+    private Uri imageUri = null; // this uri will be the true uri of the final selected profile photo
     private File photo = null;
     private File initialPhoto = null; // the profile picture the user started with. stored until the end when the user is done editing their profile
     private File oldPhoto = null;
@@ -130,7 +128,7 @@ public class EditStudentProfileFragment extends Fragment {
                         }).start();
 
 
-                        if (oldPhoto != null) // if a camera image already exists then delete it
+                        if (oldPhoto != null && oldPhoto != initialPhoto) // if a camera image already exists then delete it
                             oldPhoto.delete();
                         imgEdit.setBackgroundResource(R.color.image_background_transparent);
                     } else {

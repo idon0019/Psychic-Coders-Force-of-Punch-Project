@@ -60,13 +60,12 @@
                 android:id="@+id/TxtFName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="First Name"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="50sp"
                 android:layout_marginTop="30sp"
-                />
+                android:layout_marginRight="50sp"
+                android:text="First Name"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/TxtFirstName"
