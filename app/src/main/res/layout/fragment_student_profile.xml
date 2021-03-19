@@ -155,14 +155,13 @@
                 android:id="@+id/Txtweight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weight"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:layout_below="@+id/TxtAge"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="65sp"
                 android:layout_marginTop="30sp"
-                />
+                android:layout_marginRight="65sp"
+                android:text="Weight (kg)"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/TxtWeight"
@@ -181,14 +180,13 @@
                 android:id="@+id/Txtheight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Height"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:layout_below="@+id/TxtWeight"
                 android:layout_alignParentEnd="true"
-                android:layout_marginRight="65sp"
                 android:layout_marginTop="30sp"
-                />
+                android:layout_marginRight="65sp"
+                android:text="Height (cm)"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/TxtHeight"

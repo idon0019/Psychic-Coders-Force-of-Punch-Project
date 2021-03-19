@@ -153,10 +153,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Height:       "
-                android:textSize="20sp"
+                android:paddingRight="10sp"
+                android:text="Height (cm):"
                 android:textColor="@color/white"
-                android:paddingRight="10sp"/>
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/EdtHeight"
@@ -175,10 +175,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weight:      "
-                android:textSize="20sp"
+                android:paddingRight="10sp"
+                android:text="Weight (kg):"
                 android:textColor="@color/white"
-                android:paddingRight="10sp"/>
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/EdtWeight"
