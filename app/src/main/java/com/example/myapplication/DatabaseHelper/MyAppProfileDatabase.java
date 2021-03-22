@@ -382,6 +382,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     /**
      * Edits the student profile.
      * @param id : ID of account to edit.
+     * @param imageUri : Path of image file
      * @param fname : First name of student.
      * @param lname : Last name of student.
      * @param age : Age of student.
@@ -406,6 +407,13 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         cv.put(COLUMN_STUDENT_HEIGHT, height);
 
         return (database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null) > 0);
+    }
+
+    public boolean editStudentPhoto(long id, String imageUri) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_STUDENT_PHOTO, imageUri);
+        return (database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null) == 1);
     }
 
 
@@ -581,7 +589,6 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                         + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
                 database.execSQL(createTable);
-
         }
     }
 }

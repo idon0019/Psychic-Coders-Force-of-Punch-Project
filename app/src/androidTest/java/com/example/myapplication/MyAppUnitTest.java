@@ -14,9 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -204,6 +206,54 @@ public class MyAppUnitTest {
         assertFalse(databaseHelper.editStudentProfile(INVALID_ID, "", "bob", "the builder", VALID_AGE, "100", "100.0"));
     }
 
+    /**
+     * Verifies TC #12
+     */
+    @Test
+    public void setUserPhotoPath(){
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+
+        assertTrue(databaseHelper.editStudentPhoto(lastID, "/images/test.png"));
+        databaseHelper.deleteStudent(lastID);
+    }
+    /**
+     * Verifies TC #13
+     */
+    @Test
+    public void removeUserPhoto(){
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+
+        assertTrue(databaseHelper.editStudentPhoto(lastID, ""));
+        assertTrue(databaseHelper.editStudentPhoto(lastID, null));
+        databaseHelper.deleteStudent(lastID);
+    }
+
+
+    /**
+     * Verifies TC #14
+     */
+
+    @Test
+    public void retrieveAllPunchesForUser() {
+
+        Random rand = new Random();
+        databaseHelper.addStudent(sampleProfile);
+        Date time = Calendar.getInstance().getTime();
+        long lastID = databaseHelper.getLastStudentID();
+
+        for(int i = 0; i < 10; i++) {
+            PunchModel pm = new PunchModel(0, lastID, rand.nextDouble()*50, time.getTime());
+            databaseHelper.addPunch(pm);
+        }
+
+        List<PunchModel> punches = databaseHelper.getAllPunchesFromProfile(lastID);
+        assertEquals(10, punches.size());
+        databaseHelper.deleteStudent(lastID);
+
+        assertEquals(0,databaseHelper.getAllPunchesFromProfile(lastID).size());
+    }
     @After
     public void after() {
 
