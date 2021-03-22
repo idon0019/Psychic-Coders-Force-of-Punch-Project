@@ -12,6 +12,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +49,7 @@ import java.util.Calendar;
 public class AddNewUserFragment extends Fragment {
 
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
-    private TextView txtAge;
+    private TextView txtAge, txtAddPhoto;
     private ImageButton imgAdd;
     private ProgressBar progressBar;
     private NavController navController;
@@ -60,6 +62,7 @@ public class AddNewUserFragment extends Fragment {
     private File oldPhoto = null;
     private String photoPath = null;
     private boolean imageLoaded = true;
+    private boolean setImage = false;
 
 
     // sets the launcher for getting an image from the camera
@@ -73,6 +76,8 @@ public class AddNewUserFragment extends Fragment {
                     } else { // if a photo was taken then update the photo and delete the old photo if one exists
                         imgAdd.setVisibility(View.GONE); // hides the view while the image loads.
                         imageLoaded = false;
+                        setImage = true;
+                        txtAddPhoto.setText(R.string.remove_photo);
                         progressBar.setVisibility(View.VISIBLE);
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), imageUri);
@@ -108,6 +113,8 @@ public class AddNewUserFragment extends Fragment {
                         // this uri will be the true uri of the final selected profile photo
                         imgAdd.setVisibility(View.GONE);
                         imageLoaded = false;
+                        setImage = true;
+                        txtAddPhoto.setText(R.string.remove_photo);
                         progressBar.setVisibility(View.VISIBLE);
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), getImage.getData());
@@ -163,6 +170,7 @@ public class AddNewUserFragment extends Fragment {
         edtWeight = view.findViewById(R.id.EdtWeight);
         edtHeight = view.findViewById(R.id.EdtHeight);
         txtAge = view.findViewById(R.id.TxtAge);
+        txtAddPhoto = view.findViewById(R.id.TxtAddPhoto);
         imgAdd = view.findViewById(R.id.ImgAdd);
         progressBar = view.findViewById(R.id.addUserProgressBar);
         progressBar.setVisibility(View.GONE); // hides the progress bar at first
@@ -202,7 +210,7 @@ public class AddNewUserFragment extends Fragment {
                         Float.parseFloat(edtHeight.getText().toString())
                 );
 
-                valid = !edtFirstName.getText().toString().equals("") && !edtLastName.getText().toString().equals("") && photoPath != null;
+                valid = !edtFirstName.getText().toString().equals("") && !edtLastName.getText().toString().equals("");
             } catch (Exception e) {
                 // no special error handler.
             }
@@ -234,13 +242,12 @@ public class AddNewUserFragment extends Fragment {
 
         });
 
-        // Opens image picker to let user choose a profile image.
-        imgAdd.setOnClickListener(v -> {
+        View.OnClickListener addPhotoListener = v -> {
             if (ContextCompat.checkSelfPermission(
-                    requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                    AddNewUserFragment.this.requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED) {
                 // builds the image picker dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddNewUserFragment.this.getActivity());
 
                 builder.setTitle(res.getString(R.string.dialog_name));
                 builder.setMessage(res.getString(R.string.dialog_message));
@@ -251,8 +258,8 @@ public class AddNewUserFragment extends Fragment {
                     // creates a temp file
                     oldPhoto = photo;
                     try {
-                        photo = BitmapMaker.createNewImageFile(requireContext());
-                        imageUri = FileProvider.getUriForFile(requireContext(),
+                        photo = BitmapMaker.createNewImageFile(AddNewUserFragment.this.requireContext());
+                        imageUri = FileProvider.getUriForFile(AddNewUserFragment.this.requireContext(),
                                 "com.example.myapplication.fileprovider",
                                 photo);
                         takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
@@ -266,7 +273,7 @@ public class AddNewUserFragment extends Fragment {
                     // creates a temp file and return its uri
                     oldPhoto = photo;
                     try {
-                        photo = BitmapMaker.createNewImageFile(requireContext());
+                        photo = BitmapMaker.createNewImageFile(AddNewUserFragment.this.requireContext());
                         Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
                         pickPhotoIntent.setType("image/*");
                         getGalleryImage.launch(pickPhotoIntent);
@@ -280,8 +287,8 @@ public class AddNewUserFragment extends Fragment {
 
                 AlertDialog alertDialog = builder.create();
                 alertDialog.show();
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                AlertDialog.Builder permissionDialog = new AlertDialog.Builder(getActivity());
+            } else if (AddNewUserFragment.this.shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                AlertDialog.Builder permissionDialog = new AlertDialog.Builder(AddNewUserFragment.this.getActivity());
 
                 permissionDialog.setTitle(res.getString(R.string.permission_name));
                 permissionDialog.setMessage(res.getString(R.string.permission_message));
@@ -295,6 +302,39 @@ public class AddNewUserFragment extends Fragment {
                 // The registered ActivityResultCallback gets the result of this request.
                 requestPermissionLauncher.launch(
                         Manifest.permission.READ_EXTERNAL_STORAGE);
+            }
+        };
+
+        View.OnClickListener removePhotoListener = v -> {
+            if (imageLoaded) {
+                if (photo != null)
+                    photo.delete();
+                photoPath = "";
+
+                imgAdd.setImageDrawable(null);
+
+                imgAdd.setBackgroundResource(R.color.image_background_translucent);
+                setImage = false;
+                txtAddPhoto.setText(R.string.add_photo);
+            }
+        };
+
+        // Opens image picker to let user choose a profile image.
+        imgAdd.setOnClickListener(addPhotoListener);
+        txtAddPhoto.setOnClickListener(addPhotoListener);
+        txtAddPhoto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (setImage)
+                    txtAddPhoto.setOnClickListener(removePhotoListener);
+                else
+                    txtAddPhoto.setOnClickListener(addPhotoListener);
             }
         });
 
