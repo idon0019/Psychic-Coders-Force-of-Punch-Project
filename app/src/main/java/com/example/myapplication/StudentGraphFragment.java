@@ -1,5 +1,6 @@
 package com.example.myapplication;
 
+import android.app.AlertDialog;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import androidx.navigation.Navigation;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -66,6 +68,7 @@ public class StudentGraphFragment extends Fragment {
         ImageButton btnHome = view.findViewById(R.id.BtnHome);
         txtPunchInfo = view.findViewById(R.id.TxtPunchInfo);
         txtPunchData = view.findViewById(R.id.TxtPunchData);
+        Button btnDeletePunchData = view.findViewById(R.id.BtnDeletePunchData);
         res = getResources();
 
         MyAppProfileDatabase database = new MyAppProfileDatabase(getActivity());
@@ -97,6 +100,23 @@ public class StudentGraphFragment extends Fragment {
         btnHome.setOnClickListener(v -> {
             // Navigate to main menu
             navController.navigate(R.id.action_studentGraph_to_firstFragment);
+        });
+
+        btnDeletePunchData.setOnClickListener( v -> {
+            AlertDialog.Builder builder = new AlertDialog.Builder(StudentGraphFragment.this.getActivity());
+
+            builder.setTitle(R.string.delete_punch_title);
+            builder.setMessage(R.string.delete_punch_message);
+            builder.setPositiveButton(R.string.delete_punch_confirm, (dialog, which) -> {
+                database.deletePunchesFromProfile(accountID);
+                onBackEvent();
+            });
+            builder.setNegativeButton(R.string.delete_punch_cancel, (dialog, which) -> {
+                dialog.dismiss();
+            });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         });
 
 
