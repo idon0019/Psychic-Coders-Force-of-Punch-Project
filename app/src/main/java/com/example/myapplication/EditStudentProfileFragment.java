@@ -24,6 +24,8 @@ import androidx.navigation.Navigation;
 
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,13 +50,14 @@ public class EditStudentProfileFragment extends Fragment {
 
     public static final String REQUEST_KEY = "editStudent";
     private EditText edtFirstName, edtLastName, edtWeight, edtHeight;
-    private TextView txtAge;
+    private TextView txtAge, txtEditPhoto;
     private ImageView imgEdit;
     private ProgressBar progressBar;
     private NavController navController;
     private long accountID;
     private MyAppProfileDatabase database;
     private boolean imageLoaded = true;
+    private boolean setImage = false;
 
     private Calendar calendar;
     private DatePickerDialog dialog;
@@ -77,6 +80,8 @@ public class EditStudentProfileFragment extends Fragment {
                     } else { // if a photo was taken then update the photo and delete the old photo if one exists
                         imgEdit.setVisibility(View.GONE);
                         imageLoaded = true;
+                        setImage = true;
+                        txtEditPhoto.setText(R.string.remove_photo);
                         progressBar.setVisibility(View.VISIBLE);
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), imageUri);
@@ -111,6 +116,8 @@ public class EditStudentProfileFragment extends Fragment {
                         // this uri will be the true uri of the final selected profile photo
                         imgEdit.setVisibility(View.GONE);
                         imageLoaded = false;
+                        setImage = true;
+                        txtEditPhoto.setText(R.string.remove_photo);
                         progressBar.setVisibility(View.VISIBLE);
                         try {
                             bitmap = MediaStore.Images.Media.getBitmap(requireContext().getContentResolver(), getImage.getData());
@@ -160,6 +167,7 @@ public class EditStudentProfileFragment extends Fragment {
         edtFirstName = view.findViewById(R.id.EdtFirstName);
         edtLastName = view.findViewById(R.id.EdtLastName);
         txtAge = view.findViewById(R.id.TxtAge);
+        txtEditPhoto = view.findViewById(R.id.TxtAddPhoto);
         edtWeight = view.findViewById(R.id.EdtWeight);
         edtHeight = view.findViewById(R.id.EdtHeight);
         progressBar = view.findViewById(R.id.editUserProgressBar);
@@ -180,6 +188,12 @@ public class EditStudentProfileFragment extends Fragment {
             edtWeight.setText(database.getWeightFromDatabase(accountID));
             edtHeight.setText(database.getHeightFromDatabase(accountID));
 
+            if (photoPath.equals(""))
+                txtEditPhoto.setText(R.string.add_photo);
+            else {
+                txtEditPhoto.setText(R.string.remove_photo);
+                imgEdit.setBackgroundResource(R.color.image_background_transparent);
+            }
         });
 
         // Launches dialog to pick date of birth.
@@ -216,7 +230,7 @@ public class EditStudentProfileFragment extends Fragment {
                         Float.parseFloat(edtHeight.getText().toString())
                 );
 
-                valid = !edtFirstName.getText().toString().equals("") && !edtLastName.getText().toString().equals("") && photoPath != null;
+                valid = !edtFirstName.getText().toString().equals("") && !edtLastName.getText().toString().equals("");
             } catch (Exception e) {
                 //
             }
@@ -256,48 +270,82 @@ public class EditStudentProfileFragment extends Fragment {
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
-        imgEdit.setOnClickListener(v -> {
-            // builds the image picker dialog
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        View.OnClickListener editPhotoListener = v -> {
+                // builds the image picker dialog
+                AlertDialog.Builder builder = new AlertDialog.Builder(EditStudentProfileFragment.this.getActivity());
 
-            builder.setTitle(res.getString(R.string.dialog_name));
-            builder.setMessage(res.getString(R.string.dialog_message));
+                builder.setTitle(res.getString(R.string.dialog_name));
+                builder.setMessage(res.getString(R.string.dialog_message));
 
-            builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
-                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
+                    Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                // creates a temp file
-                oldPhoto = photo;
-                try {
-                    photo = BitmapMaker.createNewImageFile(requireContext());
-                    imageUri = FileProvider.getUriForFile(getContext(),
-                            "com.example.myapplication.fileprovider",
-                            photo);
-                    takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                    getCameraImage.launch(takePhotoIntent);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }));
+                    // creates a temp file
+                    oldPhoto = photo;
+                    try {
+                        photo = BitmapMaker.createNewImageFile(EditStudentProfileFragment.this.requireContext());
+                        imageUri = FileProvider.getUriForFile(EditStudentProfileFragment.this.requireContext(),
+                                "com.example.myapplication.fileprovider",
+                                photo);
+                        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                        getCameraImage.launch(takePhotoIntent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }));
 
-            builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
-                // creates a temp file and return its uri
-                oldPhoto = photo;
-                try {
-                    photo = BitmapMaker.createNewImageFile(requireContext());
-                    Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
-                    pickPhotoIntent.setType("image/*");
-                    getGalleryImage.launch(pickPhotoIntent);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }));
+                builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
+                    // creates a temp file and return its uri
+                    oldPhoto = photo;
+                    try {
+                        photo = BitmapMaker.createNewImageFile(EditStudentProfileFragment.this.requireContext());
+                        Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
+                        pickPhotoIntent.setType("image/*");
+                        getGalleryImage.launch(pickPhotoIntent);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }));
 
-            builder.setNeutralButton(R.string.dialog_cancel,
-                    (dialog, which) -> dialog.dismiss());
+                builder.setNeutralButton(R.string.dialog_cancel,
+                        (dialog, which) -> dialog.dismiss());
 
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
+                AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+
+        };
+
+        View.OnClickListener removePhotoListener = v -> {
+            if (imageLoaded) {
+                if (photo != null)
+                    photo.delete();
+                photoPath = "";
+
+                imgEdit.setImageDrawable(null);
+
+                imgEdit.setBackgroundResource(R.color.image_background_translucent);
+                setImage = false;
+                txtEditPhoto.setText(R.string.add_photo);
+            }
+        };
+
+        // Opens image picker to let user choose a profile image.
+        imgEdit.setOnClickListener(editPhotoListener);
+        txtEditPhoto.setOnClickListener(editPhotoListener);
+        txtEditPhoto.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (setImage)
+                    txtEditPhoto.setOnClickListener(removePhotoListener);
+                else
+                    txtEditPhoto.setOnClickListener(editPhotoListener);
+            }
         });
     }
 

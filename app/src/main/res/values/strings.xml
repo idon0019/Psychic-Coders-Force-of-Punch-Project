@@ -21,6 +21,10 @@
     <string name="data_point_details">Attempt %d:\nDate: %s\nForce: %sN</string>
     <string name="punch_data_label">Punch History</string>
     <string name="graph_info_init_text">Tap a point for details.</string>
+    <string name="delete_punch_title">Delete All Punch Data</string>
+    <string name="delete_punch_message">Are you sure you want to delete all punch data? This operation cannot be undone.</string>
+    <string name="delete_punch_confirm">Confirm</string>
+    <string name="delete_punch_cancel">Cancel</string>
 
     <!-- Strings used in PunchResultFragment -->
     <string name="previous_record">Previous best:\n%sN</string>
@@ -35,7 +39,9 @@
     
     <!-- Strings used for user profile create/edit -->
     <string name="submit_image_not_loaded">Profile image loading…</string>
-    <string name="submit_missing_fields">Please choose profile photo and fill out all fields</string>
+    <string name="submit_missing_fields">Please fill out all fields</string>
+    <string name="remove_photo"><u>Remove Photo</u></string>
+    <string name="add_photo"><u>Add Photo</u></string>
 
     <!-- Strings used for the permission dialog -->
     <string name="permission_name">Permission Request</string>

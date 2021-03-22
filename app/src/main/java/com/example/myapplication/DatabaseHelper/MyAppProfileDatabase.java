@@ -48,7 +48,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Method gets called first time the database is accessed
-     * @param database : Database to operate on.
+     * @param database Database to operate on.
      */
     @Override
     public void onCreate(SQLiteDatabase database) {
@@ -75,7 +75,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Add a student to the database
-     * @param profileModel : Profile object to add into database.
+     * @param profileModel Profile object to add into database.
      * @return True if insertion is successful, false if otherwise.
      */
     public boolean addStudent(ProfileModel profileModel) {
@@ -219,7 +219,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the first name of the student of which profile the user chose.
-     * @param accountID : ID of account to look through.
+     * @param accountID ID of account to look through.
      * @return Student first name.
      */
     public String getFirstNameFromDatabase(long accountID) {
@@ -242,7 +242,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the last name of the student.
-     * @param accountID : ID of account to look through.
+     * @param accountID ID of account to look through.
      * @return Student last name.
      */
     public String getLastNameFromDatabase(long accountID) {
@@ -261,7 +261,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the birth date of the student.
-     * @param accountID : ID of account to look through.
+     * @param accountID ID of account to look through.
      * @return A string representation of their birthday in dd/mm/yyyy
      */
     public String getDOBFromDatabase(long accountID) {
@@ -280,7 +280,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Returns student age.
-     * @param accountID : ID of account to look through
+     * @param accountID ID of account to look through
      * @return Age of student.
      */
     public int getAgeFromDatabase(long accountID) {
@@ -315,7 +315,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the weight of the student.
-     * @param accountID : ID of account to look through.
+     * @param accountID ID of account to look through.
      * @return Student weight.
      */
     public String getWeightFromDatabase(long accountID) {
@@ -336,7 +336,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Gets the height of the student.
-     * @param accountID : ID of account to look through.
+     * @param accountID ID of account to look through.
      * @return Student height.
      */
     public String getHeightFromDatabase(long accountID) {
@@ -357,7 +357,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Deletes a student from database and all punches of that student
-     * @param accountID : The account id of the student in the database
+     * @param accountID The account id of the student in the database
      * @return True if a student was deleted.
      */
     public boolean deleteStudent(long accountID) {
@@ -381,13 +381,12 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Edits the student profile.
-     * @param id : ID of account to edit.
-     * @param imageUri : Path of image file
-     * @param fname : First name of student.
-     * @param lname : Last name of student.
-     * @param age : Age of student.
-     * @param weight : Weight of student.
-     * @param height : Height of student.
+     * @param id ID of account to edit.
+     * @param fname First name of student.
+     * @param lname Last name of student.
+     * @param age Age of student.
+     * @param weight Weight of student.
+     * @param height Height of student.
      * @return True if edit successful, false if otherwise. Needed for unit testing.
      */
     public boolean editStudentProfile(long id, String imageUri, String fname, String lname, String age, String weight, String height) {
@@ -421,7 +420,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
      * Creates a new punch in the table.
      * The student id for punch model *must* be for an
      * existing record in the Students db.
-     * @param punchModel : Punch to insert into database.
+     * @param punchModel Punch to insert into database.
      * @return True if insertion successful, false if otherwise. Needed for unit testing.
      */
     public boolean addPunch(@NotNull PunchModel punchModel) {
@@ -444,8 +443,8 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Returns the date of a specific punch by using account id and punch force.
-     * @param accountID : ID of account to look at.
-     * @param force : Force value to search for.
+     * @param accountID ID of account to look at.
+     * @param force Force value to search for.
      * @return String representation of the punch date.
      */
     public long getDateFromPunchForce(long accountID, double force) {
@@ -505,7 +504,7 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
 
     /**
      * Returns all punches of a given account id.
-     * @param accountID : ID of account to look through.
+     * @param accountID ID of account to look through.
      * @return An array of all matching punches.
      */
     public List<PunchModel> getAllPunchesFromProfile(long accountID) {
@@ -533,10 +532,21 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
     }
 
     /**
+     * Deletes all punch from a given account.
+     * @param accountID Account ID to delete punches from.
+     */
+    public void deletePunchesFromProfile(long accountID) {
+        String[] args = {Long.toString(accountID)};
+
+        SQLiteDatabase database = this.getWritableDatabase();
+        database.delete(PUNCH_TABLE, PUNCH_ACCOUNT_ID + " = ?", args);
+    }
+
+    /**
      * This method gets called whenever the version of the database changes
-     * @param database : Database to migrate.
-     * @param oldVersion : Old version
-     * @param newVersion : New version
+     * @param database Database to migrate.
+     * @param oldVersion Old version
+     * @param newVersion New version
      */
     @Override
     public void onUpgrade(SQLiteDatabase database, int oldVersion, int newVersion) {

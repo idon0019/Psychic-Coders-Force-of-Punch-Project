@@ -76,5 +76,14 @@
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"/>
 
+        <Button
+            android:id="@+id/BtnDeletePunchData"
+            android:layout_width="wrap_content"
+            android:layout_height="50sp"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/black"
+            android:text="Delete Punch Data"
+            android:textColor="@color/white" />
+
     </LinearLayout>
 </ScrollView>

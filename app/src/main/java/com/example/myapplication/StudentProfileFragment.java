@@ -138,7 +138,7 @@ public class StudentProfileFragment extends Fragment {
 
             // shows a popup to confirm deletion
             builder.setTitle("Delete Student");
-            builder.setMessage("Are you sure you want to remove " + database1.getFirstNameFromDatabase(accountID) + " " + database1.getLastNameFromDatabase(accountID) + "?");
+            builder.setMessage("Are you sure you want to remove " + database1.getFirstNameFromDatabase(accountID) + " " + database1.getLastNameFromDatabase(accountID) + "? This operation cannot be undone.");
 
             builder.setPositiveButton("Yes", (dialog, which) -> {
                 boolean deleteStudent = database1.deleteStudent(accountID);

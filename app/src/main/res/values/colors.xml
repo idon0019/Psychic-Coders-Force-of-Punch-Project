@@ -15,4 +15,5 @@
     <color name="black_overlay">#393939</color>
     <color name="red">#9B0000</color>
     <color name="image_background_transparent">#00000000</color>
+    <color name="image_background_translucent">#33000000</color>
 </resources>
