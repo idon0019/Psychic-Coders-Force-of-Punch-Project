@@ -52,7 +52,6 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
 
         navController = Navigation.findNavController(view);
         Button btnCancel = view.findViewById(R.id.BtnCancel);
-        Button btnNext = view.findViewById(R.id.BtnNext);
         res = getResources();
 
         bundle = new Bundle();
@@ -75,12 +74,6 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
         };
 
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
-
-        // used for debugging purposes. moves to the next page.
-        btnNext.setOnClickListener(v -> {
-            getParentFragmentManager().setFragmentResult(PunchResultFragment.REQUEST_KEY, bundle);
-            navController.navigate(R.id.action_measuringPunchFragment_to_punchResultFragment);
-        });
     }
 
     private void onBackEvent() {
