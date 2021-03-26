@@ -408,6 +408,13 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
         return (database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null) > 0);
     }
 
+    public boolean editStudentPhoto(long id, String imageUri) {
+        SQLiteDatabase database = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(COLUMN_STUDENT_PHOTO, imageUri);
+        return (database.update(STUDENT_TABLE, cv, COLUMN_ID + " = " + id, null) == 1);
+    }
+
 
     /**
      * Creates a new punch in the table.
@@ -592,7 +599,6 @@ public class MyAppProfileDatabase extends SQLiteOpenHelper {
                         + COLUMN_STUDENT_HEIGHT + " FLOAT)";
 
                 database.execSQL(createTable);
-
         }
     }
 }

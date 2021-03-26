@@ -14,9 +14,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import static org.junit.Assert.*;
 
@@ -102,17 +104,6 @@ public class MyAppUnitTest {
     }
 
     /*
-     * Verifies TC15
-     */
-    @Test
-    public void findUserValid() {
-        databaseHelper.addStudent(sampleProfile);
-        long lastID = databaseHelper.getLastStudentID();
-        assertNotNull(databaseHelper.findStudent(lastID)); //Should exist!
-        databaseHelper.deleteStudent(lastID);
-    }
-
-    /*
      * Verifies TC3
      */
     @Test
@@ -126,13 +117,6 @@ public class MyAppUnitTest {
         assertEquals(0, lst.size()); //ensure all punches are deleted!
     }
 
-    /*
-     * Verifies TC16
-     */
-    @Test
-    public void findUserInvalid() {
-        assertNull(databaseHelper.findStudent(INVALID_ID)); //Should not exist!
-    }
     /*
      * Verifies TC4
      */
@@ -156,17 +140,45 @@ public class MyAppUnitTest {
     }
 
     /**
-     * Verifies TC #7. This one is failing, so it is disabled. Please resolve addPunch() method to ensure
-     * user exists!
+     * Verifies TC6
+     */
+    @Test
+    public void removeAllPunchesForUser() {
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+        Date time = Calendar.getInstance().getTime();
+
+        /*
+         * Add 100 punches to user's profile
+         */
+        for(int i = 0; i < 10 ; i++) {
+            PunchModel pm = new PunchModel(0, lastID, 5, time.getTime());
+            databaseHelper.addPunch(pm);
+        }
+
+        databaseHelper.deletePunchesFromProfile(lastID);
+
+        assertTrue(databaseHelper.getAllPunchesFromProfile(lastID).isEmpty());
+        databaseHelper.deleteStudent(lastID);
+    }
+
+    /**
+     * Verifies TC #7.
      */
     @Test
     public void addPunchUserInvalid() {
-        long ID = INVALID_ID;
         Date time = Calendar.getInstance().getTime();
-        PunchModel pm = new PunchModel(0, 99999, 5, time.getTime());
+        PunchModel pm = new PunchModel(0, INVALID_ID, 5, time.getTime());
         assertFalse(databaseHelper.addPunch(pm)); //add should NOT be successful.
     }
 
+    /**
+     * Verifies TC8
+     */
+    @Test
+    public void removeAllPunchesForUserInvalid() {
+        databaseHelper.deletePunchesFromProfile(INVALID_ID);
+    }
     /**
      * Verifies TC #9
      */
@@ -202,6 +214,74 @@ public class MyAppUnitTest {
     @Test
     public void editUserInfoNonExisting() {
         assertFalse(databaseHelper.editStudentProfile(INVALID_ID, "", "bob", "the builder", VALID_AGE, "100", "100.0"));
+    }
+
+    /**
+     * Verifies TC #12
+     */
+    @Test
+    public void setUserPhotoPath(){
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+
+        assertTrue(databaseHelper.editStudentPhoto(lastID, "/images/test.png"));
+        databaseHelper.deleteStudent(lastID);
+    }
+    /**
+     * Verifies TC #13
+     */
+    @Test
+    public void removeUserPhoto(){
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+
+        assertTrue(databaseHelper.editStudentPhoto(lastID, ""));
+        assertTrue(databaseHelper.editStudentPhoto(lastID, null));
+        databaseHelper.deleteStudent(lastID);
+    }
+
+
+    /**
+     * Verifies TC #14
+     */
+
+    @Test
+    public void retrieveAllPunchesForUser() {
+
+        Random rand = new Random();
+        databaseHelper.addStudent(sampleProfile);
+        Date time = Calendar.getInstance().getTime();
+        long lastID = databaseHelper.getLastStudentID();
+
+        for(int i = 0; i < 10; i++) {
+            PunchModel pm = new PunchModel(0, lastID, rand.nextDouble()*50, time.getTime());
+            databaseHelper.addPunch(pm);
+        }
+
+        List<PunchModel> punches = databaseHelper.getAllPunchesFromProfile(lastID);
+        assertEquals(10, punches.size());
+        databaseHelper.deleteStudent(lastID);
+
+        assertEquals(0,databaseHelper.getAllPunchesFromProfile(lastID).size());
+    }
+
+    /*
+     * Verifies TC15
+     */
+    @Test
+    public void findUserValid() {
+        databaseHelper.addStudent(sampleProfile);
+        long lastID = databaseHelper.getLastStudentID();
+        assertNotNull(databaseHelper.findStudent(lastID)); //Should exist!
+        databaseHelper.deleteStudent(lastID);
+    }
+
+    /*
+     * Verifies TC16
+     */
+    @Test
+    public void findUserInvalid() {
+        assertNull(databaseHelper.findStudent(INVALID_ID)); //Should not exist!
     }
 
     @After
