@@ -60,7 +60,7 @@ public class AddNewUserFragment extends Fragment {
     private Uri imageUri;
     private File photo = null;
     private File oldPhoto = null;
-    private String photoPath = null;
+    private String photoPath = "";
     private boolean imageLoaded = true;
     private boolean setImage = false;
 

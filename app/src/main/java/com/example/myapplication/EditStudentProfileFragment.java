@@ -67,7 +67,7 @@ public class EditStudentProfileFragment extends Fragment {
     private File photo = null;
     private File initialPhoto = null; // the profile picture the user started with. stored until the end when the user is done editing their profile
     private File oldPhoto = null;
-    private String photoPath = null;
+    private String photoPath = "";
 
     // sets the launcher for getting an image from the camera
     ActivityResultLauncher<Intent> getCameraImage = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
@@ -178,10 +178,13 @@ public class EditStudentProfileFragment extends Fragment {
         getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
             accountID = result.getLong(res.getString(R.string.account_id_key));
 
-            photo = new File(database.getImagePathFromDatabase(accountID));
-            photoPath = photo.toString();
+            String path = database.getImagePathFromDatabase(accountID);
+            if (path == null || !path.equals("")) {
+                photo = new File(database.getImagePathFromDatabase(accountID));
+                photoPath = photo.toString();
+                imgEdit.setImageBitmap(BitmapFactory.decodeFile(photoPath));
+            }
             initialPhoto = photo;
-            imgEdit.setImageBitmap(BitmapFactory.decodeFile(photo.toString()));
             edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
             edtLastName.setText(database.getLastNameFromDatabase(accountID));
             txtAge.setText(database.getDOBFromDatabase(accountID));
@@ -202,10 +205,10 @@ public class EditStudentProfileFragment extends Fragment {
 
             int d = calendar.get(Calendar.DAY_OF_MONTH);
             int m = calendar.get(Calendar.MONTH);
-            int y = calendar.get(Calendar.YEAR)-10;
+            int y = calendar.get(Calendar.YEAR) - 10;
 
             dialog = new DatePickerDialog(getActivity(),
-                    (view1, year, month, dayOfMonth) -> txtAge.setText(String.format(res.getString(R.string.date_picker_text), dayOfMonth, month+1, year)), //txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
+                    (view1, year, month, dayOfMonth) -> txtAge.setText(String.format(res.getString(R.string.date_picker_text), dayOfMonth, month + 1, year)), //txtAge.setText(dayOfMonth + "/" + (month+1) + "/" + year); },
                     y,
                     m,
                     d);
@@ -271,47 +274,47 @@ public class EditStudentProfileFragment extends Fragment {
         requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(), callback);
 
         View.OnClickListener editPhotoListener = v -> {
-                // builds the image picker dialog
-                AlertDialog.Builder builder = new AlertDialog.Builder(EditStudentProfileFragment.this.getActivity());
+            // builds the image picker dialog
+            AlertDialog.Builder builder = new AlertDialog.Builder(EditStudentProfileFragment.this.getActivity());
 
-                builder.setTitle(res.getString(R.string.dialog_name));
-                builder.setMessage(res.getString(R.string.dialog_message));
+            builder.setTitle(res.getString(R.string.dialog_name));
+            builder.setMessage(res.getString(R.string.dialog_message));
 
-                builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
-                    Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            builder.setPositiveButton(R.string.dialog_camera, ((dialog1, which) -> {
+                Intent takePhotoIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-                    // creates a temp file
-                    oldPhoto = photo;
-                    try {
-                        photo = BitmapMaker.createNewImageFile(EditStudentProfileFragment.this.requireContext());
-                        imageUri = FileProvider.getUriForFile(EditStudentProfileFragment.this.requireContext(),
-                                "com.example.myapplication.fileprovider",
-                                photo);
-                        takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-                        getCameraImage.launch(takePhotoIntent);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }));
+                // creates a temp file
+                oldPhoto = photo;
+                try {
+                    photo = BitmapMaker.createNewImageFile(EditStudentProfileFragment.this.requireContext());
+                    imageUri = FileProvider.getUriForFile(EditStudentProfileFragment.this.requireContext(),
+                            "com.example.myapplication.fileprovider",
+                            photo);
+                    takePhotoIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
+                    getCameraImage.launch(takePhotoIntent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }));
 
-                builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
-                    // creates a temp file and return its uri
-                    oldPhoto = photo;
-                    try {
-                        photo = BitmapMaker.createNewImageFile(EditStudentProfileFragment.this.requireContext());
-                        Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
-                        pickPhotoIntent.setType("image/*");
-                        getGalleryImage.launch(pickPhotoIntent);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }));
+            builder.setNegativeButton(R.string.dialog_gallery, ((dialog1, which) -> {
+                // creates a temp file and return its uri
+                oldPhoto = photo;
+                try {
+                    photo = BitmapMaker.createNewImageFile(EditStudentProfileFragment.this.requireContext());
+                    Intent pickPhotoIntent = new Intent(Intent.ACTION_PICK);
+                    pickPhotoIntent.setType("image/*");
+                    getGalleryImage.launch(pickPhotoIntent);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }));
 
-                builder.setNeutralButton(R.string.dialog_cancel,
-                        (dialog, which) -> dialog.dismiss());
+            builder.setNeutralButton(R.string.dialog_cancel,
+                    (dialog, which) -> dialog.dismiss());
 
-                AlertDialog alertDialog = builder.create();
-                alertDialog.show();
+            AlertDialog alertDialog = builder.create();
+            alertDialog.show();
 
         };
 
@@ -334,10 +337,12 @@ public class EditStudentProfileFragment extends Fragment {
         txtEditPhoto.setOnClickListener(editPhotoListener);
         txtEditPhoto.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) { }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) { }
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -369,6 +374,7 @@ public class EditStudentProfileFragment extends Fragment {
 
     /**
      * Gets the size of a photo from its URI.
+     *
      * @param contentURI Photo URI.
      * @return Size of the photo.
      */
