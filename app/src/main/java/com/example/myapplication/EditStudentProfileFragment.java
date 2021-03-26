@@ -174,31 +174,6 @@ public class EditStudentProfileFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         res = getResources();
 
-        // Populates existing fields with profile information.
-        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
-            accountID = result.getLong(res.getString(R.string.account_id_key));
-
-            String path = database.getImagePathFromDatabase(accountID);
-            if (path == null || !path.equals("")) {
-                photo = new File(database.getImagePathFromDatabase(accountID));
-                photoPath = photo.toString();
-                imgEdit.setImageBitmap(BitmapFactory.decodeFile(photoPath));
-            }
-            initialPhoto = photo;
-            edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
-            edtLastName.setText(database.getLastNameFromDatabase(accountID));
-            txtAge.setText(database.getDOBFromDatabase(accountID));
-            edtWeight.setText(database.getWeightFromDatabase(accountID));
-            edtHeight.setText(database.getHeightFromDatabase(accountID));
-
-            if (photoPath.equals(""))
-                txtEditPhoto.setText(R.string.add_photo);
-            else {
-                txtEditPhoto.setText(R.string.remove_photo);
-                imgEdit.setBackgroundResource(R.color.image_background_transparent);
-            }
-        });
-
         // Launches dialog to pick date of birth.
         btnDate.setOnClickListener(v -> {
             calendar = Calendar.getInstance();
@@ -334,7 +309,6 @@ public class EditStudentProfileFragment extends Fragment {
 
         // Opens image picker to let user choose a profile image.
         imgEdit.setOnClickListener(editPhotoListener);
-        txtEditPhoto.setOnClickListener(editPhotoListener);
         txtEditPhoto.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -352,6 +326,36 @@ public class EditStudentProfileFragment extends Fragment {
                     txtEditPhoto.setOnClickListener(editPhotoListener);
             }
         });
+
+        // Populates existing fields with profile information.
+        getParentFragmentManager().setFragmentResultListener(REQUEST_KEY, this, (requestKey, result) -> {
+            accountID = result.getLong(res.getString(R.string.account_id_key));
+
+            String path = database.getImagePathFromDatabase(accountID);
+            if (path == null || !path.equals("")) {
+                setImage = true;
+                photo = new File(database.getImagePathFromDatabase(accountID));
+                photoPath = photo.toString();
+                imgEdit.setImageBitmap(BitmapFactory.decodeFile(photoPath));
+            }
+            initialPhoto = photo;
+            edtFirstName.setText(database.getFirstNameFromDatabase(accountID));
+            edtLastName.setText(database.getLastNameFromDatabase(accountID));
+            txtAge.setText(database.getDOBFromDatabase(accountID));
+            edtWeight.setText(database.getWeightFromDatabase(accountID));
+            edtHeight.setText(database.getHeightFromDatabase(accountID));
+
+            if (photoPath.equals("")) {
+                txtEditPhoto.setText(R.string.add_photo);
+                txtEditPhoto.setOnClickListener(editPhotoListener);
+            }
+            else {
+                txtEditPhoto.setText(R.string.remove_photo);
+                txtEditPhoto.setOnClickListener(removePhotoListener);
+                imgEdit.setBackgroundResource(R.color.image_background_transparent);
+            }
+        });
+
     }
 
     /**
