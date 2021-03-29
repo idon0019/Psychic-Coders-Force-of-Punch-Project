@@ -109,7 +109,7 @@ public class MeasuringPunchFragment extends Fragment implements SensorEventListe
     public double calculateForce() {
         double bagMass;
         double force;
-        bagMass = 40;/*arbitrary number, macro implementation possible*/
+        bagMass = 10;/*arbitrary number, macro implementation possible*/
         force = bagMass * this.maxAcceleration;
         return force;
     }
